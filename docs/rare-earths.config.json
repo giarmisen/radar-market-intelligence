@@ -1,0 +1,75 @@
+{
+  "$comment": "Radar domain config — rare earths. The engine reads this; switching domains means writing a new file like this one, not touching engine code. Seeds the DB on first run.",
+  "slug": "rare-earths",
+  "name": "Rare Earths / Critical Raw Materials",
+  "funding_significance_usd": 200000000,
+
+  "actors": [
+    { "name": "USGS", "role": "reference", "tier": 0 },
+    { "name": "IEA Critical Minerals", "role": "reference", "tier": 0 },
+    { "name": "EU DG GROW", "role": "reference", "tier": 0 },
+    { "name": "European Court of Auditors", "role": "reference", "tier": 0 },
+    { "name": "MERICS", "role": "reference", "tier": 0 },
+    { "name": "CSIS", "role": "reference", "tier": 0 },
+    { "name": "RAND", "role": "reference", "tier": 0 },
+    { "name": "Argus Media", "role": "reference", "tier": 0 },
+    { "name": "Fastmarkets", "role": "reference", "tier": 0 },
+
+    { "name": "MP Materials", "role": "producer", "tier": 1, "geography": ["US"] },
+    { "name": "Lynas Rare Earths", "role": "producer", "tier": 1, "geography": ["AU", "MY"] },
+    { "name": "USA Rare Earth", "role": "producer", "tier": 1, "geography": ["US"] },
+    { "name": "Iluka Resources", "role": "producer", "tier": 1, "geography": ["AU"] },
+    { "name": "Energy Fuels", "role": "producer", "tier": 1, "geography": ["US"] },
+    { "name": "China Northern Rare Earth Group", "role": "producer", "tier": 1, "geography": ["CN"] },
+    { "name": "China Rare Earth Group", "role": "producer", "tier": 1, "geography": ["CN"] },
+    { "name": "JL Mag Rare-Earth", "role": "producer", "tier": 1, "geography": ["CN"] },
+    { "name": "Shenghe Resources", "role": "producer", "tier": 1, "geography": ["CN"] },
+
+    { "name": "Solvay", "role": "processor", "tier": 2, "geography": ["FR", "BE"] },
+    { "name": "Neo Performance Materials", "role": "processor", "tier": 2, "geography": ["CA"] },
+    { "name": "Arafura Rare Earths", "role": "processor", "tier": 2, "geography": ["AU"] },
+
+    { "name": "Lockheed Martin", "role": "buyer", "tier": 2, "geography": ["US"] },
+    { "name": "Raytheon", "role": "buyer", "tier": 2, "geography": ["US"] },
+    { "name": "Airbus Defence", "role": "buyer", "tier": 2, "geography": ["EU"] },
+    { "name": "Tesla", "role": "buyer", "tier": 2, "geography": ["US"] },
+    { "name": "BYD", "role": "buyer", "tier": 2, "geography": ["CN"] },
+    { "name": "Vestas", "role": "buyer", "tier": 2, "geography": ["DK"] },
+    { "name": "Siemens Gamesa", "role": "buyer", "tier": 2, "geography": ["ES", "DE"] },
+
+    { "name": "US DOE", "role": "regulator", "tier": 2, "geography": ["US"] },
+    { "name": "EU Commission", "role": "regulator", "tier": 2, "geography": ["EU"] },
+    { "name": "MOFCOM", "role": "regulator", "tier": 2, "geography": ["CN"] },
+    { "name": "Australian Government", "role": "regulator", "tier": 2, "geography": ["AU"] }
+  ],
+
+  "radar_queries": [
+    { "label": "Recycling startups", "query": "rare earth recycling startup funding" },
+    { "label": "Greenland projects", "query": "Greenland rare earth mining project" },
+    { "label": "Ukraine minerals deals", "query": "Ukraine critical minerals agreement" },
+    { "label": "Africa REE projects", "query": "Africa rare earth project development" }
+  ],
+
+  "field_sources": [
+    { "label": "SEC EDGAR full-text", "type": "filings", "url": "https://efts.sec.gov/LATEST/search-index?q=%22rare+earth%22" },
+    { "label": "EUR-Lex CRM", "type": "official_journal", "url": "https://eur-lex.europa.eu" },
+    { "label": "MERICS publications", "type": "think_tank", "url": "https://merics.org/en/publications" }
+  ],
+
+  "saved_searches": [
+    "rare earth export controls",
+    "critical raw materials act",
+    "rare earth offtake agreement",
+    "rare earth processing plant",
+    "neodymium praseodymium price"
+  ],
+
+  "scheduled_events_seed": [
+    {
+      "title": "China export-control suspension (2nd wave) expires",
+      "scheduled_date": "2026-11-10",
+      "category": "geopolitical",
+      "so_what": "If not extended, licensing requirements with extraterritorial reach resume for REE-related exports."
+    }
+  ]
+}

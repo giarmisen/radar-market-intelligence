@@ -1,0 +1,84 @@
+{
+    "$comment": "Radar domain config — Language Services & Language AI. Scope: global, with focus on enterprise LSPs and AI translation technology. Designed as a product analyst tool for a company like TransPerfect operating in this market.",
+    "slug": "language-services-ai",
+    "name": "Language Services & Language AI",
+    "funding_significance_usd": 20000000,
+  
+    "actors": [
+      { "name": "Slator", "role": "reference", "tier": 0 },
+      { "name": "Nimdzi Insights", "role": "reference", "tier": 0 },
+      { "name": "MultiLingual Magazine", "role": "reference", "tier": 0 },
+      { "name": "LocWorld", "role": "reference", "tier": 0 },
+      { "name": "GALA (Globalization and Localization Association)", "role": "reference", "tier": 0 },
+      { "name": "Common Sense Advisory", "role": "reference", "tier": 0 },
+  
+      { "name": "TransPerfect", "role": "producer", "tier": 1, "geography": ["US", "EU"] },
+      { "name": "RWS", "role": "producer", "tier": 1, "geography": ["GB", "EU"] },
+      { "name": "Lionbridge", "role": "producer", "tier": 1, "geography": ["US", "EU"] },
+      { "name": "Welocalize", "role": "producer", "tier": 1, "geography": ["US", "EU"] },
+      { "name": "Keywords Studios", "role": "producer", "tier": 1, "geography": ["IE", "EU"] },
+      { "name": "Translated", "role": "producer", "tier": 1, "geography": ["IT"] },
+      { "name": "Acolad", "role": "producer", "tier": 1, "geography": ["FR", "EU"] },
+      { "name": "Appen", "role": "producer", "tier": 1, "geography": ["AU", "US"] },
+  
+      { "name": "DeepL", "role": "processor", "tier": 1, "geography": ["DE", "EU"] },
+      { "name": "ModernMT", "role": "processor", "tier": 1, "geography": ["IT"] },
+      { "name": "SYSTRAN", "role": "processor", "tier": 1, "geography": ["FR"] },
+      { "name": "Phrase (Memsource)", "role": "processor", "tier": 1, "geography": ["CZ", "EU"] },
+      { "name": "memoQ", "role": "processor", "tier": 1, "geography": ["HU"] },
+      { "name": "XTM International", "role": "processor", "tier": 1, "geography": ["GB"] },
+      { "name": "Lilt", "role": "processor", "tier": 1, "geography": ["US"] },
+      { "name": "Unbabel", "role": "processor", "tier": 1, "geography": ["PT", "US"] },
+  
+      { "name": "Google Translate (Google Cloud)", "role": "buyer", "tier": 2, "geography": ["US"] },
+      { "name": "Microsoft Azure Translator", "role": "buyer", "tier": 2, "geography": ["US"] },
+      { "name": "Amazon Translate", "role": "buyer", "tier": 2, "geography": ["US"] },
+      { "name": "Meta AI (NLLB)", "role": "buyer", "tier": 2, "geography": ["US"] },
+  
+      { "name": "European Commission DGT", "role": "regulator", "tier": 2, "geography": ["EU"] },
+      { "name": "EU AI Act enforcement bodies", "role": "regulator", "tier": 2, "geography": ["EU"] },
+      { "name": "US Executive Order on AI (OSTP)", "role": "regulator", "tier": 2, "geography": ["US"] },
+      { "name": "ISO TC37 (Terminology and Language Resources)", "role": "regulator", "tier": 2, "geography": ["GLOBAL"] }
+    ],
+  
+    "radar_queries": [
+      { "label": "Language AI new model release", "query": "language AI translation model release 2026" },
+      { "label": "LSP acquisition M&A", "query": "language service provider acquisition merger 2026" },
+      { "label": "MTPE machine translation post-editing", "query": "MTPE machine translation post-editing enterprise" },
+      { "label": "EU AI Act language services", "query": "EU AI Act localization translation compliance" },
+      { "label": "Language access regulation US", "query": "language access policy US federal 2026" }
+    ],
+  
+    "field_sources": [
+      { "label": "Slator — Language Industry News", "type": "rss", "url": "https://slator.com/feed/" },
+      { "label": "SlatorPod — Weekly podcast", "type": "rss", "url": "https://www.slatorpod.com/rss" },
+      { "label": "MultiLingual Magazine", "type": "rss", "url": "https://multilingual.com/feed/" },
+      { "label": "Nimdzi Insights blog", "type": "rss", "url": "https://www.nimdzi.com/feed/" },
+      { "label": "LocWorld blog", "type": "rss", "url": "https://locworld.com/feed/" }
+    ],
+  
+    "saved_searches": [
+      "TransPerfect AI product launch",
+      "language service provider AI strategy",
+      "machine translation quality enterprise",
+      "localization AI automation 2026",
+      "translation management system new feature",
+      "DeepL enterprise expansion",
+      "RWS language AI"
+    ],
+  
+    "scheduled_events_seed": [
+      {
+        "title": "EU AI Act — obligations for high-risk AI systems fully applicable",
+        "scheduled_date": "2026-08-02",
+        "category": "regulatory",
+        "so_what": "Full enforcement of high-risk AI obligations under EU AI Act. Language AI tools used in regulated contexts (legal, medical, public sector) may require conformity assessments. Directly affects LSPs operating in EU."
+      },
+      {
+        "title": "LocWorld52 — major localization industry conference",
+        "scheduled_date": "2026-10-01",
+        "category": "communications",
+        "so_what": "Annual conference where major LSPs and language tech companies announce strategy, partnerships, and product direction. High signal for Tier 1 actor movements."
+      }
+    ]
+  }

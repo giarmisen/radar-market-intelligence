@@ -1,0 +1,98 @@
+{
+  "$comment": "Radar domain config — Spanish natural wine producers. Scope: Spain (Catalonia + peninsula + islands). Definition: low-intervention, biodynamic/organic viticulture, minimal sulfites. Producers are the primary actors; importers, critics, and bars serve as references and signal amplifiers.",
+  "slug": "natural-wine-es",
+  "name": "Natural Wine — Spain",
+  "funding_significance_usd": 500000,
+
+  "actors": [
+    { "name": "Pipette Magazine", "role": "reference", "tier": 0 },
+    { "name": "Noble Rot", "role": "reference", "tier": 0 },
+    { "name": "RAW Wine", "role": "reference", "tier": 0 },
+    { "name": "H2O Vino", "role": "reference", "tier": 0 },
+    { "name": "Glug Magazine", "role": "reference", "tier": 0 },
+    { "name": "Vila Viniteca", "role": "reference", "tier": 0 },
+    { "name": "Monvínic", "role": "reference", "tier": 0 },
+    { "name": "Vinum Naturae", "role": "reference", "tier": 0 },
+    { "name": "Asociación de Productores de Vinos Naturales (PVN)", "role": "reference", "tier": 0 },
+
+    { "name": "Laureano Serres", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Partida Creus", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Costador", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Celler Escoda-Sanahuja", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Clos Lentiscus", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "La Salada", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Mendall", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Joan Ramón Escoda", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Celler Frisach", "role": "producer", "tier": 1, "geography": ["ES-CT"] },
+    { "name": "Bodegas Cueva", "role": "producer", "tier": 1, "geography": ["ES-VC"] },
+    { "name": "Microbio Wines", "role": "producer", "tier": 1, "geography": ["ES-CL"] },
+    { "name": "Comando G", "role": "producer", "tier": 1, "geography": ["ES-MD"] },
+    { "name": "Envínate", "role": "producer", "tier": 1, "geography": ["ES-CN", "ES-GA"] },
+    { "name": "Suertes del Marqués", "role": "producer", "tier": 1, "geography": ["ES-CN"] },
+    { "name": "4 Monos Viticultores", "role": "producer", "tier": 1, "geography": ["ES-MD"] },
+    { "name": "Bodegas Forjas del Salnés", "role": "producer", "tier": 1, "geography": ["ES-GA"] },
+    { "name": "Olivier Rivière", "role": "producer", "tier": 1, "geography": ["ES-RI"] },
+    { "name": "Bodegas Itsasmendi", "role": "producer", "tier": 1, "geography": ["ES-PV"] },
+    { "name": "Daterra Viticultores", "role": "producer", "tier": 1, "geography": ["ES-GA"] },
+    { "name": "Cota 45", "role": "producer", "tier": 1, "geography": ["ES-AN"] },
+
+    { "name": "Cuvée 3000", "role": "buyer", "tier": 2, "geography": ["ES"] },
+    { "name": "Vinissimus", "role": "buyer", "tier": 2, "geography": ["ES"] },
+    { "name": "Bar Brutal", "role": "buyer", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "Bodega 1900", "role": "buyer", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "Les Caves", "role": "buyer", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "El Rincón de Jaén", "role": "buyer", "tier": 2, "geography": ["ES-MD"] },
+    { "name": "La Tasquita de Enfrente", "role": "buyer", "tier": 2, "geography": ["ES-MD"] },
+    { "name": "Quimet & Quimet", "role": "buyer", "tier": 2, "geography": ["ES-CT"] },
+
+    { "name": "DO Penedès", "role": "regulator", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "DO Empordà", "role": "regulator", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "DO Terra Alta", "role": "regulator", "tier": 2, "geography": ["ES-CT"] },
+    { "name": "DOCa Rioja", "role": "regulator", "tier": 2, "geography": ["ES-RI"] },
+    { "name": "DO Rías Baixas", "role": "regulator", "tier": 2, "geography": ["ES-GA"] },
+    { "name": "DO Sierra de Gredos", "role": "regulator", "tier": 2, "geography": ["ES-MD", "ES-CL"] },
+    { "name": "Ministerio de Agricultura España", "role": "regulator", "tier": 2, "geography": ["ES"] },
+    { "name": "European Commission DG AGRI", "role": "regulator", "tier": 2, "geography": ["EU"] }
+  ],
+
+  "radar_queries": [
+    { "label": "New natural wine producers Spain", "query": "new natural wine producer Spain" },
+    { "label": "Biodynamic conversion Spain", "query": "biodynamic conversion Spanish winery" },
+    { "label": "DO conflicts natural producers", "query": "Spanish DO denomination natural wine conflict" },
+    { "label": "Wine tariffs Spain export", "query": "Spain wine export tariffs US Trump" },
+    { "label": "Catalonia natural wine scene", "query": "Catalonia natural wine producer" }
+  ],
+
+  "field_sources": [
+    { "label": "Elvi Wine — Spanish Wine Revolution", "type": "rss", "url": "https://elvivino.substack.com/feed" },
+    { "label": "LA MESCITA — Pipette Magazine newsletter", "type": "rss", "url": "https://rachelsigner.substack.com/feed" },
+    { "label": "Must — sustainable wine newsletter", "type": "rss", "url": "https://mustsustainablewine.substack.com/feed" },
+    { "label": "A View From My Table — Andy Neather", "type": "rss", "url": "https://aviewfrommytable.substack.com/feed" },
+    { "label": "Vinetur (Spanish wine news)", "type": "rss", "url": "https://www.vinetur.com/ultimos/rss.html" }
+  ],
+
+  "saved_searches": [
+    "natural wine Spain new release",
+    "vino natural España bodega",
+    "biodynamic wine Spain conversion",
+    "Catalonia natural wine producer",
+    "Spanish wine DO conflict producer",
+    "wine tariffs Europe Spain",
+    "low intervention wine Spain"
+  ],
+
+  "scheduled_events_seed": [
+    {
+      "title": "RAW Wine Fair London — Spanish producers represented",
+      "scheduled_date": "2027-03-14",
+      "category": "communications",
+      "so_what": "Annual fair where Spanish natural producers gain UK distribution and press exposure."
+    },
+    {
+      "title": "H2O Vino Barcelona — main Spanish natural wine fair",
+      "scheduled_date": "2026-11-23",
+      "category": "communications",
+      "so_what": "Largest natural wine fair in Spain. Producer roster signals who is in/out of the scene this year."
+    }
+  ]
+}
