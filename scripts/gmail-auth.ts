@@ -11,10 +11,8 @@ import {
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-process.env.GMAIL_CREDENTIALS_PATH ??= resolve(
-  projectRoot,
-  "config/gmail-credentials.json",
-);
+const env = process.env as Record<string, string | undefined>;
+env.NODE_ENV ??= "development";
 
 config({ path: resolve(projectRoot, ".env.local") });
 

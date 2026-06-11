@@ -11,6 +11,8 @@ const DEFAULT_ALERT_INBOX = "radarmarket.languageservices@gmail.com";
 const GOOGLE_ALERTS_SENDER = "googlealerts-noreply@google.com";
 
 export const GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+export const DEFAULT_GMAIL_REDIRECT_URI =
+  "http://localhost:3000/api/auth/gmail/callback";
 
 const ANCHOR_RE = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
 
@@ -38,6 +40,11 @@ export interface GmailOAuthConfig {
   redirectUri: string;
 }
 
+function gmailEnv(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value || undefined;
+}
+
 function credentialsPath(): string {
   const explicit = process.env.GMAIL_CREDENTIALS_PATH?.trim();
   if (explicit) {
@@ -53,6 +60,47 @@ function credentialsPath(): string {
     dirname(fileURLToPath(import.meta.url)),
     "../../config/gmail-credentials.json",
   );
+}
+
+function loadGmailCredentialsFromEnv(): GmailOAuthConfig | null {
+  const clientId = gmailEnv("GMAIL_CLIENT_ID");
+  const clientSecret = gmailEnv("GMAIL_CLIENT_SECRET");
+  if (!clientId || !clientSecret) {
+    return null;
+  }
+
+  return {
+    clientId,
+    clientSecret,
+    redirectUri:
+      gmailEnv("GMAIL_REDIRECT_URI") ?? DEFAULT_GMAIL_REDIRECT_URI,
+  };
+}
+
+function loadGmailCredentialsFromFile(): GmailOAuthConfig {
+  let raw: string;
+  try {
+    raw = readFileSync(credentialsPath(), "utf8");
+  } catch {
+    throw new Error(
+      `Gmail credentials not found at ${credentialsPath()}. Copy config/gmail-credentials.json.example and fill in OAuth client details, or set GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET.`,
+    );
+  }
+
+  const parsed = JSON.parse(raw) as GmailCredentialsFile;
+  const block = parsed.installed ?? parsed.web;
+  if (!block?.client_id || !block?.client_secret) {
+    throw new Error(
+      "Invalid Gmail credentials file: expected installed or web OAuth client with client_id and client_secret.",
+    );
+  }
+
+  return {
+    clientId: block.client_id,
+    clientSecret: block.client_secret,
+    redirectUri:
+      block.redirect_uris?.[0] ?? DEFAULT_GMAIL_REDIRECT_URI,
+  };
 }
 
 function defaultSinceDate(lookbackDays = DEFAULT_LOOKBACK_DAYS): string {
@@ -85,31 +133,18 @@ function stripHtml(html: string): string {
 }
 
 export function loadGmailCredentials(): GmailOAuthConfig {
-  let raw: string;
-  try {
-    raw = readFileSync(credentialsPath(), "utf8");
-  } catch {
-    throw new Error(
-      `Gmail credentials not found at ${credentialsPath()}. Copy config/gmail-credentials.json.example and fill in OAuth client details.`,
-    );
+  const fromEnv = loadGmailCredentialsFromEnv();
+  if (fromEnv) {
+    return fromEnv;
   }
 
-  const parsed = JSON.parse(raw) as GmailCredentialsFile;
-  const block = parsed.installed ?? parsed.web;
-  if (!block?.client_id || !block?.client_secret) {
-    throw new Error(
-      "Invalid Gmail credentials file: expected installed or web OAuth client with client_id and client_secret.",
-    );
+  if (process.env.NODE_ENV === "development") {
+    return loadGmailCredentialsFromFile();
   }
 
-  const redirectUri =
-    block.redirect_uris?.[0] ?? "http://localhost:3000/oauth2callback";
-
-  return {
-    clientId: block.client_id,
-    clientSecret: block.client_secret,
-    redirectUri,
-  };
+  throw new Error(
+    "Gmail OAuth credentials missing. Set GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET environment variables.",
+  );
 }
 
 export async function loadRefreshToken(email: string): Promise<string | null> {
