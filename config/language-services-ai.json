@@ -54,7 +54,8 @@
       { "label": "SlatorPod — Weekly podcast", "type": "rss", "url": "https://www.slatorpod.com/rss" },
       { "label": "MultiLingual Magazine", "type": "rss", "url": "https://multilingual.com/feed/" },
       { "label": "Nimdzi Insights blog", "type": "rss", "url": "https://www.nimdzi.com/feed/" },
-      { "label": "LocWorld blog", "type": "rss", "url": "https://locworld.com/feed/" }
+      { "label": "LocWorld blog", "type": "rss", "url": "https://locworld.com/feed/" },
+      { "label": "Google Alerts — Gmail", "type": "gmail", "url": "radarmarket.languageservices@gmail.com" }
     ],
   
     "saved_searches": [

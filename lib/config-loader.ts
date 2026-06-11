@@ -28,6 +28,7 @@ const SOURCE_TYPES: SourceType[] = [
   "trade_press",
   "patent_db",
   "search_query",
+  "gmail",
 ];
 
 const SIGNAL_CATEGORIES: SignalCategory[] = [

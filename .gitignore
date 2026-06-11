@@ -28,6 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# Gmail OAuth credentials (use gmail-credentials.json.example as template)
+config/gmail-credentials.json
+
 # vercel
 .vercel
 

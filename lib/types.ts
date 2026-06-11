@@ -13,7 +13,8 @@ export type SourceType =
   | "think_tank"
   | "trade_press"
   | "patent_db"
-  | "search_query";
+  | "search_query"
+  | "gmail";
 
 export type SignalCategory =
   | "product"

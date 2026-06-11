@@ -48,7 +48,7 @@ create table radar_queries (
 -- ============================================================
 create type source_type as enum (
   'rss','newsroom','filings','official_journal','think_tank',
-  'trade_press','patent_db','search_query'
+  'trade_press','patent_db','search_query','gmail'
 );
 create type source_status as enum ('active','candidate','rejected','retired');
 
@@ -150,6 +150,18 @@ create view upcoming_events as
 select * from signals
 where scheduled_date is not null and scheduled_date >= current_date
 order by scheduled_date;
+
+-- ============================================================
+-- GMAIL TOKENS — OAuth refresh token persistence
+-- ============================================================
+create table gmail_tokens (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  refresh_token text not null,
+  updated_at timestamptz default now()
+);
+
+alter table gmail_tokens disable row level security;
 
 -- API access (v1: no RLS, single-analyst tool)
 grant usage on schema public to anon, authenticated, service_role;

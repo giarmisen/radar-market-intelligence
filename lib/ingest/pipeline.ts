@@ -11,6 +11,7 @@ import {
   ingestEdgar,
   parseEdgarQueryFromSourceUrl,
 } from "./edgar";
+import { ingestGmail } from "./gmail";
 import { ingestRss } from "./rss";
 // import { ingestSearch } from "./search";
 
@@ -24,6 +25,7 @@ export interface IngestSummary {
   collected: {
     edgar: number;
     rss: number;
+    gmail: number;
     search: number;
     scrape: number;
   };
@@ -163,7 +165,7 @@ async function collectRawItems(
   config: DomainConfig,
   sources: DbSource[],
 ): Promise<{ items: IngestRawItem[]; counts: IngestSummary["collected"]; errors: string[] }> {
-  const counts = { edgar: 0, rss: 0, search: 0, scrape: 0 };
+  const counts = { edgar: 0, rss: 0, gmail: 0, search: 0, scrape: 0 };
   const errors: string[] = [];
   const items: IngestRawItem[] = [];
   const { startDate, endDate } = defaultEdgarDateRange(DEFAULT_LOOKBACK_DAYS);
@@ -207,6 +209,23 @@ async function collectRawItems(
     } catch (error) {
       errors.push(
         `rss: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  const gmailSource = sources.find((source) => source.type === "gmail");
+  if (gmailSource) {
+    try {
+      const gmailItems = await ingestGmail({
+        sourceId: gmailSource.id,
+        email: gmailSource.url ?? undefined,
+        sinceDate,
+      });
+      items.push(...gmailItems);
+      counts.gmail = gmailItems.length;
+    } catch (error) {
+      errors.push(
+        `gmail: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
