@@ -6,6 +6,7 @@ import {
   formatRevenueUsd,
   formatRole,
 } from "@/lib/format";
+import { ActorAnalysisSection } from "./ActorAnalysisSection";
 import { SignalItem } from "./SignalItem";
 
 interface ActorProfileDetailProps {
@@ -124,6 +125,11 @@ export function ActorProfileDetail({ data }: ActorProfileDetailProps) {
           </section>
         </div>
       ) : null}
+
+      <ActorAnalysisSection
+        actorSlug={data.actor.slug}
+        domainSlug={data.domainSlug}
+      />
 
       <section className="radar-profile-signals">
         <div className="radar-profile-signals-header">
