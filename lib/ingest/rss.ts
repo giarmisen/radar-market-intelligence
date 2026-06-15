@@ -1,9 +1,12 @@
 import Parser from "rss-parser";
 import type { IngestRawItem } from "../types";
+import {
+  DEFAULT_INGEST_LOOKBACK_HOURS,
+  ingestSinceTimestamp,
+  todayIsoDate,
+} from "./date-range";
 
-const DEFAULT_LOOKBACK_DAYS = 7;
-/** TEMP: raised for RSS backfill */
-const DEFAULT_MAX_ITEMS_PER_FEED = 50;
+const DEFAULT_MAX_ITEMS_PER_FEED = 30;
 
 const RSS_USER_AGENT =
   process.env.RSS_USER_AGENT?.trim() ||
@@ -20,12 +23,16 @@ export interface RssIngestParams {
   toDate?: string;
   /** @deprecated Use fromDate */
   sinceDate?: string;
+  /** When false (cron), filter by pubDate >= now - 48h. When true, use fromDate/toDate. */
+  explicit?: boolean;
   maxItemsPerFeed?: number;
 }
 
 export interface RssIngestDebug {
+  mode: "default" | "explicit";
   fromDate: string;
   toDate: string;
+  sinceTimestamp?: number;
   filteredByDate: number;
   filteredNoDate: number;
   filteredOther: number;
@@ -52,12 +59,6 @@ const parser = new Parser({
   },
 });
 
-function defaultSinceDate(lookbackDays = DEFAULT_LOOKBACK_DAYS): string {
-  const since = new Date();
-  since.setUTCDate(since.getUTCDate() - lookbackDays);
-  return since.toISOString().slice(0, 10);
-}
-
 function parseItemDate(item: Parser.Item): string | null {
   const raw = item.isoDate ?? item.pubDate;
   if (!raw) {
@@ -70,6 +71,20 @@ function parseItemDate(item: Parser.Item): string | null {
   }
 
   return parsed.toISOString().slice(0, 10);
+}
+
+function parseItemTimestamp(item: Parser.Item): number | null {
+  const raw = item.isoDate ?? item.pubDate;
+  if (!raw) {
+    return null;
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.getTime();
 }
 
 function itemRawContent(item: Parser.Item): string {
@@ -103,13 +118,21 @@ function itemUrl(item: Parser.Item, feedUrl: string): string | null {
  * Standard RSS/Atom parse. Feed URLs and source IDs come from domain sources config.
  */
 export async function ingestRss(params: RssIngestParams): Promise<RssIngestResult> {
-  const fromDate = params.fromDate ?? params.sinceDate ?? defaultSinceDate();
-  const toDate = params.toDate ?? new Date().toISOString().slice(0, 10);
+  const explicit = params.explicit === true;
+  const toDate = params.toDate ?? todayIsoDate();
+  const sinceTimestamp = explicit
+    ? undefined
+    : ingestSinceTimestamp(DEFAULT_INGEST_LOOKBACK_HOURS);
+  const fromDate = explicit
+    ? (params.fromDate ?? params.sinceDate ?? todayIsoDate())
+    : new Date(sinceTimestamp!).toISOString().slice(0, 10);
   const maxItemsPerFeed = params.maxItemsPerFeed ?? DEFAULT_MAX_ITEMS_PER_FEED;
 
   const debug: RssIngestDebug = {
+    mode: explicit ? "explicit" : "default",
     fromDate,
     toDate,
+    sinceTimestamp,
     filteredByDate: 0,
     filteredNoDate: 0,
     filteredOther: 0,
@@ -126,7 +149,11 @@ export async function ingestRss(params: RssIngestParams): Promise<RssIngestResul
   const seenUrls = new Set<string>();
   const feedErrors: string[] = [];
 
-  console.log("[ingest:rss] date filter disabled (backfill mode)");
+  console.log(
+    `[ingest:rss] mode=${debug.mode} range ${fromDate} → ${toDate}${
+      sinceTimestamp ? ` since=${new Date(sinceTimestamp).toISOString()}` : ""
+    }`,
+  );
 
   for (const feed of params.feeds) {
     const feedDebug = {
@@ -156,7 +183,27 @@ export async function ingestRss(params: RssIngestParams): Promise<RssIngestResul
         continue;
       }
 
-      const eventDate = parseItemDate(entry) ?? new Date().toISOString().slice(0, 10);
+      const eventDate = parseItemDate(entry);
+      if (!eventDate) {
+        debug.filteredNoDate += 1;
+        feedDebug.filteredNoDate += 1;
+        continue;
+      }
+
+      if (explicit) {
+        if (eventDate < fromDate || eventDate > toDate) {
+          debug.filteredByDate += 1;
+          feedDebug.filteredByDate += 1;
+          continue;
+        }
+      } else {
+        const publishedAt = parseItemTimestamp(entry);
+        if (!publishedAt || publishedAt < sinceTimestamp!) {
+          debug.filteredByDate += 1;
+          feedDebug.filteredByDate += 1;
+          continue;
+        }
+      }
 
       const url = itemUrl(entry, feed.url);
       if (!url || seenUrls.has(url)) {

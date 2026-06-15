@@ -50,7 +50,7 @@ async function handleIngest(request: NextRequest) {
     const dateRange = parseIngestDateRange(from, to);
 
     console.log(
-      `[ingest:route] resolved date_range ${dateRange.fromDate} → ${dateRange.toDate}`,
+      `[ingest:route] resolved date_range ${dateRange.fromDate} → ${dateRange.toDate} explicit=${dateRange.explicit}`,
     );
 
     const summary = await runIngest(slug, dateRange);

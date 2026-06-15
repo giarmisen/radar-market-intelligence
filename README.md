@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Radar — Market Intelligence Tool
 
-## Getting Started
+**Live demo:** [radar-market.vercel.app](https://radar-market.vercel.app)
 
-First, run the development server:
+Radar is a market intelligence app that turns scattered industry news into structured, actionable signals. It monitors RSS feeds, Google Alerts, and other sources on a schedule, enriches each item with AI, and surfaces what matters on a living dashboard. Built as a portfolio project by a product designer who codes, it ships a full workflow from ingestion to insight—not just a static UI mockup. The reference domain is **language services & AI**: tracking companies like RWS, TransPerfect, and DeepL, plus industry news from Slator and similar outlets.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Key features
+
+- **Market Pulse** — A live view of the latest signal per tracked actor, with relevance scoring, categories, and a short “so what” summary.
+- **Timeline** — Full signal history with filters by actor, category, and date.
+- **Actor profiles & comparison** — Dedicated pages per company with linked signals; side-by-side comparison across actors.
+- **AI-generated actor reports** — On-demand strategic briefs powered by Claude Sonnet.
+- **Automated daily ingestion** — Vercel cron pulls new items every morning; RSS and Gmail adapters default to a 48-hour window so late runs don’t miss stories.
+
+## Stack
+
+| Layer | Technology |
+| --- | --- |
+| App | [Next.js 14](https://nextjs.org) (App Router) |
+| Database | [Supabase](https://supabase.com) (Postgres) |
+| AI | [Anthropic Claude API](https://www.anthropic.com) — Haiku for signal enrichment, Sonnet for actor reports |
+| Hosting & cron | [Vercel](https://vercel.com) |
+| Sources | Google Alerts + Gmail API, Slator RSS |
+
+## How it works
+
+```
+Sources → Ingest → Enrich → Store → Surface
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Sources** — Configured per domain (RSS URLs, Gmail inbox for Google Alerts, etc.).
+2. **Ingest** — The `/api/ingest` pipeline fetches raw items on a daily cron (or on demand with `?from=` / `?to=` for backfill).
+3. **Enrich** — Each item is passed to Claude Haiku to extract category, relevance score, linked actors, lifecycle tags, and a one-line implication.
+4. **Store** — Signals, actors, and relationships land in Supabase with URL-based deduplication.
+5. **Surface** — Market Pulse, Timeline, and actor pages read from the same data layer so the UI stays in sync with what was ingested.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Screenshots
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+_Add screenshots here for portfolio use._
 
-## Learn More
+Suggested captures:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Market Pulse** — hero stats and actor cards with recent signals  
+2. **Timeline** — filtered table view  
+3. **Actor profile** — single company with signal list and analysis section  
+4. **Compare** — two or more actors side by side  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Save images to `docs/screenshots/` and reference them like:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```markdown
+![Market Pulse](docs/screenshots/market-pulse.png)
+```
 
-## Deploy on Vercel
+## Local development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm install
+# Configure .env.local with Supabase and Anthropic API keys
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000). Domain config lives in `config/`; schema and migrations in `supabase/`.
+
+## License
+
+Private portfolio project — not licensed for redistribution.

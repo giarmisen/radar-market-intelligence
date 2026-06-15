@@ -182,10 +182,12 @@ async function collectRawItems(
   const errors: string[] = [];
   const debug: IngestDebugInfo = {};
   const items: IngestRawItem[] = [];
-  const { fromDate, toDate } = dateRange;
+  const { fromDate, toDate, explicit } = dateRange;
   const actorNames = config.actors.map((actor) => actor.name);
 
-  console.log(`[ingest:pipeline] collecting items for ${fromDate} → ${toDate}`);
+  console.log(
+    `[ingest:pipeline] collecting items for ${fromDate} → ${toDate} explicit=${explicit}`,
+  );
 
   // EDGAR — skip unless domain has a filings source (e.g. rare-earths)
   const filingsSource = sources.find((source) => source.type === "filings");
@@ -222,6 +224,7 @@ async function collectRawItems(
         feeds: rssFeeds,
         fromDate,
         toDate,
+        explicit,
       });
       items.push(...rssResult.items);
       counts.rss = rssResult.items.length;
@@ -241,6 +244,7 @@ async function collectRawItems(
         email: gmailSource.url ?? undefined,
         fromDate,
         toDate,
+        explicit,
       });
       items.push(...gmailResult.items);
       counts.gmail = gmailResult.items.length;
@@ -295,8 +299,7 @@ export async function runIngest(
   const sources = await loadActiveSources(domainId);
   const actorMap = await loadActorMap(domainId);
   const enrichmentContext = enrichmentContextFromConfig(config);
-  const resolvedDateRange =
-    dateRange ?? parseIngestDateRange(null, null, DEFAULT_LOOKBACK_DAYS);
+  const resolvedDateRange = dateRange ?? parseIngestDateRange(null, null);
 
   const { items, counts, errors, debug } = await collectRawItems(
     config,

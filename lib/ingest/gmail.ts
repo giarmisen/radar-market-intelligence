@@ -4,8 +4,13 @@ import { fileURLToPath } from "url";
 import { google, gmail_v1 } from "googleapis";
 import { getSupabase } from "../supabase";
 import type { IngestRawItem } from "../types";
+import {
+  DEFAULT_INGEST_LOOKBACK_HOURS,
+  defaultGmailAfterDate,
+  ingestSinceTimestamp,
+  todayIsoDate,
+} from "./date-range";
 
-const DEFAULT_LOOKBACK_DAYS = 7;
 const DEFAULT_MAX_MESSAGES = 50;
 const DEFAULT_ALERT_INBOX = "radarmarket.languageservices@gmail.com";
 const GOOGLE_ALERTS_SENDER = "googlealerts-noreply@google.com";
@@ -34,12 +39,16 @@ export interface GmailIngestParams {
   toDate?: string;
   /** @deprecated Use fromDate */
   sinceDate?: string;
+  /** When false (cron), search after yesterday and filter to last 48h. */
+  explicit?: boolean;
   maxMessages?: number;
 }
 
 export interface GmailIngestDebug {
+  mode: "default" | "explicit";
   fromDate: string;
   toDate: string;
+  sinceTimestamp?: number;
   searchQuery: string;
   messagesListed: number;
   messagesInRange: number;
@@ -119,12 +128,6 @@ function loadGmailCredentialsFromFile(): GmailOAuthConfig {
     redirectUri:
       block.redirect_uris?.[0] ?? DEFAULT_GMAIL_REDIRECT_URI,
   };
-}
-
-function defaultSinceDate(lookbackDays = DEFAULT_LOOKBACK_DAYS): string {
-  const since = new Date();
-  since.setUTCDate(since.getUTCDate() - lookbackDays);
-  return since.toISOString().slice(0, 10);
 }
 
 function toGmailAfterDate(isoDate: string): string {
@@ -390,6 +393,28 @@ function extractHtmlBody(part: gmail_v1.Schema$MessagePart | undefined): string 
   return "";
 }
 
+function messageTimestamp(message: gmail_v1.Schema$Message): number | null {
+  const internal = message.internalDate;
+  if (internal) {
+    const parsed = Number(internal);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+
+  const headerDate = message.payload?.headers?.find(
+    (header) => header.name?.toLowerCase() === "date",
+  )?.value;
+  if (headerDate) {
+    const parsed = new Date(headerDate);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.getTime();
+    }
+  }
+
+  return null;
+}
+
 function messageEventDate(message: gmail_v1.Schema$Message): string {
   const internal = message.internalDate;
   if (internal) {
@@ -452,18 +477,33 @@ export async function ingestGmail(
   params: GmailIngestParams,
 ): Promise<GmailIngestResult> {
   const email = params.email?.trim() || DEFAULT_ALERT_INBOX;
-  const fromDate = params.fromDate ?? params.sinceDate ?? defaultSinceDate();
-  const toDate = params.toDate ?? new Date().toISOString().slice(0, 10);
+  const explicit = params.explicit === true;
+  const sinceTimestamp = explicit
+    ? undefined
+    : ingestSinceTimestamp(DEFAULT_INGEST_LOOKBACK_HOURS);
+  const fromDate = explicit
+    ? (params.fromDate ?? params.sinceDate ?? todayIsoDate())
+    : defaultGmailAfterDate();
+  const toDate = params.toDate ?? todayIsoDate();
   const maxMessages = params.maxMessages ?? DEFAULT_MAX_MESSAGES;
   const gmail = await createGmailClient(email);
 
-  const query = `from:${GOOGLE_ALERTS_SENDER} after:${toGmailAfterDate(fromDate)} before:${toGmailBeforeDate(toDate)}`;
-  console.log(`[ingest:gmail] search query: ${query}`);
-  console.log(`[ingest:gmail] date range ${fromDate} → ${toDate}`);
+  const query = explicit
+    ? `from:${GOOGLE_ALERTS_SENDER} after:${toGmailAfterDate(fromDate)} before:${toGmailBeforeDate(toDate)}`
+    : `from:${GOOGLE_ALERTS_SENDER} after:${toGmailAfterDate(fromDate)}`;
+
+  console.log(`[ingest:gmail] mode=${explicit ? "explicit" : "default"} search query: ${query}`);
+  console.log(
+    `[ingest:gmail] date range ${fromDate} → ${toDate}${
+      sinceTimestamp ? ` since=${new Date(sinceTimestamp).toISOString()}` : ""
+    }`,
+  );
 
   const debug: GmailIngestDebug = {
+    mode: explicit ? "explicit" : "default",
     fromDate,
     toDate,
+    sinceTimestamp,
     searchQuery: query,
     messagesListed: 0,
     messagesInRange: 0,
@@ -496,9 +536,17 @@ export async function ingestGmail(
     });
 
     const eventDate = messageEventDate(message);
-    if (eventDate < fromDate || eventDate > toDate) {
-      debug.messagesFilteredByDate += 1;
-      continue;
+    if (explicit) {
+      if (eventDate < fromDate || eventDate > toDate) {
+        debug.messagesFilteredByDate += 1;
+        continue;
+      }
+    } else {
+      const messageTs = messageTimestamp(message);
+      if (!messageTs || messageTs < sinceTimestamp!) {
+        debug.messagesFilteredByDate += 1;
+        continue;
+      }
     }
 
     debug.messagesInRange += 1;
