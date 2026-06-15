@@ -48,6 +48,7 @@ export interface LivingDocumentPageData {
   domainSlug: string;
   upcoming: UpcomingEvent[];
   tiers: TierSection[];
+  worthWatching: LivingDocumentSignal[];
   stats: {
     actors: number;
     signals: number;
@@ -63,6 +64,9 @@ const TIER_LABELS: Record<number, string> = {
 
 /** Max signals shown per actor card on Market Pulse */
 const MARKET_PULSE_SIGNALS_PER_ACTOR = 3;
+
+/** Max orphan signals flagged worth_watching on Market Pulse */
+const WORTH_WATCHING_LIMIT = 5;
 
 const MARKET_PULSE_SIGNALS_QUERY = `
 SELECT
@@ -168,6 +172,86 @@ async function loadUpcomingEvents(
   return { data: (data ?? []) as UpcomingEvent[], error: null };
 }
 
+async function loadWorthWatchingSignals(
+  domainId: string,
+): Promise<{ data: LivingDocumentSignal[]; error: Error | null }> {
+  const supabase = getSupabase();
+
+  const { data: rows, error } = await supabase
+    .from("signals")
+    .select(
+      `
+        id,
+        title,
+        summary,
+        so_what,
+        category,
+        relevance,
+        event_date,
+        source_url,
+        captured_at,
+        lifecycle
+      `,
+    )
+    .eq("domain_id", domainId)
+    .eq("worth_watching", true)
+    .gt("relevance", 0)
+    .order("event_date", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    return {
+      data: [],
+      error: new Error(`worth_watching: ${error.message}`),
+    };
+  }
+
+  const signalIds = (rows ?? []).map((signal) => signal.id as string);
+  if (signalIds.length === 0) {
+    return { data: [], error: null };
+  }
+
+  const { data: links, error: linksError } = await supabase
+    .from("signal_actors")
+    .select("signal_id")
+    .in("signal_id", signalIds);
+
+  if (linksError) {
+    return {
+      data: [],
+      error: new Error(`worth_watching signal_actors: ${linksError.message}`),
+    };
+  }
+
+  const linkedSignalIds = new Set(
+    (links ?? []).map((link) => link.signal_id as string),
+  );
+
+  const orphanSignals = dedupeRowsBySourceUrl(
+    (rows ?? [])
+      .filter((signal) => !linkedSignalIds.has(signal.id as string))
+      .map((signal) => ({
+        id: signal.id as string,
+        title: signal.title as string,
+        summary: signal.summary as string,
+        so_what: signal.so_what as string | null,
+        category: signal.category as SignalCategory,
+        relevance: signal.relevance as number,
+        event_date: signal.event_date as string,
+        source_url: signal.source_url as string,
+        captured_at: (signal.captured_at as string | null) ?? undefined,
+        lifecycle: signal.lifecycle as string | null,
+        actor_names: [],
+      })),
+  ).slice(0, WORTH_WATCHING_LIMIT);
+
+  console.log(
+    `[market-pulse] worth_watching: ${rows?.length ?? 0} flagged, ${orphanSignals.length} untracked shown`,
+  );
+
+  return { data: orphanSignals, error: null };
+}
+
 function buildActorNamesBySignalId(
   links: Array<{ signal_id: string; actor_id: string }>,
   actorById: Map<string, { name: string; domain_id: string }>,
@@ -210,8 +294,10 @@ export async function getLivingDocumentData(
   const domainId = domain.id;
   const supabase = getSupabase();
 
-  const [upcomingResult, signalsRes, actorsRes, domainActorsRes] = await Promise.all([
+  const [upcomingResult, worthWatchingResult, signalsRes, actorsRes, domainActorsRes] =
+    await Promise.all([
     loadUpcomingEvents(domainId),
+    loadWorthWatchingSignals(domainId),
     supabase
       .from("signals")
       .select(
@@ -244,7 +330,11 @@ export async function getLivingDocumentData(
   if (upcomingResult.error) {
     throw upcomingResult.error;
   }
+  if (worthWatchingResult.error) {
+    throw worthWatchingResult.error;
+  }
   const upcoming = upcomingResult.data;
+  const worthWatching = worthWatchingResult.data;
   if (signalsRes.error) {
     throw new Error(`signals: ${signalsRes.error.message}`);
   }
@@ -395,6 +485,7 @@ export async function getLivingDocumentData(
     domainSlug: slug,
     upcoming,
     tiers,
+    worthWatching,
     stats: {
       actors: actorCards.length,
       signals: actorCards.reduce((total, actor) => total + actor.signals.length, 0),

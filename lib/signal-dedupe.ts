@@ -270,6 +270,7 @@ export type ReEnrichmentFields = Pick<
   | "lifecycle"
   | "scheduled_date"
   | "discard_reason"
+  | "worth_watching"
   | "event_fingerprint"
   | "actors"
 >;

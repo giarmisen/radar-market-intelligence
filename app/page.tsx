@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { Nav } from "@/components/Nav";
 import { Sidebar } from "@/components/Sidebar";
 import { UpcomingBar } from "@/components/UpcomingBar";
+import { WorthWatchingSection } from "@/components/WorthWatchingSection";
 import { getLivingDocumentData } from "@/lib/living-document";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,10 @@ export default async function LivingDocumentPage() {
       />
       <UpcomingBar events={data.upcoming} />
       <div className="radar-body">
-        <Sidebar tiers={data.tiers} />
+        <Sidebar
+          tiers={data.tiers}
+          worthWatchingCount={data.worthWatching.length}
+        />
         <main className="radar-main">
           {data.tiers.length === 0 ? (
             <p className="radar-empty">
@@ -48,6 +52,7 @@ export default async function LivingDocumentPage() {
               </section>
             ))
           )}
+          <WorthWatchingSection signals={data.worthWatching} />
         </main>
       </div>
     </>

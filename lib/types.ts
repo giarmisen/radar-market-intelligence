@@ -53,6 +53,7 @@ export interface EnrichmentResult {
   scheduled_date: string | null;
   event_fingerprint: string;
   discard_reason: string | null;
+  worth_watching: boolean;
 }
 
 export interface DomainConfigActor {

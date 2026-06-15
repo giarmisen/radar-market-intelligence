@@ -27,6 +27,7 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -283,6 +284,10 @@
   background: var(--accent-light);
 }
 
+.radar-tier-dot-worth-watching {
+  background: #f59e0b;
+}
+
 .radar-sidebar-count {
   margin-left: auto;
   font-family: var(--font-reading);
@@ -302,6 +307,11 @@
   background: var(--accent-bg);
 }
 
+.radar-sidebar-count-worth-watching {
+  color: #ffffff;
+  background: #f59e0b;
+}
+
 .radar-main {
   padding: 20px 22px;
   background: var(--bg-secondary);
@@ -309,6 +319,39 @@
 
 .radar-tier-section {
   margin-bottom: 28px;
+}
+
+.radar-worth-watching {
+  margin-top: 8px;
+  padding: 18px 16px 16px;
+  background: #eaf2fa;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  scroll-margin-top: 16px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.radar-worth-watching:target {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+}
+
+.radar-worth-watching-label {
+  font-family: var(--font-structure);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-main);
+  margin: 0 0 12px;
+}
+
+.radar-worth-watching-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .radar-section-label {

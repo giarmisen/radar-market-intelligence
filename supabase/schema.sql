@@ -97,6 +97,8 @@ create table signals (
   -- dedupe by underlying event, not URL (taxonomy §4 discard rules)
   event_fingerprint text,               -- hash of normalized {actors, category, event_date, key facts}
 
+  worth_watching boolean default false, -- inspire/threaten product teams outside tracked field
+
   raw_content text                      -- original text for re-enrichment
 );
 

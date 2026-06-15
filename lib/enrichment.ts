@@ -201,8 +201,11 @@ ${rawText}
   "lifecycle": "shutdown|acquired|pivot|null",
   "scheduled_date": "YYYY-MM-DD or null — set for future events to resurface (e.g. export control expiry)",
   "key_facts": "required non-empty one-line summary of core event facts for deduplication; for acquisitions include acquirer + acquired entity names",
+  "worth_watching": true|false,
   "discard_reason": "required when relevance is 0, else null"
-}`;
+}
+
+Set worth_watching to true if this signal describes something a product team in language services or language AI would want to know about — even if the company is not in the language industry. Examples: a new voice AI product, an interesting human-AI collaboration pattern, an AI tool for underserved languages, a quality transparency feature in any industry. Criteria: novel AI application, new interaction pattern, adjacent market move, or technology that could be replicated. Default false.`;
 }
 
 function parseClaudeJson(text: string): unknown {
@@ -274,6 +277,16 @@ function computeEventFingerprint(params: {
   return createHash("sha256").update(payload).digest("hex");
 }
 
+function assertBoolean(value: unknown, field: string, defaultValue = false): boolean {
+  if (value === undefined || value === null) {
+    return defaultValue;
+  }
+  if (typeof value !== "boolean") {
+    throw new Error(`Invalid enrichment ${field}`);
+  }
+  return value;
+}
+
 function parseClaudeEnrichment(
   raw: unknown,
   eventDate: string,
@@ -299,6 +312,7 @@ function parseClaudeEnrichment(
       ? null
       : assertString(data.scheduled_date, "scheduled_date");
   const keyFacts = assertString(data.key_facts, "key_facts");
+  const worthWatching = assertBoolean(data.worth_watching, "worth_watching", false);
   const discardReason =
     data.discard_reason === null
       ? null
@@ -326,6 +340,7 @@ function parseClaudeEnrichment(
     lifecycle,
     scheduled_date: scheduledDate,
     discard_reason: discardReason,
+    worth_watching: worthWatching,
     event_fingerprint: computeEventFingerprint({
       actors,
       category,

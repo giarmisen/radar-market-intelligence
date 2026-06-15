@@ -136,6 +136,7 @@ async function insertEnrichedSignal(params: {
       lifecycle: enrichment.lifecycle,
       scheduled_date: enrichment.scheduled_date,
       discard_reason: enrichment.discard_reason,
+      worth_watching: enrichment.worth_watching,
       event_fingerprint: enrichment.event_fingerprint,
       raw_content: item.raw_content,
     })
