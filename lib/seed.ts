@@ -281,7 +281,7 @@ async function seedScheduledEvents(
       captured_at: null,
       category: event.category,
       relevance: 3,
-      source_url: "radar://seed/scheduled-events",
+      source_url: `radar://seed/scheduled-events/${event.scheduled_date}`,
       title: event.title,
       summary: event.title,
       so_what: event.so_what,

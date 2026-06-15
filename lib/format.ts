@@ -30,6 +30,22 @@ export function formatRole(role: ActorRole): string {
   return ROLE_LABELS[role] ?? role;
 }
 
+const NEW_SIGNAL_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/** True when ingested in the last 24 hours. Scheduled seeds have null captured_at. */
+export function isNewSignal(capturedAt: string | null | undefined): boolean {
+  if (!capturedAt) {
+    return false;
+  }
+
+  const captured = new Date(capturedAt);
+  if (Number.isNaN(captured.getTime())) {
+    return false;
+  }
+
+  return Date.now() - captured.getTime() <= NEW_SIGNAL_WINDOW_MS;
+}
+
 export function formatDate(isoDate: string): string {
   const date = new Date(`${isoDate}T00:00:00`);
   return date.toLocaleDateString("en-US", {

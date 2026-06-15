@@ -16,7 +16,7 @@ export default async function LivingDocumentPage() {
       <Hero
         eyebrow={data.domainName}
         title="Market Pulse"
-        sub="Current state of the market by actor — latest relevant signals grouped by tracking tier."
+        sub="Latest signals per tracked actor — full history in Timeline."
         stats={[
           { value: data.stats.actors, label: "Actors with signals" },
           { value: data.stats.signals, label: "Market Pulse signals" },

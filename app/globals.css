@@ -427,6 +427,13 @@
   gap: 6px;
 }
 
+.radar-signal-meta-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .radar-category-badge {
   font-family: var(--font-structure);
   font-size: 9px;
@@ -435,6 +442,18 @@
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: 20px;
+}
+
+.radar-new-badge {
+  font-family: var(--font-structure);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #196dba;
+  color: #ffffff;
 }
 
 .radar-signal-date {

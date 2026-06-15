@@ -9,6 +9,7 @@ import {
   formatDate,
   formatLifecycle,
 } from "@/lib/format";
+import { SignalNewBadge } from "./SignalItem";
 
 interface TimelineTableProps {
   rows: TimelineRow[];
@@ -246,9 +247,12 @@ export function TimelineTable({ rows }: TimelineTableProps) {
               sorted.map((row) => (
                 <tr key={row.id}>
                   <td>
-                    <span className="radar-signal-date">
-                      {formatDate(row.event_date)}
-                    </span>
+                    <div className="radar-signal-meta-inline">
+                      <span className="radar-signal-date">
+                        {formatDate(row.event_date)}
+                      </span>
+                      <SignalNewBadge capturedAt={row.captured_at} />
+                    </div>
                     {row.lifecycle ? (
                       <div className="radar-lifecycle-stack">
                         <span className="radar-lifecycle-tag">

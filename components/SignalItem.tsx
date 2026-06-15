@@ -4,10 +4,23 @@ import {
   formatCategory,
   formatDate,
   formatLifecycle,
+  isNewSignal,
 } from "@/lib/format";
 
 interface SignalItemProps {
   signal: LivingDocumentSignal;
+}
+
+export function SignalNewBadge({
+  capturedAt,
+}: {
+  capturedAt?: string | null;
+}) {
+  if (!isNewSignal(capturedAt)) {
+    return null;
+  }
+
+  return <span className="radar-new-badge">New</span>;
 }
 
 export function SignalItem({ signal }: SignalItemProps) {
@@ -22,6 +35,10 @@ export function SignalItem({ signal }: SignalItemProps) {
     <article className={`radar-signal ${scoreClass}`}>
       <div className="radar-signal-header">
         <div>
+          <span className="radar-signal-date">
+            {formatDate(signal.event_date)}
+          </span>
+          <SignalNewBadge capturedAt={signal.captured_at} />
           <span className={categoryClassName(signal.category)}>
             {formatCategory(signal.category)}
           </span>
@@ -36,9 +53,6 @@ export function SignalItem({ signal }: SignalItemProps) {
             className={`radar-score-badge radar-score-${signal.relevance}`}
           >
             {signal.relevance}
-          </span>
-          <span className="radar-signal-date">
-            {formatDate(signal.event_date)}
           </span>
         </div>
       </div>

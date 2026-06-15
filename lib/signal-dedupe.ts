@@ -168,6 +168,11 @@ export async function dedupeDomainBySourceUrl(
   const byUrl = new Map<string, SignalPeer[]>();
 
   for (const row of data ?? []) {
+    const sourceUrl = row.source_url as string;
+    if (sourceUrl.startsWith("radar://seed/")) {
+      continue;
+    }
+
     const peer: SignalPeer = {
       id: row.id as string,
       source_url: row.source_url as string,

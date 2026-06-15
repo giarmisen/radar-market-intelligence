@@ -20,6 +20,7 @@ export interface TimelineRow {
   so_what: string | null;
   source_url: string;
   lifecycle: string | null;
+  captured_at?: string | null;
   actors: TimelineActor[];
   top_tier: number;
 }
