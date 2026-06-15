@@ -15,8 +15,6 @@ import { type GmailIngestDebug, ingestGmail } from "./gmail";
 import { type RssIngestDebug, ingestRss } from "./rss";
 // import { ingestSearch } from "./search";
 
-const DEFAULT_LOOKBACK_DAYS = 7;
-
 export interface IngestDebugInfo {
   rss?: RssIngestDebug;
   gmail?: GmailIngestDebug;
@@ -274,7 +272,7 @@ async function collectRawItems(
   //     const searchItems = await ingestSearch({
   //       queries: searchQueries,
   //       domainName: config.name,
-  //       lookbackDays: DEFAULT_LOOKBACK_DAYS,
+  //       lookbackDays: 7,
   //     });
   //     items.push(...searchItems);
   //     counts.search = searchItems.length;
