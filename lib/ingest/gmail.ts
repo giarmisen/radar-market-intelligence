@@ -30,8 +30,26 @@ interface GmailCredentialsFile {
 export interface GmailIngestParams {
   sourceId: string;
   email?: string;
+  fromDate?: string;
+  toDate?: string;
+  /** @deprecated Use fromDate */
   sinceDate?: string;
   maxMessages?: number;
+}
+
+export interface GmailIngestDebug {
+  fromDate: string;
+  toDate: string;
+  searchQuery: string;
+  messagesListed: number;
+  messagesInRange: number;
+  messagesFilteredByDate: number;
+  itemsExtracted: number;
+}
+
+export interface GmailIngestResult {
+  items: IngestRawItem[];
+  debug: GmailIngestDebug;
 }
 
 export interface GmailOAuthConfig {
@@ -110,6 +128,10 @@ function defaultSinceDate(lookbackDays = DEFAULT_LOOKBACK_DAYS): string {
 }
 
 function toGmailAfterDate(isoDate: string): string {
+  return isoDate.replace(/-/g, "/");
+}
+
+function toGmailBeforeDate(isoDate: string): string {
   return isoDate.replace(/-/g, "/");
 }
 
@@ -227,34 +249,87 @@ export function isArticleUrl(url: string): boolean {
   return true;
 }
 
+function decodeHtmlEntitiesInHref(href: string): string {
+  return href
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#0*39;/gi, "'")
+    .replace(/&quot;/gi, '"');
+}
+
+function isGoogleAlertsManagementHref(href: string): boolean {
+  const lower = decodeHtmlEntitiesInHref(href).toLowerCase();
+  if (isAlertsInternalHref(lower)) {
+    return true;
+  }
+  return /\/\/([^/]+\.)?google\.[a-z]{2,}(\.[a-z]{2})?\/alerts/.test(lower);
+}
+
+function isGoogleUrlRedirect(href: string): boolean {
+  const decoded = decodeHtmlEntitiesInHref(href);
+  try {
+    const url = new URL(decoded);
+    return url.pathname === "/url" && isGoogleHost(url.hostname);
+  } catch {
+    return /google\.[a-z.]+\/url\?/i.test(decoded);
+  }
+}
+
+/** Unwrap google.com/url?...&url=ARTICLE_URL redirect links from alert emails. */
+export function extractArticleUrlFromGoogleRedirect(href: string): string | null {
+  const decoded = decodeHtmlEntitiesInHref(href.trim());
+  if (!decoded || isGoogleAlertsManagementHref(decoded)) {
+    return null;
+  }
+
+  if (!isGoogleUrlRedirect(decoded)) {
+    return null;
+  }
+
+  let target: string | null = null;
+  try {
+    const parsed = new URL(decoded);
+    target = parsed.searchParams.get("url") ?? parsed.searchParams.get("q");
+  } catch {
+    const match = decoded.match(/[?&]url=([^&]+)/i);
+    target = match ? match[1] : null;
+  }
+
+  if (!target || isAlertsInternalHref(target)) {
+    return null;
+  }
+
+  try {
+    const articleUrl = decodeURIComponent(target).trim();
+    if (!articleUrl || !isArticleUrl(articleUrl)) {
+      return null;
+    }
+    return new URL(articleUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
 function normalizeAlertUrl(href: string): string | null {
-  const trimmed = href.trim();
+  const fromRedirect = extractArticleUrlFromGoogleRedirect(href);
+  if (fromRedirect) {
+    return fromRedirect;
+  }
+
+  const trimmed = decodeHtmlEntitiesInHref(href.trim());
   if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("mailto:")) {
     return null;
   }
-  if (isAlertsInternalHref(trimmed)) {
+  if (isGoogleAlertsManagementHref(trimmed)) {
     return null;
   }
 
   try {
     const url = new URL(trimmed);
-
-    if (isGoogleHost(url.hostname) && url.pathname === "/url") {
-      const target = url.searchParams.get("url") ?? url.searchParams.get("q");
-      if (!target || isAlertsInternalHref(target)) {
-        return null;
-      }
-      const unwrapped = decodeURIComponent(target).trim();
-      if (!unwrapped || !isArticleUrl(unwrapped)) {
-        return null;
-      }
-      return new URL(unwrapped).toString();
-    }
-
     if (!isArticleUrl(url.toString())) {
       return null;
     }
-
     return url.toString();
   } catch {
     return null;
@@ -274,17 +349,19 @@ export function parseGoogleAlertHtml(html: string): ParsedAlertLink[] {
   ANCHOR_RE.lastIndex = 0;
   while ((match = ANCHOR_RE.exec(html)) !== null) {
     const href = match[1];
-    const title = stripHtml(match[2]);
-    const url = normalizeAlertUrl(href);
+    const url =
+      extractArticleUrlFromGoogleRedirect(href) ?? normalizeAlertUrl(href);
+    if (!url || seenUrls.has(url)) {
+      continue;
+    }
 
-    if (!url || !title || title.length < 3) {
-      continue;
-    }
-    if (!isArticleUrl(url)) {
-      continue;
-    }
-    if (seenUrls.has(url)) {
-      continue;
+    let title = stripHtml(match[2]);
+    if (!title || title.length < 3) {
+      try {
+        title = new URL(url).hostname.replace(/^www\./, "");
+      } catch {
+        continue;
+      }
     }
 
     seenUrls.add(url);
@@ -373,13 +450,27 @@ async function createGmailClient(email: string): Promise<gmail_v1.Gmail> {
  */
 export async function ingestGmail(
   params: GmailIngestParams,
-): Promise<IngestRawItem[]> {
+): Promise<GmailIngestResult> {
   const email = params.email?.trim() || DEFAULT_ALERT_INBOX;
-  const sinceDate = params.sinceDate ?? defaultSinceDate();
+  const fromDate = params.fromDate ?? params.sinceDate ?? defaultSinceDate();
+  const toDate = params.toDate ?? new Date().toISOString().slice(0, 10);
   const maxMessages = params.maxMessages ?? DEFAULT_MAX_MESSAGES;
   const gmail = await createGmailClient(email);
 
-  const query = `from:${GOOGLE_ALERTS_SENDER} after:${toGmailAfterDate(sinceDate)}`;
+  const query = `from:${GOOGLE_ALERTS_SENDER} after:${toGmailAfterDate(fromDate)} before:${toGmailBeforeDate(toDate)}`;
+  console.log(`[ingest:gmail] search query: ${query}`);
+  console.log(`[ingest:gmail] date range ${fromDate} → ${toDate}`);
+
+  const debug: GmailIngestDebug = {
+    fromDate,
+    toDate,
+    searchQuery: query,
+    messagesListed: 0,
+    messagesInRange: 0,
+    messagesFilteredByDate: 0,
+    itemsExtracted: 0,
+  };
+
   const listResponse = await gmail.users.messages.list({
     userId: "me",
     q: query,
@@ -390,6 +481,9 @@ export async function ingestGmail(
     listResponse.data.messages
       ?.map((message) => message.id)
       .filter((id): id is string => Boolean(id)) ?? [];
+
+  debug.messagesListed = messageIds.length;
+  console.log(`[ingest:gmail] messages listed: ${messageIds.length}`);
 
   const items: IngestRawItem[] = [];
   const seenUrls = new Set<string>();
@@ -402,9 +496,12 @@ export async function ingestGmail(
     });
 
     const eventDate = messageEventDate(message);
-    if (eventDate < sinceDate) {
+    if (eventDate < fromDate || eventDate > toDate) {
+      debug.messagesFilteredByDate += 1;
       continue;
     }
+
+    debug.messagesInRange += 1;
 
     const html = extractHtmlBody(message.payload);
     if (!html) {
@@ -427,8 +524,13 @@ export async function ingestGmail(
         source_id: params.sourceId,
         event_date: eventDate,
       });
+      debug.itemsExtracted += 1;
     }
   }
 
-  return items;
+  console.log(
+    `[ingest:gmail] messagesInRange=${debug.messagesInRange} filteredByDate=${debug.messagesFilteredByDate} items=${debug.itemsExtracted}`,
+  );
+
+  return { items, debug };
 }

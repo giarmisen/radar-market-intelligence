@@ -7,21 +7,28 @@ import { sourceUrlExists } from "../signal-dedupe";
 import { getSupabase } from "../supabase";
 import type { DomainConfig, IngestRawItem } from "../types";
 import {
-  defaultEdgarDateRange,
   ingestEdgar,
   parseEdgarQueryFromSourceUrl,
 } from "./edgar";
-import { ingestGmail } from "./gmail";
-import { ingestRss } from "./rss";
+import { type IngestDateRange, parseIngestDateRange } from "./date-range";
+import { type GmailIngestDebug, ingestGmail } from "./gmail";
+import { type RssIngestDebug, ingestRss } from "./rss";
 // import { ingestSearch } from "./search";
 
 const DEFAULT_LOOKBACK_DAYS = 7;
+
+export interface IngestDebugInfo {
+  rss?: RssIngestDebug;
+  gmail?: GmailIngestDebug;
+}
 
 export interface IngestSummary {
   processed: number;
   inserted: number;
   skipped_dedupe: number;
   errors: string[];
+  date_range: IngestDateRange;
+  debug: IngestDebugInfo;
   collected: {
     edgar: number;
     rss: number;
@@ -164,13 +171,21 @@ async function insertEnrichedSignal(params: {
 async function collectRawItems(
   config: DomainConfig,
   sources: DbSource[],
-): Promise<{ items: IngestRawItem[]; counts: IngestSummary["collected"]; errors: string[] }> {
+  dateRange: IngestDateRange,
+): Promise<{
+  items: IngestRawItem[];
+  counts: IngestSummary["collected"];
+  errors: string[];
+  debug: IngestDebugInfo;
+}> {
   const counts = { edgar: 0, rss: 0, gmail: 0, search: 0, scrape: 0 };
   const errors: string[] = [];
+  const debug: IngestDebugInfo = {};
   const items: IngestRawItem[] = [];
-  const { startDate, endDate } = defaultEdgarDateRange(DEFAULT_LOOKBACK_DAYS);
-  const sinceDate = startDate;
+  const { fromDate, toDate } = dateRange;
   const actorNames = config.actors.map((actor) => actor.name);
+
+  console.log(`[ingest:pipeline] collecting items for ${fromDate} → ${toDate}`);
 
   // EDGAR — skip unless domain has a filings source (e.g. rare-earths)
   const filingsSource = sources.find((source) => source.type === "filings");
@@ -182,8 +197,8 @@ async function collectRawItems(
         query: filingsSource.url
           ? parseEdgarQueryFromSourceUrl(filingsSource.url)
           : undefined,
-        startDate,
-        endDate,
+        startDate: fromDate,
+        endDate: toDate,
       });
       items.push(...edgarItems);
       counts.edgar = edgarItems.length;
@@ -203,9 +218,14 @@ async function collectRawItems(
 
   if (rssFeeds.length > 0) {
     try {
-      const rssItems = await ingestRss({ feeds: rssFeeds, sinceDate });
-      items.push(...rssItems);
-      counts.rss = rssItems.length;
+      const rssResult = await ingestRss({
+        feeds: rssFeeds,
+        fromDate,
+        toDate,
+      });
+      items.push(...rssResult.items);
+      counts.rss = rssResult.items.length;
+      debug.rss = rssResult.debug;
     } catch (error) {
       errors.push(
         `rss: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -216,13 +236,15 @@ async function collectRawItems(
   const gmailSource = sources.find((source) => source.type === "gmail");
   if (gmailSource) {
     try {
-      const gmailItems = await ingestGmail({
+      const gmailResult = await ingestGmail({
         sourceId: gmailSource.id,
         email: gmailSource.url ?? undefined,
-        sinceDate,
+        fromDate,
+        toDate,
       });
-      items.push(...gmailItems);
-      counts.gmail = gmailItems.length;
+      items.push(...gmailResult.items);
+      counts.gmail = gmailResult.items.length;
+      debug.gmail = gmailResult.debug;
     } catch (error) {
       errors.push(
         `gmail: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -261,17 +283,26 @@ async function collectRawItems(
 
   // Phase 3: scrape adapter not built yet
 
-  return { items, counts, errors };
+  return { items, counts, errors, debug };
 }
 
-export async function runIngest(domainSlug: string): Promise<IngestSummary> {
+export async function runIngest(
+  domainSlug: string,
+  dateRange?: IngestDateRange,
+): Promise<IngestSummary> {
   const config = loadDomainConfig(domainSlug);
   const domainId = await getDomainId(domainSlug);
   const sources = await loadActiveSources(domainId);
   const actorMap = await loadActorMap(domainId);
   const enrichmentContext = enrichmentContextFromConfig(config);
+  const resolvedDateRange =
+    dateRange ?? parseIngestDateRange(null, null, DEFAULT_LOOKBACK_DAYS);
 
-  const { items, counts, errors } = await collectRawItems(config, sources);
+  const { items, counts, errors, debug } = await collectRawItems(
+    config,
+    sources,
+    resolvedDateRange,
+  );
   const seenFingerprints = new Set<string>();
   const seenUrls = new Set<string>();
 
@@ -337,6 +368,8 @@ export async function runIngest(domainSlug: string): Promise<IngestSummary> {
     inserted,
     skipped_dedupe,
     errors,
+    date_range: resolvedDateRange,
+    debug,
     collected: counts,
   };
 }
