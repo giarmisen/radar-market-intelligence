@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-export async function POST(request: NextRequest) {
+async function handleIngest(request: NextRequest) {
   try {
     const slug = resolveDomainSlug(request.nextUrl.searchParams.get("domain"));
     const summary = await runIngest(slug);
@@ -22,4 +22,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
+}
+
+/** Vercel cron jobs invoke scheduled routes with GET. */
+export async function GET(request: NextRequest) {
+  return handleIngest(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handleIngest(request);
 }
