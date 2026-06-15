@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 interface NavProps {
-  active: "living" | "timeline" | "actors" | "proposals";
+  active: "living" | "timeline" | "actors" | "reports" | "proposals";
   pendingProposals: number;
 }
 
@@ -9,6 +9,7 @@ const LINKS = [
   { id: "living" as const, href: "/", label: "Market Pulse" },
   { id: "timeline" as const, href: "/timeline", label: "Timeline" },
   { id: "actors" as const, href: "/actors", label: "Actors" },
+  { id: "reports" as const, href: "/reports", label: "Reports" },
   { id: "proposals" as const, href: "/proposals", label: "Proposals" },
 ];
 

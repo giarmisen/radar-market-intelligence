@@ -1155,6 +1155,124 @@
   margin: 0 0 12px;
 }
 
+/* —— Market Report —— */
+.radar-report-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+}
+
+.radar-report-controls {
+  padding: 16px;
+}
+
+.radar-report-filters {
+  margin-bottom: 10px;
+}
+
+.radar-report-helper {
+  font-family: var(--font-reading);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0 0 14px;
+}
+
+.radar-report-date-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.radar-report-date-label {
+  font-family: var(--font-reading);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.radar-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.radar-report-loading {
+  font-family: var(--font-reading);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.radar-report-output {
+  padding: 20px 22px;
+}
+
+.radar-report-meta {
+  font-family: var(--font-reading);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.radar-report-markdown {
+  font-family: var(--font-reading);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+
+.radar-report-h1 {
+  font-family: var(--font-structure);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+  margin: 0 0 16px;
+}
+
+.radar-report-h2 {
+  font-family: var(--font-structure);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-main);
+  margin: 24px 0 10px;
+}
+
+.radar-report-h2:first-child {
+  margin-top: 0;
+}
+
+.radar-report-h3 {
+  font-family: var(--font-structure);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 16px 0 8px;
+}
+
+.radar-report-p {
+  margin: 0 0 10px;
+}
+
+.radar-report-list {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+
+.radar-report-list li {
+  margin-bottom: 6px;
+}
+
+.radar-report-list li::marker {
+  color: var(--accent-light);
+}
+
 .radar-analysis-report {
   display: flex;
   flex-direction: column;
