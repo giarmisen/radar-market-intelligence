@@ -26,7 +26,14 @@ export function ActorsRegistry({ data }: ActorsRegistryProps) {
     <>
       {data.tiers.map((tier) => (
         <section key={tier.tier} className="radar-tier-section">
-          <h2 className="radar-section-label">{tier.label}</h2>
+          <div className="radar-actors-section-header">
+            <h2 className="radar-section-label">{tier.label}</h2>
+            {tier.tier === 1 ? (
+              <Link href="/actors/compare" className="radar-profile-compare-link">
+                Compare actors →
+              </Link>
+            ) : null}
+          </div>
           <div className="radar-table-wrap">
             <table className="radar-table">
               <thead>

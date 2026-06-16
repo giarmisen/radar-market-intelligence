@@ -4,7 +4,7 @@ import {
   type ActorProfilePageData,
 } from "./actor-profile";
 
-const ANALYSIS_MODEL = "claude-sonnet-4-20250514";
+const ANALYSIS_MODEL = "claude-sonnet-4-6";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
 export interface SwotAnalysis {
@@ -63,16 +63,27 @@ function assertStringArray(value: unknown, field: string): string[] {
   return value.map((item) => item.trim()).filter(Boolean);
 }
 
+function normalizeBulletArray(value: unknown, field: string): string[] {
+  const items = assertStringArray(value, field);
+  if (items.length === 1 && /[\n•]|^[-*]\s/m.test(items[0])) {
+    return items[0]
+      .split(/\n+/)
+      .map((line) => line.replace(/^[-*•]\s*/, "").trim())
+      .filter(Boolean);
+  }
+  return items;
+}
+
 function assertSwot(value: unknown): SwotAnalysis {
   if (!value || typeof value !== "object") {
     throw new Error("Invalid analysis swot");
   }
   const swot = value as Record<string, unknown>;
   return {
-    strengths: assertStringArray(swot.strengths, "swot.strengths"),
-    weaknesses: assertStringArray(swot.weaknesses, "swot.weaknesses"),
-    opportunities: assertStringArray(swot.opportunities, "swot.opportunities"),
-    threats: assertStringArray(swot.threats, "swot.threats"),
+    strengths: normalizeBulletArray(swot.strengths, "swot.strengths"),
+    weaknesses: normalizeBulletArray(swot.weaknesses, "swot.weaknesses"),
+    opportunities: normalizeBulletArray(swot.opportunities, "swot.opportunities"),
+    threats: normalizeBulletArray(swot.threats, "swot.threats"),
   };
 }
 
@@ -106,11 +117,11 @@ function parseAnalysisReport(raw: unknown): ActorAnalysisReport {
       "ai_strategy_assessment",
     ),
     product_map: assertProductMap(data.product_map),
-    market_opportunities: assertStringArray(
+    market_opportunities: normalizeBulletArray(
       data.market_opportunities,
       "market_opportunities",
     ),
-    key_risks: assertStringArray(data.key_risks, "key_risks"),
+    key_risks: normalizeBulletArray(data.key_risks, "key_risks"),
   };
 }
 
@@ -181,18 +192,25 @@ ${formatSignalsContext(data)}
 Return ONLY valid JSON with this exact shape:
 {
   "swot": {
-    "strengths": ["3-5 concise bullet points"],
-    "weaknesses": ["3-5 concise bullet points"],
-    "opportunities": ["3-5 concise bullet points"],
-    "threats": ["3-5 concise bullet points"]
+    "strengths": ["bullet 1", "bullet 2", "bullet 3"],
+    "weaknesses": ["bullet 1", "bullet 2", "bullet 3"],
+    "opportunities": ["bullet 1", "bullet 2", "bullet 3"],
+    "threats": ["bullet 1", "bullet 2", "bullet 3"]
   },
   "ai_strategy_assessment": "2-4 paragraphs assessing AI strategy maturity, investments, differentiation, and gaps vs competitors",
   "product_map": [
     { "name": "Product or platform name", "description": "Role in portfolio and competitive positioning" }
   ],
-  "market_opportunities": ["3-6 specific market opportunities this actor could pursue"],
-  "key_risks": ["3-6 material strategic or operational risks"]
-}`;
+  "market_opportunities": ["opportunity 1", "opportunity 2", "opportunity 3"],
+  "key_risks": ["risk 1", "risk 2", "risk 3"]
+}
+
+Output formatting rules (critical):
+- swot.strengths, swot.weaknesses, swot.opportunities, and swot.threats MUST each be a JSON array of 3-5 separate bullet strings — one insight per array element. Do NOT return prose paragraphs or a single concatenated string for any SWOT quadrant.
+- market_opportunities MUST be a JSON array of 3-6 separate bullet strings — one opportunity per element. Do NOT return prose.
+- key_risks MUST be a JSON array of 3-6 separate bullet strings — one risk per element. Do NOT return prose.
+- ai_strategy_assessment is the only prose field: return 2-4 paragraphs as a single string with blank lines between paragraphs.
+- Each bullet string should be a complete, self-contained insight (no leading "- " or "• " characters in the string values).`;
 }
 
 async function callClaudeAnalysis(prompt: string): Promise<string> {

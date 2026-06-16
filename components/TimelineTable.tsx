@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TimelineRow } from "@/lib/timeline";
+import type { TierFilterValue } from "./FilterPills";
 import type { SignalCategory } from "@/lib/types";
 import {
   categoryClassName,
@@ -13,6 +14,7 @@ import { SignalNewBadge } from "./SignalItem";
 
 interface TimelineTableProps {
   rows: TimelineRow[];
+  tierFilter?: TierFilterValue;
 }
 
 type SortKey = "event_date" | "category" | "relevance" | "top_tier";
@@ -31,16 +33,62 @@ const CATEGORIES: SignalCategory[] = [
 const EMPTY_FILTERS = {
   category: "",
   actor: "",
-  tier: "",
   relevance: "",
   dateFrom: "",
   dateTo: "",
 };
 
-export function TimelineTable({ rows }: TimelineTableProps) {
+const PAGE_SIZE = 25;
+
+function TimelineCard({ row }: { row: TimelineRow }) {
+  const actorLabel =
+    row.actors.length > 0 ? row.actors.map((actor) => actor.name).join(", ") : "—";
+
+  return (
+    <article className="timeline-card">
+      <div className="timeline-card-content">
+        <p className="timeline-card-summary">{row.summary}</p>
+        {row.so_what ? (
+          <p className="radar-signal-sowhat">→ {row.so_what}</p>
+        ) : null}
+        <a
+          href={row.source_url}
+          className="radar-signal-source timeline-card-source"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {row.source_url.replace(/^https?:\/\//, "")}
+        </a>
+      </div>
+      <div className="timeline-card-meta">
+        <span className="timeline-card-pill">{formatDate(row.event_date)}</span>
+        <SignalNewBadge capturedAt={row.captured_at} />
+        {row.lifecycle ? (
+          <span className="timeline-card-pill timeline-card-pill-lifecycle">
+            {formatLifecycle(row.lifecycle)}
+          </span>
+        ) : null}
+        <span className={`timeline-card-pill ${categoryClassName(row.category)}`}>
+          {formatCategory(row.category)}
+        </span>
+        <span className="timeline-card-pill">{actorLabel}</span>
+        <span className={`radar-score-badge radar-score-${row.relevance}`}>
+          {row.relevance}
+        </span>
+      </div>
+    </article>
+  );
+}
+
+export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("event_date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [filters, tierFilter, sortKey, sortDir]);
 
   const actorOptions = useMemo(() => {
     const names = new Set<string>();
@@ -52,25 +100,22 @@ export function TimelineTable({ rows }: TimelineTableProps) {
     return Array.from(names).sort();
   }, [rows]);
 
-  const tierOptions = useMemo(() => {
-    const tiers = new Set<number>();
-    for (const row of rows) {
-      if (row.top_tier < 99) {
-        tiers.add(row.top_tier);
-      }
-    }
-    return Array.from(tiers).sort((a, b) => a - b);
-  }, [rows]);
-
   const filtered = useMemo(() => {
     return rows.filter((row) => {
+      if (tierFilter === "worth-watching") {
+        if (row.actors.length > 0) {
+          return false;
+        }
+      } else if (tierFilter !== "all") {
+        if (row.top_tier !== Number(tierFilter)) {
+          return false;
+        }
+      }
+
       if (filters.category && row.category !== filters.category) {
         return false;
       }
       if (filters.actor && !row.actors.some((a) => a.name === filters.actor)) {
-        return false;
-      }
-      if (filters.tier && row.top_tier !== Number(filters.tier)) {
         return false;
       }
       if (filters.relevance && row.relevance !== Number(filters.relevance)) {
@@ -84,7 +129,7 @@ export function TimelineTable({ rows }: TimelineTableProps) {
       }
       return true;
     });
-  }, [rows, filters]);
+  }, [rows, filters, tierFilter]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -108,6 +153,18 @@ export function TimelineTable({ rows }: TimelineTableProps) {
     });
     return copy;
   }, [filtered, sortKey, sortDir]);
+
+  const visibleRows = useMemo(
+    () => sorted.slice(0, visibleCount),
+    [sorted, visibleCount],
+  );
+
+  const remaining = sorted.length - visibleRows.length;
+  const nextBatch = Math.min(PAGE_SIZE, remaining);
+
+  function showMore() {
+    setVisibleCount((count) => Math.min(count + PAGE_SIZE, sorted.length));
+  }
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -157,18 +214,6 @@ export function TimelineTable({ rows }: TimelineTableProps) {
         </select>
         <select
           className="radar-filter-control"
-          value={filters.tier}
-          onChange={(e) => setFilters((f) => ({ ...f, tier: e.target.value }))}
-        >
-          <option value="">All tiers</option>
-          {tierOptions.map((tier) => (
-            <option key={tier} value={tier}>
-              Tier {tier}
-            </option>
-          ))}
-        </select>
-        <select
-          className="radar-filter-control"
           value={filters.relevance}
           onChange={(e) =>
             setFilters((f) => ({ ...f, relevance: e.target.value }))
@@ -207,33 +252,49 @@ export function TimelineTable({ rows }: TimelineTableProps) {
         </span>
       </div>
 
-      <div className="radar-table-wrap">
-        <table className="radar-table">
+      <div className="timeline-views">
+        <div className="radar-table-wrap timeline-table-wrap">
+          <table className="radar-table timeline-table">
+          <colgroup>
+            <col className="radar-table-col-date" />
+            <col className="radar-table-col-category" />
+            <col className="radar-table-col-actors" />
+            <col className="radar-table-col-tier" />
+            <col className="radar-table-col-score" />
+            <col className="radar-table-col-summary" />
+            <col className="radar-table-col-source" />
+          </colgroup>
           <thead>
             <tr>
-              <th className={sortKey === "event_date" ? "sorted" : ""}>
+              <th
+                className={`radar-table-col-date${sortKey === "event_date" ? " sorted" : ""}`}
+              >
                 <button type="button" onClick={() => toggleSort("event_date")}>
                   Date{sortIndicator("event_date")}
                 </button>
               </th>
-              <th className={sortKey === "category" ? "sorted" : ""}>
+              <th
+                className={`radar-table-col-category${sortKey === "category" ? " sorted" : ""}`}
+              >
                 <button type="button" onClick={() => toggleSort("category")}>
                   Category{sortIndicator("category")}
                 </button>
               </th>
-              <th>Actors</th>
-              <th className={sortKey === "top_tier" ? "sorted" : ""}>
+              <th className="radar-table-col-actors">Actors</th>
+              <th className={`radar-table-col-tier${sortKey === "top_tier" ? " sorted" : ""}`}>
                 <button type="button" onClick={() => toggleSort("top_tier")}>
                   Tier{sortIndicator("top_tier")}
                 </button>
               </th>
-              <th className={sortKey === "relevance" ? "sorted" : ""}>
+              <th
+                className={`radar-table-col-score${sortKey === "relevance" ? " sorted" : ""}`}
+              >
                 <button type="button" onClick={() => toggleSort("relevance")}>
                   Score{sortIndicator("relevance")}
                 </button>
               </th>
-              <th>Summary</th>
-              <th>Source</th>
+              <th className="radar-table-col-summary">Summary</th>
+              <th className="radar-table-col-source">Source</th>
             </tr>
           </thead>
           <tbody>
@@ -244,34 +305,32 @@ export function TimelineTable({ rows }: TimelineTableProps) {
                 </td>
               </tr>
             ) : (
-              sorted.map((row) => (
+              visibleRows.map((row) => (
                 <tr key={row.id}>
-                  <td>
-                    <div className="radar-signal-meta-inline">
+                  <td className="radar-table-col-date">
+                    <div className="radar-table-badge-row">
                       <span className="radar-signal-date">
                         {formatDate(row.event_date)}
                       </span>
                       <SignalNewBadge capturedAt={row.captured_at} />
-                    </div>
-                    {row.lifecycle ? (
-                      <div className="radar-lifecycle-stack">
+                      {row.lifecycle ? (
                         <span className="radar-lifecycle-tag">
                           {formatLifecycle(row.lifecycle)}
                         </span>
-                      </div>
-                    ) : null}
+                      ) : null}
+                    </div>
                   </td>
-                  <td>
+                  <td className="radar-table-col-category">
                     <span className={categoryClassName(row.category)}>
                       {formatCategory(row.category)}
                     </span>
                   </td>
-                  <td className="radar-table-actors">
+                  <td className="radar-table-col-actors">
                     {row.actors.length > 0
                       ? row.actors.map((a) => a.name).join(", ")
                       : "—"}
                   </td>
-                  <td>
+                  <td className="radar-table-col-tier">
                     {row.top_tier < 99 ? (
                       <span
                         className={`radar-tier-badge${row.top_tier === 2 ? " radar-tier-badge-2" : ""}`}
@@ -282,28 +341,28 @@ export function TimelineTable({ rows }: TimelineTableProps) {
                       "—"
                     )}
                   </td>
-                  <td>
+                  <td className="radar-table-col-score">
                     <span
                       className={`radar-score-badge radar-score-${row.relevance}`}
                     >
                       {row.relevance}
                     </span>
                   </td>
-                  <td>
+                  <td className="radar-table-col-summary">
                     <div className="radar-signal-text">{row.summary}</div>
                     {row.so_what ? (
                       <p className="radar-signal-sowhat">→ {row.so_what}</p>
                     ) : null}
                   </td>
-                  <td>
+                  <td className="radar-table-col-source">
                     <a
                       href={row.source_url}
-                      className="radar-table-link"
+                      className="radar-table-link radar-table-source-link"
                       target="_blank"
                       rel="noopener noreferrer"
+                      title={row.source_url}
                     >
-                      {row.source_url.replace(/^https?:\/\//, "").slice(0, 48)}
-                      {row.source_url.length > 56 ? "…" : ""}
+                      {row.source_url.replace(/^https?:\/\//, "")}
                     </a>
                   </td>
                 </tr>
@@ -311,7 +370,24 @@ export function TimelineTable({ rows }: TimelineTableProps) {
             )}
           </tbody>
         </table>
+        </div>
+
+        <div className="timeline-cards">
+          {sorted.length === 0 ? (
+            <p className="radar-empty">No signals match the current filters.</p>
+          ) : (
+            visibleRows.map((row) => <TimelineCard key={row.id} row={row} />)
+          )}
+        </div>
       </div>
+
+      {sorted.length > 0 && remaining > 0 ? (
+        <div className="timeline-show-more-wrap">
+          <button type="button" className="timeline-show-more" onClick={showMore}>
+            Show {nextBatch} more ({remaining} remaining)
+          </button>
+        </div>
+      ) : null}
     </>
   );
 }

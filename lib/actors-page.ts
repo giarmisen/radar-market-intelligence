@@ -50,6 +50,8 @@ const TIER_LABELS: Record<number, string> = {
   3: "Tier 3 — Wide radar",
 };
 
+const TIER_DISPLAY_ORDER = [1, 2, 0];
+
 export async function getActorsPageData(
   domainSlug?: string,
 ): Promise<ActorsPageData> {
@@ -100,11 +102,15 @@ export async function getActorsPageData(
     pendingProposal: proposalByActor.get(actor.id) ?? null,
   }));
 
-  const tierNumbers = Array.from(new Set(actors.map((actor) => actor.tier))).sort(
-    (a, b) => a - b,
+  const tierNumbers = TIER_DISPLAY_ORDER.filter((tier) =>
+    actors.some((actor) => actor.tier === tier),
   );
+  const extraTiers = Array.from(new Set(actors.map((actor) => actor.tier)))
+    .filter((tier) => !TIER_DISPLAY_ORDER.includes(tier))
+    .sort((a, b) => a - b);
+  const orderedTiers = [...tierNumbers, ...extraTiers];
 
-  const tiers: ActorTierSection[] = tierNumbers.map((tier) => ({
+  const tiers: ActorTierSection[] = orderedTiers.map((tier) => ({
     tier,
     label: TIER_LABELS[tier] ?? `Tier ${tier}`,
     actors: actors.filter((actor) => actor.tier === tier),

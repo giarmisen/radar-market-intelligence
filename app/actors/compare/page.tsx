@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { ActorCompareView } from "@/components/ActorCompareView";
-import { Hero } from "@/components/Hero";
-import { Nav } from "@/components/Nav";
+import { AppShell } from "@/components/AppShell";
+import { PageTopbar } from "@/components/PageTopbar";
+import { StatGrid } from "@/components/StatGrid";
 import {
   getActorComparePageData,
   getActorProfilesForCompare,
@@ -28,26 +29,28 @@ export default async function ActorComparePage({
   ]);
 
   return (
-    <>
-      <Nav active="actors" pendingProposals={pageData.pendingProposals} />
-      <Hero
-        eyebrow={pageData.domainName}
+    <AppShell active="actors" pendingProposals={pageData.pendingProposals}>
+      <PageTopbar
         title="Compare actors"
-        sub="Side-by-side profiles for Tier 1 actors — business model, AI strategy, and positioning."
-        stats={[
-          {
-            value: pageData.options.filter((option) => option.hasProfile).length,
-            label: "Profiles available",
-          },
-          { value: profiles.length, label: "Selected" },
-          { value: 3, label: "Max compare" },
-        ]}
+        subtitle="Side-by-side profiles for Tier 1 actors — business model, AI strategy, and positioning."
+        meta={pageData.domainName}
       />
-      <main className="radar-page-main">
+      <div className="radar-content">
+        <StatGrid
+          stats={[
+            {
+              value: pageData.options.filter((option) => option.hasProfile).length,
+              label: "Profiles available",
+            },
+            { value: profiles.length, label: "Selected" },
+            { value: 3, label: "Max compare" },
+            { value: pageData.options.length, label: "Tier 1 options" },
+          ]}
+        />
         <Suspense fallback={<p className="radar-empty">Loading compare view…</p>}>
           <ActorCompareView options={pageData.options} profiles={profiles} />
         </Suspense>
-      </main>
-    </>
+      </div>
+    </AppShell>
   );
 }

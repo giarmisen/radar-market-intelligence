@@ -1,10 +1,8 @@
-import { Hero } from "@/components/Hero";
-import { Nav } from "@/components/Nav";
+import { AppShell } from "@/components/AppShell";
+import { PageTopbar } from "@/components/PageTopbar";
 import { QuarterlyReviewPanel } from "@/components/QuarterlyReviewPanel";
 import { loadDomainConfig, resolveDomainSlug } from "@/lib/config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "@/lib/domain";
-import { defaultReportDateRange } from "@/lib/report-date-range";
-import { fetchReportSignals } from "@/lib/quarterly-review";
 
 export const dynamic = "force-dynamic";
 
@@ -13,25 +11,17 @@ export default async function ReportsPage() {
   const config = loadDomainConfig(slug);
   const domain = await getDomainMeta(slug);
   const pendingProposals = await getPendingProposalsCount(domain.id);
-  const { from, to } = defaultReportDateRange();
-  const defaultRangeSignals = await fetchReportSignals(slug, from, to);
 
   return (
-    <>
-      <Nav active="reports" pendingProposals={pendingProposals} />
-      <Hero
-        eyebrow={config.name}
+    <AppShell active="reports" pendingProposals={pendingProposals}>
+      <PageTopbar
         title="Market Report"
-        sub="Generate an on-demand analyst briefing from signals in any date range."
-        stats={[
-          { value: defaultRangeSignals.length, label: "Signals (90 days)" },
-          { value: config.actors.length, label: "Tracked actors" },
-          { value: 6, label: "Report sections" },
-        ]}
+        subtitle="Generate an on-demand analyst briefing from signals in any date range."
+        meta={config.name}
       />
-      <main className="radar-page-main">
+      <div className="radar-content">
         <QuarterlyReviewPanel domainSlug={slug} domainName={config.name} />
-      </main>
-    </>
+      </div>
+    </AppShell>
   );
 }

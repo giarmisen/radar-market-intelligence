@@ -1,6 +1,7 @@
-import { Hero } from "@/components/Hero";
-import { Nav } from "@/components/Nav";
+import { AppShell } from "@/components/AppShell";
+import { PageTopbar } from "@/components/PageTopbar";
 import { ProposalsQueue } from "@/components/ProposalsQueue";
+import { StatGrid } from "@/components/StatGrid";
 import { getProposalsPageData } from "@/lib/proposals-page";
 
 export const dynamic = "force-dynamic";
@@ -9,24 +10,26 @@ export default async function ProposalsPage() {
   const data = await getProposalsPageData();
 
   return (
-    <>
-      <Nav active="proposals" pendingProposals={data.pendingProposals} />
-      <Hero
-        eyebrow={data.domainName}
+    <AppShell active="proposals" pendingProposals={data.pendingProposals}>
+      <PageTopbar
         title="Proposals"
-        sub="Curation queue — review system-generated proposals and approve or reject changes to actors and sources."
-        stats={[
-          { value: data.stats.pending, label: "Pending proposals" },
-          { value: data.stats.evidence, label: "Evidence signals" },
-          {
-            value: new Set(data.proposals.map((p) => p.type)).size,
-            label: "Proposal types",
-          },
-        ]}
+        subtitle="Curation queue — review system-generated proposals and approve or reject changes."
+        meta={data.domainName}
       />
-      <main className="radar-page-main">
+      <div className="radar-content">
+        <StatGrid
+          stats={[
+            { value: data.stats.pending, label: "Pending proposals" },
+            { value: data.stats.evidence, label: "Evidence signals" },
+            {
+              value: new Set(data.proposals.map((p) => p.type)).size,
+              label: "Proposal types",
+            },
+            { value: data.proposals.length, label: "Total in queue" },
+          ]}
+        />
         <ProposalsQueue proposals={data.proposals} />
-      </main>
-    </>
+      </div>
+    </AppShell>
   );
 }

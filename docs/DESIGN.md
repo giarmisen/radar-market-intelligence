@@ -1,162 +1,170 @@
 # Radar — DESIGN.md
-**v2.0 — June 2026**
+**v3.0 — June 2026**
 Visual specification. Reference this file before writing any component. Do not deviate without updating this doc first.
+
+---
+
+## Aesthetic direction
+
+Linear-light. White content area, `#FAFAFA` sidebar, black as the only accent color. Clean, dense, readable. No hero sections, no colored backgrounds on large areas. Color appears only where it carries meaning — category badges (semantic), NEW badge (green), Worth Watching border (amber). Everything else is black, white, and grays.
 
 ---
 
 ## Typography
 
-Hybrid system: Montserrat for identity/structure, Inter for readability.
+Single font: **Inter**. Two weights only in practice: 400 (body) and 500–600 (labels, headings). Never 700 or 800 — hierarchy comes from size and color, not weight.
 
 ```
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 ```
 
-| Role | Font | Weight | Size | Notes |
+| Role | Weight | Size | Color | Notes |
 |---|---|---|---|---|
-| Nav logo | Montserrat | 800 | 16px | `letter-spacing: -0.3px` |
-| Nav links | Montserrat | 600 | 12px | — |
-| Hero eyebrow | Montserrat | 700 | 10px | uppercase, `letter-spacing: 2px` |
-| Hero title | Montserrat | 800 | 26px | `letter-spacing: -0.5px`, `line-height: 1.1` |
-| Stat numbers | Montserrat | 900 | 24px | `letter-spacing: -0.5px` |
-| Section labels | Montserrat | 700 | 10px | uppercase, `letter-spacing: 1.5px` |
-| Actor name / card title | Montserrat | 800 | 14px | — |
-| Category badges | Montserrat | 700 | 9px | uppercase, `letter-spacing: 1px` |
-| Score badges | Montserrat | 700 | 10px | — |
-| Filter button | Inter | 500 | 11px | — |
-| Body / signal text | Inter | 400 | 12px | `line-height: 1.55` |
-| So-what line | Inter | 600 | 11px | accent color, prefixed with `→` |
-| Meta / dates / counts | Inter | 400–500 | 10–11px | muted color |
-| Source URL | Inter | 400 | 10px | link color |
-| Sidebar items | Inter | 500 | 12px | — |
-| Card meta line | Inter | 400 | 11px | muted |
+| Logo | 600 | 12px | `#111` | `letter-spacing: 0.3px` |
+| Page title | 600 | 16px | `#111` | `letter-spacing: -0.3px` |
+| Page subtitle | 400 | 11px | `#C0C0C0` | |
+| Section label | 500 | 10px | `#C0C0C0` | uppercase, `letter-spacing: 0.8px` |
+| Actor name / card title | 600 | 13px | `#111` | |
+| Actor meta | 400 | 11px | `#C0C0C0` | |
+| Sidebar nav item | 400 | 13px | `#888` default, `#111` active | |
+| Filter pill label | 500 | 11px | varies | |
+| Signal body text | 400 | 12px | `#444` | `line-height: 1.55` |
+| So-what line | 500 | 11px | `#555` | prefixed with `→` |
+| Category badge | 500 | 9px | semantic | uppercase, `letter-spacing: 0.6px` |
+| Score badge | 500 | 10px | see below | |
+| Date / meta | 400 | 10px | `#C0C0C0` | |
+| Source URL | 400 | 10px | `#C0C0C0` | |
+| Stat number | 600 | 20px | `#111` | `letter-spacing: -0.5px` |
+| Stat label | 500 | 10px | `#C0C0C0` | uppercase, `letter-spacing: 0.8px` |
+| Worth Watching body | 400 | 12px | `#444` | `line-height: 1.5` |
+| Worth Watching meta | 400 | 10px | `#C0C0C0` | |
 
 ---
 
 ## Color palette
 
-### Base (TransPerfect brand colors)
+### Base
 | Token | Hex | Usage |
 |---|---|---|
-| `--bg-primary` | `#ffffff` | Page background, cards |
-| `--bg-secondary` | `#f5f9fd` | Main content area |
-| `--bg-accent-light` | `#eaf2fa` | Upcoming bar, active sidebar, score-2 signal bg, stat card bg |
-| `--border` | `#dce8f4` | All borders, dividers |
-| `--text-primary` | `#071d49` | Actor names, logo, signal text |
-| `--text-body` | `#071d49` | All body text |
-| `--text-muted` | `#6a6a6a` | Meta text, dates, counts, card meta |
+| `--bg-primary` | `#ffffff` | Page background, cards, content area |
+| `--bg-secondary` | `#FAFAFA` | Sidebar, stat cards, signal backgrounds |
+| `--bg-tertiary` | `#F5F5F5` | Filter pills (inactive), upcoming pills |
+| `--border-default` | `#EBEBEB` | Sidebar border, dividers |
+| `--border-card` | `#F0F0F0` | Card borders, section borders |
+| `--text-primary` | `#111111` | All primary text, headings, actor names |
+| `--text-body` | `#444444` | Signal body text |
+| `--text-muted` | `#888888` | Sidebar items (inactive), filters (inactive) |
+| `--text-dim` | `#C0C0C0` | Dates, meta, labels, counts |
 
-### Accent (TransPerfect brand)
+### Accent (black only)
 | Token | Hex | Usage |
 |---|---|---|
-| `--accent-dark` | `#071d49` | Nav background, score-3 badge bg |
-| `--accent-main` | `#196dba` | Hero bg, active states, score-3 signal border, so-what text, sidebar active text, hover border |
-| `--accent-light` | `#65a8e4` | Sidebar labels, upcoming label, Tier 2 dot, source URL links, dim badges text |
-| `--accent-bg` | `#eaf2fa` | Active nav link bg, upcoming bar bg, signal s2 bg, sidebar active bg |
-| `--accent-border` | `#c5dbf0` | Upcoming bar border |
+| `--accent` | `#111111` | Active sidebar item text, score-3 badge bg, score-3 signal border, filter active bg, proposal badge |
+| `--accent-bg` | `#F0F0F0` | Active sidebar item bg, card hover border |
 
-### Category badge colors (semantic)
+### Semantic colors (only for meaning, never decoration)
+| Usage | Background | Text / Border |
+|---|---|---|
+| NEW badge | `#DCFCE7` | `#16A34A` |
+| Worth Watching border | `#FEF3C7` | — |
+| Proposal count badge | `#111` | `#fff` |
+
+### Category badge colors
 | Category | Background | Text |
 |---|---|---|
-| Team / M&A | `rgba(99,59,183,0.08)` | `#533ab7` |
-| Product | `rgba(25,109,186,0.10)` | `#196dba` |
-| Regulatory | `rgba(216,90,48,0.08)` | `#d85a30` |
-| Geopolitical | `rgba(216,90,48,0.08)` | `#d85a30` |
-| Commercial | `rgba(22,141,91,0.08)` | `#148d5b` |
-| Communications | `rgba(100,100,100,0.08)` | `#646464` |
-| Technical | `rgba(52,52,52,0.08)` | `#333` |
+| Product | `#F0FDF4` | `#15803D` |
+| Regulatory | `#FEF2F2` | `#B91C1C` |
+| Geopolitical | `#FFF7ED` | `#C2410C` |
+| Commercial | `#EFF6FF` | `#2563EB` |
+| Team / M&A | `#F5F3FF` | `#6D28D9` |
+| Communications | `#EFF6FF` | `#2563EB` |
+| Technical | `#F9FAFB` | `#374151` |
 
 ### Score badges
 | Score | Background | Text |
 |---|---|---|
-| 3 — Critical | `#071d49` | `#ffffff` |
-| 2 — Relevant | `#eaf2fa` | `#196dba` |
-
-### Lifecycle tag
-| State | Background | Text |
-|---|---|---|
-| Any lifecycle event | `rgba(216,90,48,0.08)` | `#d85a30` |
+| 3 — Critical | `#111111` | `#ffffff` |
+| 2 — Relevant | `#F0F0F0` | `#888888` |
 
 ---
 
 ## Layout
 
-### Grid
-- Nav: full width, `height: 52px`, `padding: 0 28px`, `background: #071d49`
-- Hero: full width, `padding: 28px 28px 24px`, `background: #196dba`
-- Upcoming bar: full width, `padding: 10px 28px`, `background: #eaf2fa`
-- Body: two-column grid — sidebar `200px` + main `1fr`
-- Sidebar: `padding: 18px 10px`, `border-right: 1px solid #dce8f4`
-- Main: `padding: 20px 22px`, `background: #f5f9fd`
+### Overall structure
+- Two-column grid: sidebar `200px` + main `1fr`
+- Sidebar: `background: #FAFAFA`, `border-right: 1px solid #EBEBEB`, `padding: 16px 8px`
+- Main: two sub-areas — topbar (white, `border-bottom: 1px solid #F0F0F0`) + content area (`background: #FAFAFA`, `padding: 18px 24px`)
 
-### Border radius
-- Cards: `10px`
-- Badges / pills / category tags: `20px` (pills) or `10px` (small badges)
-- Nav links, sidebar items, filter button: `6px`
-- Signals: `0 8px 8px 0` (left-border pattern)
+### Sidebar
+- Logo: 12px/600, `padding: 4px 10px`, `margin-bottom: 12px`
+- Nav items: 13px/400, `padding: 6px 10px`, `border-radius: 6px`
+- Active: `background: #F0F0F0`, `color: #111`, weight 500
+- Hover: `background: #F0F0F0`, `color: #111`
+- Divider before Proposals: `height: 1px`, `background: #EBEBEB`, `margin: 8px 4px`
+- Icons: Tabler outline, 14px, inherit color
 
-### Borders
-- All borders: `1px solid #dce8f4`
-- Score-3 signal left border: `2px solid #196dba`
-- Score-2 signal left border: `2px solid #65a8e4`
-- Card hover: `border-color: #196dba`
-- No box shadows
+### Topbar (inside main)
+- `padding: 16px 24px 0`
+- Title + last-ingestion time on the same row
+- Subtitle below title
+- Filter pills below subtitle, `padding-bottom: 12px`
+
+### Filter pills
+- `font-size: 11px`, `font-weight: 500`, `border-radius: 20px`, `padding: 4px 12px`
+- Inactive: `background: #F5F5F5`, `color: #888`
+- Active: `background: #111`, `color: #fff`
+- Hover (inactive): `background: #EBEBEB`, `color: #111`
+
+### Stat cards
+- `background: #fff`, `border: 1px solid #F0F0F0`, `border-radius: 8px`, `padding: 12px 14px`
+- Grid of 4 with `gap: 8px`
+
+### Upcoming bar
+- `background: #fff`, `border: 1px solid #F0F0F0`, `border-radius: 8px`, `padding: 10px 14px`
+- Pills: `background: #F5F5F5`, `border-radius: 20px`, `padding: 3px 10px`
+- Date inside pill: `color: #111`, `font-weight: 600`
+
+### Cards
+- `background: #fff`, `border: 1px solid #F0F0F0`, `border-radius: 10px`, `padding: 14px 16px`
+- Hover: `border-color: #DDD`, `box-shadow: 0 4px 12px rgba(0,0,0,0.06)`, `transform: translateY(-1px)`, `transition: all 0.15s`
+- Footer: `border-top: 1px solid #F5F5F5`, `padding-top: 8px`, `margin-top: 10px`
+
+### Signals (inside cards)
+- Left border pattern: `border-left: 2px solid`, `border-radius: 0 6px 6px 0`, `padding: 7px 10px`
+- Score 3: `border-left-color: #111`, `background: #F8F8F8`
+- Score 2: `border-left-color: #EBEBEB`, `background: #FAFAFA`
+- NEW badge: `background: #DCFCE7`, `color: #16A34A`, 9px/600, `border-radius: 20px`, `padding: 2px 6px`
+
+### Worth Watching section
+- No full-width colored background — integrated as a group in the content flow
+- Header: amber dot (6px, `#F59E0B`) + label
+- Cards: `background: #fff`, `border: 1px solid #FEF3C7`, `border-radius: 10px`, `padding: 12px 14px`
 
 ---
 
-## Components
+## Navigation structure
 
-### Nav
-- Background: `#071d49`
-- Logo: `Radar.` — dot in `#65a8e4`, Montserrat 800
-- Links: Montserrat 600 12px, `rgba(255,255,255,0.6)` default, white + `rgba(255,255,255,0.1)` bg on active
-- Proposal count: `rgba(255,255,255,0.2)` bg, white text
+**Sidebar contains only global views — never contextual filters:**
+1. Market Pulse
+2. Timeline
+3. Reports
+4. Actors
+5. (divider)
+6. Proposals `[count badge]`
 
-### Hero
-- Background: `#196dba` (solid, no gradient)
-- Eyebrow: Montserrat 700 10px uppercase, `#65a8e4`
-- Title: Montserrat 800 26px white, `letter-spacing: -0.5px`
-- Sub: Inter 400 12px, `rgba(255,255,255,0.65)`
-- Stats: Montserrat 900 24px white numbers, Inter 500 10px `rgba(255,255,255,0.6)` labels, separated by `rgba(255,255,255,0.2)` dividers
-
-### Upcoming bar
-- Background: `#eaf2fa`, border-bottom: `1px solid #c5dbf0`
-- Label: Montserrat 700 10px uppercase `#196dba`
-- Pills: white bg, `#c5dbf0` border, `border-radius: 20px` — date in `#196dba`/600
-
-### Sidebar
-- Items: Inter 500 12px `#6a6a6a`, active = `#eaf2fa` bg + `#071d49` text/600
-- Tier dots: 6px circle — Tier 1 `#196dba`, Tier 2 `#65a8e4`
-- Section labels: Montserrat 700 9px uppercase `#65a8e4`
-- Count badges: `#196dba` bg + white text for new signals; `#eaf2fa` bg + `#65a8e4` text for zero
-
-### Cards
-- White bg, `#dce8f4` border, `border-radius: 10px`
-- Hover + highlight: `border-color: #196dba`
-- Actor name: Montserrat 800 14px `#071d49`
-- Meta line: Inter 400 11px `#6a6a6a`
-- Footer: `border-top: 1px solid #dce8f4`, `padding-top: 10px`
-
-### Signals (inside cards)
-- Left border pattern: `2px solid` + `border-radius: 0 8px 8px 0`
-- Score 3: left border `#196dba`, background `#eaf2fa`
-- Score 2: left border `#65a8e4`, background `#f5f9fd`
-- Category badge: Montserrat 700 9px uppercase, semantic color
-- Date: Inter 500 10px `#6a6a6a`
-- Text: Inter 400 12px `#071d49`, `line-height: 1.55`
-- So-what line: Inter 600 11px `#196dba`, prefixed with `→`
-- Source URL: Inter 400 10px `#65a8e4`, clickable, opens new tab
+**Tier/actor filters live inside pages** — as filter pills in the topbar of Market Pulse and Timeline. Not in the sidebar.
 
 ---
 
 ## Rules
 
-1. **No gradients.** Hero is flat `#196dba`. Nav is flat `#071d49`. Nothing else.
-2. **No shadows.** Cards use border-color transitions only.
-3. **Section separation by background color.** White → `#f5f9fd` → `#eaf2fa` — never by borders.
-4. **No rounded corners on left-border signals.** `border-radius: 0 8px 8px 0` only.
-5. **Signal borders are always 2px.** Everything else 1px.
+1. **No hero sections.** No full-width colored backgrounds. The topbar is white, the content area is `#FAFAFA`.
+2. **Black is the only accent.** No brand blues, no greens, no purples as accent. Color only in semantic badges (category, NEW, Worth Watching border).
+3. **No shadows on cards by default.** Only on hover, and subtle: `0 4px 12px rgba(0,0,0,0.06)`.
+4. **Sidebar = navigation only.** No actor lists, no tier breakdowns. Those go inside the page.
+5. **Inter only, max weight 600.** Never 700 or 800.
 6. **So-what lines always start with →.**
-7. **Category badges are semantic, not decorative.**
-8. **Montserrat for structure and identity. Inter for reading.**
-9. **Source URL always visible** on signal cards, below the so-what line.
+7. **Source URL always visible** on signal cards, below the so-what.
+8. **NEW badge = green, always.** Only for signals captured in the last 24h.
+9. **Worth Watching border = amber.** Not the card background — just the border.
+10. **Transitions: 0.15s on cards, 0.12s on sidebar items.**

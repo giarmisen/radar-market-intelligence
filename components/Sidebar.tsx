@@ -1,96 +1,114 @@
-"use client";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import {
+  IconActors,
+  IconChevronLeft,
+  IconChevronRight,
+  IconProposals,
+  IconPulse,
+  IconReport,
+  IconTimeline,
+} from "./SidebarIcons";
 
-import { Fragment, useEffect, useState } from "react";
-import type { TierSection } from "@/lib/living-document";
+export type SidebarActive =
+  | "living"
+  | "timeline"
+  | "reports"
+  | "actors"
+  | "proposals";
 
 interface SidebarProps {
-  tiers: TierSection[];
-  worthWatchingCount: number;
+  active: SidebarActive;
+  pendingProposals: number;
+  collapsed: boolean;
+  isMobile: boolean;
+  onToggleCollapse: () => void;
+  onNavigate: () => void;
 }
 
-function WorthWatchingNavItem({
-  count,
+interface NavItem {
+  id: SidebarActive;
+  href: string;
+  label: string;
+  icon: ReactNode;
+  dividerBefore?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "living", href: "/", label: "Market Pulse", icon: <IconPulse /> },
+  { id: "timeline", href: "/timeline", label: "Timeline", icon: <IconTimeline /> },
+  { id: "actors", href: "/actors", label: "Actors", icon: <IconActors /> },
+  { id: "reports", href: "/reports", label: "Reports", icon: <IconReport /> },
+  {
+    id: "proposals",
+    href: "/proposals",
+    label: "Proposals",
+    icon: <IconProposals />,
+    dividerBefore: true,
+  },
+];
+
+export function Sidebar({
   active,
-}: {
-  count: number;
-  active: boolean;
-}) {
+  pendingProposals,
+  collapsed,
+  isMobile,
+  onToggleCollapse,
+  onNavigate,
+}: SidebarProps) {
+  const sidebarClassName = [
+    "radar-sidebar",
+    collapsed ? "radar-sidebar-collapsed" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <a
-      href="#worth-watching"
-      className={`radar-sidebar-item${active ? " radar-sidebar-item-active" : ""}`}
-      aria-current={active ? "location" : undefined}
-    >
-      <span className="radar-tier-dot radar-tier-dot-worth-watching" />
-      <span>Worth Watching</span>
-      <span
-        className={`radar-sidebar-count ${
-          count > 0
-            ? "radar-sidebar-count-worth-watching"
-            : "radar-sidebar-count-zero"
-        }`}
+    <aside className={sidebarClassName}>
+      <Link
+        href="/"
+        className="radar-sidebar-logo"
+        title="Radar"
+        onClick={onNavigate}
       >
-        {count}
-      </span>
-    </a>
-  );
-}
-
-export function Sidebar({ tiers, worthWatchingCount }: SidebarProps) {
-  const [hash, setHash] = useState("");
-
-  useEffect(() => {
-    const syncHash = () => setHash(window.location.hash);
-    syncHash();
-    window.addEventListener("hashchange", syncHash);
-    return () => window.removeEventListener("hashchange", syncHash);
-  }, []);
-
-  const worthWatchingActive = hash === "#worth-watching";
-  const hasTier2 = tiers.some((tier) => tier.tier === 2);
-
-  return (
-    <aside className="radar-sidebar">
-      <div className="radar-sidebar-section">
-        <div className="radar-sidebar-label">Tiers</div>
-        {tiers.map((tier) => (
-          <Fragment key={tier.tier}>
-            <a
-              href={`#tier-${tier.tier}`}
+        <span className="radar-sidebar-logo-text">Radar.</span>
+        <span className="radar-sidebar-logo-mark" aria-hidden>
+          R.
+        </span>
+      </Link>
+      <nav className="radar-sidebar-nav" aria-label="Main">
+        {NAV_ITEMS.map((item) => (
+          <div key={item.id}>
+            {item.dividerBefore ? <div className="radar-sidebar-divider" /> : null}
+            <Link
+              href={item.href}
               className={`radar-sidebar-item${
-                hash === `#tier-${tier.tier}` ? " radar-sidebar-item-active" : ""
+                active === item.id ? " radar-sidebar-item-active" : ""
               }`}
-              aria-current={hash === `#tier-${tier.tier}` ? "location" : undefined}
+              aria-current={active === item.id ? "page" : undefined}
+              title={collapsed ? item.label : undefined}
+              onClick={onNavigate}
             >
-              <span
-                className={`radar-tier-dot radar-tier-dot-${tier.tier}`}
-              />
-              <span>Tier {tier.tier}</span>
-              <span
-                className={`radar-sidebar-count ${
-                  tier.actors.length > 0
-                    ? "radar-sidebar-count-active"
-                    : "radar-sidebar-count-zero"
-                }`}
-              >
-                {tier.actors.length}
-              </span>
-            </a>
-            {tier.tier === 2 && worthWatchingCount > 0 ? (
-              <WorthWatchingNavItem
-                count={worthWatchingCount}
-                active={worthWatchingActive}
-              />
-            ) : null}
-          </Fragment>
+              <span className="radar-sidebar-icon">{item.icon}</span>
+              <span className="radar-sidebar-label">{item.label}</span>
+              {item.id === "proposals" && pendingProposals > 0 ? (
+                <span className="radar-sidebar-badge">{pendingProposals}</span>
+              ) : null}
+            </Link>
+          </div>
         ))}
-        {worthWatchingCount > 0 && !hasTier2 ? (
-          <WorthWatchingNavItem
-            count={worthWatchingCount}
-            active={worthWatchingActive}
-          />
-        ) : null}
-      </div>
+      </nav>
+      {!isMobile ? (
+        <button
+          type="button"
+          className="radar-sidebar-toggle"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
+        </button>
+      ) : null}
     </aside>
   );
 }

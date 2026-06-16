@@ -9,7 +9,7 @@ import type { DomainConfig, SignalCategory } from "./types";
 export type { QuarterlyReviewMeta } from "./report-date-range";
 export { parseReportDateRange } from "./report-date-range";
 
-const REPORT_MODEL = "claude-sonnet-4-20250514";
+const REPORT_MODEL = "claude-sonnet-4-6";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
 export interface ReportSignal {

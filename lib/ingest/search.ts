@@ -1,6 +1,6 @@
 import type { IngestRawItem } from "../types";
 
-const CLAUDE_MODEL = "claude-sonnet-4-20250514";
+const CLAUDE_MODEL = "claude-sonnet-4-6";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const WEB_SEARCH_TOOL_TYPE = "web_search_20250305";
 const DEFAULT_LOOKBACK_DAYS = 7;

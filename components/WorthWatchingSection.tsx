@@ -17,7 +17,7 @@ export function WorthWatchingSection({ signals }: WorthWatchingSectionProps) {
       </h2>
       <div className="radar-worth-watching-list">
         {signals.map((signal) => (
-          <SignalItem key={signal.id} signal={signal} />
+          <SignalItem key={signal.id} signal={signal} variant="worth-watching" />
         ))}
       </div>
     </section>

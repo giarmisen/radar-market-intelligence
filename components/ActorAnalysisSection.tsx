@@ -67,7 +67,7 @@ function AnalysisReport({ report }: { report: ActorAnalysisResult }) {
       <section className="radar-card radar-analysis-section">
         <h3 className="radar-section-label">AI strategy assessment</h3>
         {report.ai_strategy_assessment.split(/\n\n+/).map((paragraph, index) => (
-          <p key={index} className="radar-profile-text">
+          <p key={index} className="radar-analysis-prose">
             {paragraph}
           </p>
         ))}

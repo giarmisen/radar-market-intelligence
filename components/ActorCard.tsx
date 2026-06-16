@@ -13,9 +13,7 @@ export function ActorCard({ actor }: ActorCardProps) {
       : null;
 
   return (
-    <article
-      className={`radar-card${actor.hasCritical ? " radar-card-highlight" : ""}`}
-    >
+    <article className="radar-card">
       <header className="radar-card-header">
         <h2 className="radar-card-name">{actor.name}</h2>
         <div className="radar-card-meta">
