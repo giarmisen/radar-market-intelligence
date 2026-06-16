@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 function useReveal() {
@@ -54,7 +55,7 @@ function BrowserFrame({ src, url, alt }: { src: string; url: string; alt: string
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840', display: 'inline-block' }} />
         <span style={{ marginLeft: 16, fontSize: 12, color: '#94A3B8' }}>{url}</span>
       </div>
-      <img src={src} alt={alt} style={{ width: '100%', display: 'block' }} />
+      <Image src={src} alt={alt} width={1400} height={900} style={{ width: '100%', height: 'auto', display: 'block' }} />
     </div>
   );
 }
@@ -90,10 +91,10 @@ function Hero() {
 
         <Reveal delay={60}>
           <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#F1F5F9', margin: '0 0 6px' }}>
-            You can't read everything.
+            You can&apos;t read everything.
           </h1>
           <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#64748B', margin: '0 0 36px' }}>
-            But you can't miss what matters.
+            But you can&apos;t miss what matters.
           </h1>
         </Reveal>
 
@@ -125,7 +126,7 @@ function Hero() {
                 radar-market.vercel.app
               </div>
             </div>
-            <img src="/landing/screenshot-pulse.png" alt="Market Pulse — señales del mercado por actor" style={{ width: '100%', display: 'block' }} />
+            <Image src="/landing/screenshot-pulse.png" alt="Market Pulse — señales del mercado por actor" width={1400} height={900} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </div>
         </Reveal>
       </div>
