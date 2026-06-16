@@ -91,26 +91,26 @@ function Hero() {
 
         <Reveal delay={60}>
           <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#F1F5F9', margin: '0 0 6px' }}>
-            You can&apos;t read everything.
+            Your industry is moving.
           </h1>
           <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#64748B', margin: '0 0 36px' }}>
-            But you can&apos;t miss what matters.
+            Know where, and why.
           </h1>
         </Reveal>
 
         <Reveal delay={140}>
           <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: '#64748B', maxWidth: 520, margin: '0 auto 52px', fontWeight: 400 }}>
-            Market Radar watches your competitive field, enriches every signal with AI context, and surfaces only what deserves your attention.
+            Market Radar tracks every player in your field, reads what they publish and announce, puts it in context with AI, and tells you what is worth your attention today.
           </p>
         </Reveal>
 
         <Reveal delay={200}>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 80 }}>
             <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: '#F8FAFC', color: '#0F172A', borderRadius: 10, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
-              Open the live demo →
+              Live demo (Language Services example)
             </a>
-            <a href="#features" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: '#64748B', borderRadius: 10, fontSize: 16, fontWeight: 500, textDecoration: 'none' }}>
-              What it does
+            <a href="#cta" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: '#64748B', borderRadius: 10, fontSize: 16, fontWeight: 500, textDecoration: 'none' }}>
+              Set this up for your market
             </a>
           </div>
         </Reveal>
@@ -155,16 +155,16 @@ const FEATURES = [
     dark: false,
     eyebrow: 'Market Pulse',
     heading: 'What moved today, across your field.',
-    body: 'A live feed of signals per actor, updated daily when there is activity. Filter by tier, read by signal type, flag what warrants a closer look. Nothing slips through because nobody had time to check.',
+    body: 'A live feed of updates per player, updated daily when there is activity. Filter by tier, read by update type, flag what warrants a closer look. Nothing slips through because nobody had time to check.',
     aside: 'screenshot-pulse',
   },
   {
     id: 'actors',
     bg: '#ffffff',
     dark: false,
-    eyebrow: 'Actor profiles',
+    eyebrow: 'Player profiles',
     heading: 'Every player in your field, fully mapped.',
-    body: 'Business model, AI strategy, recent moves, core products, key markets, and every signal linked to them. When you need a deeper view, generate a Strategic Analysis report per actor: SWOT, strategy assessment, product map, market opportunities, and key risks.',
+    body: 'Business model, AI strategy, recent moves, core products, key markets, and every update linked to them. When you need a deeper view, generate a Strategic Analysis report per player: SWOT, strategy assessment, product map, market opportunities, and key risks.',
     aside: 'screenshot-actor',
   },
   {
@@ -172,8 +172,8 @@ const FEATURES = [
     bg: '#F8FAFC',
     dark: false,
     eyebrow: 'Market Reports',
-    heading: 'A full briefing, built from real signals.',
-    body: 'Pick a date range. Get a structured report: executive summary, movements by actor, emerging patterns, and what to watch next quarter. Grounded in the actual signals in the system. Download it, share it with your team or your client.',
+    heading: 'A full briefing, built from real updates.',
+    body: 'Pick a date range. Get a structured report: executive summary, movements by player, emerging patterns, and what to watch next quarter. Grounded in the actual updates in the system. Download it, share it with your team or your client.',
     aside: 'screenshot-report',
   },
 ];
@@ -233,9 +233,9 @@ function StickyStack() {
                   />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative', zIndex: 1 }}>
                     {[
-                      { n: '01', title: 'Watch', body: 'The system ingests signals daily across every actor and topic in the configured domain. No manual curation. No missed sources.' },
-                      { n: '02', title: 'Enrich', body: 'Each signal is categorized by type, scored by relevance, and linked to the actors and themes it touches.' },
-                      { n: '03', title: 'Surface', body: 'Signals rise to a live pulse, structured actor profiles, and on-demand reports. You read what matters, already in context.' },
+                      { n: '01', title: 'Watch', body: 'The system ingests updates daily across every player and topic in the configured domain. No manual curation. No missed sources.' },
+                      { n: '02', title: 'Enrich', body: 'Each update is automatically categorized, scored by relevance, and connected to the players and topics it affects. You get context, not just raw information.' },
+                      { n: '03', title: 'Surface', body: 'Updates rise to a live pulse, structured player profiles, and on-demand reports. You read what matters, already in context.' },
                     ].map((step, si) => (
                       <Reveal key={step.n} delay={si * 100}>
                         <div style={{ padding: '0 32px 0 0' }}>
@@ -331,30 +331,27 @@ function WhoItsFor() {
 // ---------------------------------------------------------------------------
 function ClosingCTA() {
   return (
-    <section style={{ padding: '120px 24px', textAlign: 'center', background: '#fff' }}>
+    <section id="cta" style={{ padding: '120px 24px', textAlign: 'center', background: '#fff' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <Reveal>
           <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 600, letterSpacing: '-.03em', lineHeight: 1.08, marginBottom: 20 }}>
-            See it on your market.
+            This is one example. Your market is next.
           </h2>
         </Reveal>
         <Reveal delay={80}>
           <p style={{ fontSize: 18, color: '#64748B', lineHeight: 1.65, marginBottom: 44 }}>
-            The demo runs on Language Services and Language AI, one configured domain. The system works across any competitive field with enough public signal: fintech, healthtech, SaaS, defense, and beyond. Open the demo, explore it, and get in touch.
+            The demo runs on Language Services and Language AI, configured as a working example of what the system can do. Market Radar can be set up for any industry with enough public activity: fintech, healthtech, SaaS, defense, and beyond.{' '}
+            <span>Interested?</span>
+            <br />
+            <a href="mailto:armisen.gi@gmail.com" style={{ color: '#0F172A', fontWeight: 600, textDecoration: 'none' }}>
+              Get in touch
+            </a>
           </p>
         </Reveal>
         <Reveal delay={160}>
           <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 30px', background: '#0F172A', color: '#fff', borderRadius: 10, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
             Open the demo →
           </a>
-          <p style={{ fontSize: 17, color: '#64748B', lineHeight: 1.65, marginTop: 20, marginBottom: 0 }}>
-            Interested in setting this up for your market?{' '}
-            <br />
-            <a href="mailto:armisen.gi@gmail.com" style={{ color: '#0F172A', fontWeight: 600, textDecoration: 'none' }}>
-              Get in touch
-            </a>
-            .
-          </p>
           <p style={{ fontSize: 14, color: '#94A3B8', lineHeight: 1.65, marginTop: 40, marginBottom: 0 }}>
             Built by{' '}
             <a href="https://linkedin.com/in/giarmisen" target="_blank" rel="noreferrer" style={{ color: '#64748B', fontWeight: 600, textDecoration: 'none' }}>
