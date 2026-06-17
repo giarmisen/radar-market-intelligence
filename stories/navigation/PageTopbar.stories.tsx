@@ -1,18 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { expect, userEvent, within } from "storybook/test";
 import { FilterPills, type TierFilterValue } from "@/components/FilterPills";
 import { PageTopbar } from "@/components/PageTopbar";
 import { DOMAIN_NAME } from "../fixtures";
 
-function PageTopbarWithFilters() {
+function PageTopbarWithFilters({
+  title,
+  subtitle,
+  meta,
+}: Pick<ComponentProps<typeof PageTopbar>, "title" | "subtitle" | "meta">) {
   const [tierFilter, setTierFilter] = useState<TierFilterValue>("all");
 
   return (
     <PageTopbar
-      title="Market Pulse"
-      subtitle="Live signals across Language Services & Language AI — tiered actors, scored updates, and what to watch today."
-      meta={DOMAIN_NAME}
+      title={title}
+      subtitle={subtitle}
+      meta={meta}
       filters={
         <FilterPills
           value={tierFilter}
@@ -66,7 +70,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <PageTopbarWithFilters />,
+  args: {
+    title: "Market Pulse",
+    subtitle:
+      "Live signals across Language Services & Language AI — tiered actors, scored updates, and what to watch today.",
+    meta: DOMAIN_NAME,
+  },
+  render: (args) => <PageTopbarWithFilters {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     expect(canvas.getByRole("heading", { name: "Market Pulse" })).toBeVisible();
