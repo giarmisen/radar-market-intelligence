@@ -1,5 +1,4 @@
 import {
-  datesWithinGroupWindow,
   maxRelevanceInTemporalWindow,
   temporalWindowStart,
 } from "./group-signals";

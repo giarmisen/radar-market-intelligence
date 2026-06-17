@@ -104,7 +104,7 @@ async function main() {
       }
     }
 
-    const actorIds = [...new Set(matched.map((name) => actorMap.get(name)!))];
+    const actorIds = Array.from(new Set(matched.map((name) => actorMap.get(name)!)));
     if (actorIds.length === 0) {
       console.log(
         `  skip ${signal.event_date} rel=${signal.relevance} ${(signal.title as string)?.slice(0, 60)}… (no actor match)`,

@@ -69,6 +69,15 @@ function shouldClusterSignals(left: GroupableSignal, right: GroupableSignal): bo
   return shareActor(left.actor_names, right.actor_names);
 }
 
+function stripGroupedMetadata<T extends GroupableSignal>(
+  signal: WithGroupedSources<T>,
+): T {
+  const rest = { ...signal };
+  delete rest.grouped_sources;
+  delete rest.source_count;
+  return rest as T;
+}
+
 /** Expand previously grouped rows so re-applying groupSignals never drops source ids. */
 function flattenInputSignals<T extends GroupableSignal>(
   signals: WithGroupedSources<T>[],
@@ -94,8 +103,7 @@ function flattenInputSignals<T extends GroupableSignal>(
       continue;
     }
 
-    const { grouped_sources: _grouped, source_count: _count, ...rest } = signal;
-    flat.push(rest as T);
+    flat.push(stripGroupedMetadata(signal));
   }
 
   return flat;
@@ -188,10 +196,7 @@ function buildGroupedSignal<T extends GroupableSignal>(group: T[]): WithGroupedS
   }
 
   if (group.length === 1) {
-    const [signal] = group;
-    const { grouped_sources: _grouped, source_count: _count, ...rest } =
-      signal as WithGroupedSources<T>;
-    return rest as WithGroupedSources<T>;
+    return stripGroupedMetadata(group[0] as WithGroupedSources<T>);
   }
 
   const primary = pickPrimarySignal(group);
