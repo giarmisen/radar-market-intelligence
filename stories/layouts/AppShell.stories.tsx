@@ -4,7 +4,7 @@ import { PageTopbar } from "@/components/PageTopbar";
 import { DOMAIN_NAME } from "../fixtures";
 
 const meta = {
-  title: "Layouts/AppShell",
+  title: "5. Layouts/AppShell",
   component: AppShell,
   parameters: {
     layout: "fullscreen",

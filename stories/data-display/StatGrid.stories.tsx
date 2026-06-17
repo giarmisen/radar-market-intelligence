@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { StatGrid } from "@/components/StatGrid";
 
 const meta = {
-  title: "Data Display/StatGrid",
+  title: "4. Data Display/StatGrid",
   component: StatGrid,
   parameters: {
     docs: {

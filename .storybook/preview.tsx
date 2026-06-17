@@ -42,6 +42,22 @@ const preview: Preview = {
       context: 'body',
       test: 'error',
     },
+    options: {
+      storySort: {
+        order: [
+          '1. Foundation',
+          ['Colors', 'Typography', 'Spacing', 'Icons', 'Motion'],
+          '2. Navigation',
+          ['Sidebar', 'PageTopbar'],
+          '3. Controls',
+          ['CategoryBadge', 'ScoreBadge', 'SignalBadge', 'FilterPills'],
+          '4. Data Display',
+          ['SignalItem', 'StatGrid', 'TimelineTable', 'WorthWatchingSection'],
+          '5. Layouts',
+          ['AppShell', 'MarketPulse'],
+        ],
+      },
+    },
   },
   decorators: [
     (Story) => (

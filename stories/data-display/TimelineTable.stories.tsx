@@ -3,7 +3,7 @@ import { TimelineTable } from "@/components/TimelineTable";
 import { timelineRows } from "../fixtures";
 
 const meta = {
-  title: "Data Display/TimelineTable",
+  title: "4. Data Display/TimelineTable",
   component: TimelineTable,
   parameters: {
     docs: {

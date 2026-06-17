@@ -3,7 +3,7 @@ import { MarketPulsePage } from "@/components/MarketPulsePage";
 import { marketPulseData } from "../fixtures";
 
 const meta = {
-  title: "Layouts/MarketPulse",
+  title: "5. Layouts/MarketPulse",
   component: MarketPulsePage,
   parameters: {
     layout: "fullscreen",

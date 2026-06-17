@@ -62,7 +62,7 @@ function SpacingBlock({ name, usage }: (typeof SPACING_TOKENS)[number]) {
 }
 
 const meta = {
-  title: "Foundation/Spacing",
+  title: "1. Foundation/Spacing",
   component: SpacingScale,
   parameters: {
     layout: "padded",

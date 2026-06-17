@@ -95,7 +95,7 @@ function TypographyRow({ className, sample, context }: (typeof TEXT_CLASSES)[num
 }
 
 const meta = {
-  title: "Foundation/Typography",
+  title: "1. Foundation/Typography",
   component: TypographyScale,
   parameters: {
     layout: "padded",

@@ -9,7 +9,7 @@ function ScoreBadge({ score }: { score: 2 | 3 }) {
 }
 
 const meta = {
-  title: "Controls/ScoreBadge",
+  title: "3. Controls/ScoreBadge",
   component: ScoreBadge,
   parameters: {
     docs: {

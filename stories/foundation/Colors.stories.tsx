@@ -82,7 +82,7 @@ function ColorSwatch({ name, usage, sample = "bg" }: (typeof COLOR_TOKENS)[numbe
 }
 
 const meta = {
-  title: "Foundation/Colors",
+  title: "1. Foundation/Colors",
   component: ColorPalette,
   parameters: {
     layout: "padded",

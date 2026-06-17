@@ -35,7 +35,7 @@ function FilterPillsDemo({
 }
 
 const meta = {
-  title: "Controls/FilterPills",
+  title: "3. Controls/FilterPills",
   component: FilterPillsDemo,
   parameters: {
     docs: {

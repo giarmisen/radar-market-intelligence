@@ -72,7 +72,7 @@ function IconGrid() {
 }
 
 const meta = {
-  title: "Foundation/Icons",
+  title: "1. Foundation/Icons",
   component: IconGrid,
   parameters: {
     layout: "padded",

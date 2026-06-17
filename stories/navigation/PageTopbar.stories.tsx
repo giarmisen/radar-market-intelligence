@@ -4,7 +4,7 @@ import { PageTopbar } from "@/components/PageTopbar";
 import { DOMAIN_NAME } from "../fixtures";
 
 const meta = {
-  title: "Navigation/PageTopbar",
+  title: "2. Navigation/PageTopbar",
   component: PageTopbar,
   parameters: {
     docs: {

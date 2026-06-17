@@ -10,7 +10,7 @@ import {
 const defaultSignal = languageServicesSignal({ relevance: 2, captured_at: null });
 
 const meta = {
-  title: "Data Display/SignalItem",
+  title: "4. Data Display/SignalItem",
   component: SignalItem,
   parameters: {
     docs: {

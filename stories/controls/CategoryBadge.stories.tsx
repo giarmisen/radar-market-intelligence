@@ -3,7 +3,7 @@ import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SIGNAL_CATEGORIES } from "../fixtures";
 
 const meta = {
-  title: "Controls/CategoryBadge",
+  title: "3. Controls/CategoryBadge",
   component: CategoryBadge,
   parameters: {
     docs: {

@@ -83,7 +83,7 @@ function TransitionNavDemo() {
 }
 
 const meta = {
-  title: "Foundation/Motion",
+  title: "1. Foundation/Motion",
   component: MotionShowcase,
   parameters: {
     layout: "padded",

@@ -3,7 +3,7 @@ import { WorthWatchingSection } from "@/components/WorthWatchingSection";
 import { WORTH_WATCHING_SIGNALS } from "../fixtures";
 
 const meta = {
-  title: "Data Display/WorthWatchingSection",
+  title: "4. Data Display/WorthWatchingSection",
   component: WorthWatchingSection,
   parameters: {
     docs: {

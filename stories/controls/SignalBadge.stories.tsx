@@ -3,7 +3,7 @@ import { SignalBadge } from "@/components/ui/SignalBadge";
 import { recentCapture } from "../fixtures";
 
 const meta = {
-  title: "Controls/SignalBadge",
+  title: "3. Controls/SignalBadge",
   component: SignalBadge,
   parameters: {
     docs: {
