@@ -99,6 +99,7 @@ export async function getTimelineData(
     `,
     )
     .eq("domain_id", domain.id)
+    .gte("relevance", 1)
     .order("event_date", { ascending: false });
 
   if (error) {
