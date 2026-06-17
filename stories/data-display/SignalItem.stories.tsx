@@ -34,34 +34,7 @@ const meta = {
     ),
   ],
   argTypes: {
-    variant: {
-      control: "select",
-      options: ["default", "worth-watching"],
-      description: "Layout variant — default for actor cards, worth-watching for orphan signals",
-    },
-    signal: { control: "object", description: "Signal payload rendered in the item" },
-    "signal.summary": { control: "text", description: "Signal headline text" },
-    "signal.relevance": {
-      control: "select",
-      options: [1, 2, 3],
-      description: "Relevance score controlling border weight and badge color",
-    },
-    "signal.category": {
-      control: "select",
-      options: SIGNAL_CATEGORIES,
-      description: "Intelligence category badge",
-    },
-    "signal.lifecycle": {
-      control: "select",
-      options: [null, "acquired", "shutdown", "pivot"],
-      description: "Optional lifecycle event tag (acquired, shutdown, pivot)",
-    },
-    "signal.captured_at": {
-      control: "text",
-      description: "ISO timestamp — recent values show the NEW badge",
-    },
-    "signal.so_what": { control: "text", description: "Analyst takeaway prefixed with →" },
-    "signal.source_url": { control: "text", description: "Linked trade press or regulatory source" },
+    signal: { control: "object", description: "Full signal payload" },
   },
   args: {
     signal: defaultSignal,
