@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
 import { AppShell } from "@/components/AppShell";
 import { PageTopbar } from "@/components/PageTopbar";
 import { DOMAIN_NAME } from "../fixtures";
@@ -54,6 +55,13 @@ export const Default: Story = {
         </div>
       </>
     ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvasElement.querySelector(".radar-sidebar")).toBeVisible();
+    expect(canvasElement.querySelector(".radar-main-column")).toBeVisible();
+    expect(canvas.getByText("Radar.")).toBeVisible();
+    expect(canvas.getByRole("heading", { name: "Market Pulse" })).toBeVisible();
   },
 };
 

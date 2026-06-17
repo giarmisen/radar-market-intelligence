@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useEffect, useState } from "react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { FilterPills, type TierFilterValue } from "@/components/FilterPills";
 
 /**
@@ -32,6 +32,17 @@ function FilterPillsDemo({
       worthWatchingCount={worthWatchingCount}
     />
   );
+}
+
+async function clickPillAndExpectActive(
+  canvasElement: HTMLElement,
+  name: string | RegExp,
+) {
+  const canvas = within(canvasElement);
+  const pill = canvas.getByRole("button", { name });
+  await userEvent.click(pill);
+  expect(pill).toHaveAttribute("aria-pressed", "true");
+  expect(pill).toHaveClass("radar-filter-pill-active");
 }
 
 const meta = {
@@ -74,12 +85,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    await clickPillAndExpectActive(canvasElement, "All tiers");
+    await clickPillAndExpectActive(canvasElement, "Tier 1");
+    await clickPillAndExpectActive(canvasElement, "Tier 2");
+    await clickPillAndExpectActive(canvasElement, /Worth Watching/);
+  },
+};
 
 export const TierOneActive: Story = {
   args: {
     value: "1",
     worthWatchingCount: 3,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const tierOne = canvas.getByRole("button", { name: "Tier 1" });
+    expect(tierOne).toHaveAttribute("aria-pressed", "true");
   },
 };
 
@@ -88,6 +111,11 @@ export const TierTwoActive: Story = {
     value: "2",
     worthWatchingCount: 3,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const tierTwo = canvas.getByRole("button", { name: "Tier 2" });
+    expect(tierTwo).toHaveAttribute("aria-pressed", "true");
+  },
 };
 
 export const WorthWatchingActive: Story = {
@@ -95,11 +123,24 @@ export const WorthWatchingActive: Story = {
     value: "worth-watching",
     worthWatchingCount: 3,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const worthWatching = canvas.getByRole("button", { name: /Worth Watching/ });
+    expect(worthWatching).toHaveAttribute("aria-pressed", "true");
+  },
 };
 
 export const NoWorthWatching: Story = {
   args: {
     value: "all",
     worthWatchingCount: 0,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.queryByRole("button", { name: /Worth Watching/ })).toBeNull();
+    expect(canvas.getByRole("button", { name: "All tiers" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   },
 };

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SIGNAL_CATEGORIES } from "../fixtures";
 
@@ -39,7 +40,17 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badge = canvas.getByText("Product");
+    expect(badge).toBeVisible();
+    expect(badge).toHaveClass("cat-product");
+    await userEvent.hover(badge);
+    expect(badge).toBeVisible();
+    expect(badge).toHaveClass("radar-category-badge");
+  },
+};
 
 export const Regulatory: Story = {
   args: { category: "regulatory" },
@@ -57,4 +68,9 @@ export const AllCategories: Story = {
       ))}
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badges = canvas.getAllByText(/./);
+    expect(badges.length).toBeGreaterThanOrEqual(SIGNAL_CATEGORIES.length);
+  },
 };

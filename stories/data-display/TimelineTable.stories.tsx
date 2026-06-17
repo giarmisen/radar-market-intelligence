@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { TimelineTable } from "@/components/TimelineTable";
 import { timelineRows } from "../fixtures";
 
@@ -40,7 +41,29 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const rows = canvasElement.querySelectorAll("tbody tr");
+    expect(rows.length).toBeGreaterThan(0);
+
+    const categorySelect = canvas.getByLabelText("Filter by category");
+    expect(categorySelect).toBeVisible();
+    const countBefore = canvas.getByText(/\d+ of \d+ signals/).textContent;
+    await userEvent.selectOptions(categorySelect, "product");
+    const countAfter = canvas.getByText(/\d+ of \d+ signals/).textContent;
+    expect(countAfter).toBeDefined();
+    expect(categorySelect).toHaveValue("product");
+    expect(countAfter).not.toBe(countBefore);
+
+    const fromDate = canvas.getByLabelText("From date");
+    const toDate = canvas.getByLabelText("To date");
+    expect(fromDate).toBeVisible();
+    expect(toDate).toBeVisible();
+    expect(fromDate).toHaveAttribute("type", "date");
+    expect(toDate).toHaveAttribute("type", "date");
+  },
+};
 
 export const TierOneFilter: Story = {
   args: {
@@ -57,5 +80,11 @@ export const TierTwoFilter: Story = {
 export const Empty: Story = {
   args: {
     rows: [],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const emptyMessages = canvas.getAllByText("No signals match the current filters.");
+    expect(emptyMessages.length).toBeGreaterThan(0);
+    expect(emptyMessages[0]).toBeVisible();
   },
 };

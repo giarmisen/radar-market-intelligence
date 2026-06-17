@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
 import { StatGrid } from "@/components/StatGrid";
 
 const meta = {
@@ -30,6 +31,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+async function verifyStats(canvasElement: HTMLElement, expectedLabels: string[]) {
+  const canvas = within(canvasElement);
+  const values = canvasElement.querySelectorAll(".radar-stat-value");
+  expect(values.length).toBe(expectedLabels.length);
+
+  values.forEach((valueEl) => {
+    expect(valueEl).toBeVisible();
+    const numericValue = Number(valueEl.textContent);
+    expect(numericValue).toBeGreaterThan(0);
+  });
+
+  for (const label of expectedLabels) {
+    const labelEl = canvas.getByText(label);
+    expect(labelEl).toBeVisible();
+    expect(labelEl).toHaveClass("radar-stat-label");
+  }
+}
+
 export const Default: Story = {
   args: {
     stats: [
@@ -37,6 +56,13 @@ export const Default: Story = {
       { value: 18, label: "Tier 1 actors" },
       { value: 6, label: "Critical updates" },
     ],
+  },
+  play: async ({ canvasElement }) => {
+    await verifyStats(canvasElement, [
+      "Signals this week",
+      "Tier 1 actors",
+      "Critical updates",
+    ]);
   },
 };
 
@@ -49,6 +75,14 @@ export const MarketPulse: Story = {
       { value: 3, label: "Worth watching" },
     ],
   },
+  play: async ({ canvasElement }) => {
+    await verifyStats(canvasElement, [
+      "Actors with signals",
+      "Pulse signals",
+      "Upcoming events",
+      "Worth watching",
+    ]);
+  },
 };
 
 export const FourColumns: Story = {
@@ -59,5 +93,13 @@ export const FourColumns: Story = {
       { value: 7, label: "Categories" },
       { value: 3, label: "Worth watching" },
     ],
+  },
+  play: async ({ canvasElement }) => {
+    await verifyStats(canvasElement, [
+      "Signals in period",
+      "Active actors",
+      "Categories",
+      "Worth watching",
+    ]);
   },
 };

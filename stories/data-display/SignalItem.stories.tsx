@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { SignalItem } from "@/components/SignalItem";
 import {
   languageServicesSignal,
@@ -45,7 +46,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const signal = canvas.getByRole("article");
+    expect(signal).toHaveClass("radar-signal");
+
+    const sourceLink = canvas.getByRole("link");
+    expect(sourceLink).toHaveClass("radar-signal-source");
+    await userEvent.hover(sourceLink);
+    expect(sourceLink).toBeVisible();
+
+    const soWhat = canvas.getByText(/^→/);
+    expect(soWhat).toBeVisible();
+    expect(soWhat).toHaveClass("radar-signal-sowhat");
+  },
+};
 
 export const Score3: Story = {
   args: {
@@ -71,6 +87,15 @@ export const WithNewBadge: Story = {
       source_url: "https://slator.com/phrase-mt-orchestration/",
       actor_names: ["Phrase (Memsource)"],
     }),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBadge = canvas.getByText("New");
+    expect(newBadge).toBeVisible();
+    expect(newBadge).toHaveClass("radar-new-badge");
+
+    const soWhat = canvas.getByText(/^→/);
+    expect(soWhat.textContent?.trim().startsWith("→")).toBe(true);
   },
 };
 
@@ -102,7 +127,19 @@ export const WorthWatchingVariant: Story = {
       actor_names: ["Meta AI (NLLB)"],
     }),
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const card = canvas.getByRole("article");
+    expect(card).toHaveClass("radar-worth-watching-card");
+    await expectHoverableCard(card);
+  },
 };
+
+async function expectHoverableCard(card: HTMLElement) {
+  expect(getComputedStyle(card).transitionProperty).not.toBe("none");
+  await userEvent.hover(card);
+  expect(card).toBeVisible();
+}
 
 export const AllCategories: Story = {
   render: () => (

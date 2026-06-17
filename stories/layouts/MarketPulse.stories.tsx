@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
 import { MarketPulsePage } from "@/components/MarketPulsePage";
 import { marketPulseData } from "../fixtures";
 
@@ -35,7 +36,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvasElement.querySelector(".radar-upcoming")).toBeVisible();
+
+    const actorCards = canvasElement.querySelectorAll(".radar-card");
+    expect(actorCards.length).toBeGreaterThan(0);
+
+    expect(canvasElement.querySelector("#worth-watching")).toBeVisible();
+    expect(
+      canvas.getByRole("heading", { name: /Worth Watching — Signals from beyond the radar/ }),
+    ).toBeVisible();
+  },
+};
 
 export const NoProposals: Story = {
   args: {

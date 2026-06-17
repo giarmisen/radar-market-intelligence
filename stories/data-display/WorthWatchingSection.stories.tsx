@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { WorthWatchingSection } from "@/components/WorthWatchingSection";
 import { WORTH_WATCHING_SIGNALS } from "../fixtures";
+
+async function expectHoverableCard(card: HTMLElement) {
+  expect(getComputedStyle(card).transitionProperty).not.toBe("none");
+  await userEvent.hover(card);
+  expect(card).toBeVisible();
+}
 
 const meta = {
   title: "4. Data Display/WorthWatchingSection",
@@ -40,16 +47,35 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getByText(/Worth Watching/)).toBeVisible();
+
+    const cards = canvas.getAllByRole("article");
+    expect(cards.length).toBeGreaterThan(0);
+
+    const card = cards[0];
+    await expectHoverableCard(card);
+  },
+};
 
 export const TwoItems: Story = {
   args: {
     signals: WORTH_WATCHING_SIGNALS.slice(0, 2),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getAllByRole("article")).toHaveLength(2);
   },
 };
 
 export const SingleItem: Story = {
   args: {
     signals: WORTH_WATCHING_SIGNALS.slice(0, 1),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getAllByRole("article")).toHaveLength(1);
   },
 };
