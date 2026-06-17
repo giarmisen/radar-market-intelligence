@@ -13,7 +13,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook",
-    "chromatic": "npx chromatic --project-token=chpt_87b256c0c380bd1"
+    "chromatic": "node scripts/chromatic.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.1",
