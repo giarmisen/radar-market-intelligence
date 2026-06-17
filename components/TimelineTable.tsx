@@ -187,6 +187,7 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
         <select
           className="radar-filter-control"
           value={filters.category}
+          aria-label="Filter by category"
           onChange={(e) =>
             setFilters((f) => ({ ...f, category: e.target.value }))
           }
@@ -201,6 +202,7 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
         <select
           className="radar-filter-control"
           value={filters.actor}
+          aria-label="Filter by actor"
           onChange={(e) => setFilters((f) => ({ ...f, actor: e.target.value }))}
         >
           <option value="">All actors</option>
@@ -213,6 +215,7 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
         <select
           className="radar-filter-control"
           value={filters.relevance}
+          aria-label="Filter by relevance"
           onChange={(e) =>
             setFilters((f) => ({ ...f, relevance: e.target.value }))
           }
