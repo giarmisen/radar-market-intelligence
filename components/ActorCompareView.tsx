@@ -146,7 +146,7 @@ export function ActorCompareView({ options, profiles }: ActorCompareViewProps) {
       </div>
 
       <section className="radar-card radar-compare-picker">
-        <h3 className="radar-section-label">Select actors (2–3)</h3>
+        <h3 className="radar-section-label text-section-label">Select actors (2–3)</h3>
         <p className="radar-compare-hint">
           Choose Tier 1 actors with profiles to compare side by side.
         </p>

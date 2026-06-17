@@ -82,8 +82,8 @@ export function Sidebar({
             {item.dividerBefore ? <div className="radar-sidebar-divider" /> : null}
             <Link
               href={item.href}
-              className={`radar-sidebar-item${
-                active === item.id ? " radar-sidebar-item-active" : ""
+              className={`radar-sidebar-item text-nav-item${
+                active === item.id ? " radar-sidebar-item-active text-nav-item-active" : ""
               }`}
               aria-current={active === item.id ? "page" : undefined}
               title={collapsed ? item.label : undefined}

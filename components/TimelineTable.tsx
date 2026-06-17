@@ -5,12 +5,12 @@ import type { TimelineRow } from "@/lib/timeline";
 import type { TierFilterValue } from "./FilterPills";
 import type { SignalCategory } from "@/lib/types";
 import {
-  categoryClassName,
   formatCategory,
   formatDate,
   formatLifecycle,
 } from "@/lib/format";
-import { SignalNewBadge } from "./SignalItem";
+import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { SignalBadge } from "@/components/ui/SignalBadge";
 
 interface TimelineTableProps {
   rows: TimelineRow[];
@@ -47,13 +47,13 @@ function TimelineCard({ row }: { row: TimelineRow }) {
   return (
     <article className="timeline-card">
       <div className="timeline-card-content">
-        <p className="timeline-card-summary">{row.summary}</p>
+        <p className="text-signal-body timeline-card-summary">{row.summary}</p>
         {row.so_what ? (
-          <p className="radar-signal-sowhat">→ {row.so_what}</p>
+          <p className="text-signal-sowhat radar-signal-sowhat">→ {row.so_what}</p>
         ) : null}
         <a
           href={row.source_url}
-          className="radar-signal-source timeline-card-source"
+          className="text-source-url radar-signal-source timeline-card-source"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -61,16 +61,14 @@ function TimelineCard({ row }: { row: TimelineRow }) {
         </a>
       </div>
       <div className="timeline-card-meta">
-        <span className="timeline-card-pill">{formatDate(row.event_date)}</span>
-        <SignalNewBadge capturedAt={row.captured_at} />
+        <span className="timeline-card-pill text-date">{formatDate(row.event_date)}</span>
+        <SignalBadge capturedAt={row.captured_at} />
         {row.lifecycle ? (
           <span className="timeline-card-pill timeline-card-pill-lifecycle">
             {formatLifecycle(row.lifecycle)}
           </span>
         ) : null}
-        <span className={`timeline-card-pill ${categoryClassName(row.category)}`}>
-          {formatCategory(row.category)}
-        </span>
+        <CategoryBadge category={row.category} className="timeline-card-pill" />
         <span className="timeline-card-pill">{actorLabel}</span>
         <span className={`radar-score-badge radar-score-${row.relevance}`}>
           {row.relevance}
@@ -309,10 +307,10 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
                 <tr key={row.id}>
                   <td className="radar-table-col-date">
                     <div className="radar-table-badge-row">
-                      <span className="radar-signal-date">
+                      <span className="text-date radar-signal-date">
                         {formatDate(row.event_date)}
                       </span>
-                      <SignalNewBadge capturedAt={row.captured_at} />
+                      <SignalBadge capturedAt={row.captured_at} />
                       {row.lifecycle ? (
                         <span className="radar-lifecycle-tag">
                           {formatLifecycle(row.lifecycle)}
@@ -321,9 +319,7 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
                     </div>
                   </td>
                   <td className="radar-table-col-category">
-                    <span className={categoryClassName(row.category)}>
-                      {formatCategory(row.category)}
-                    </span>
+                    <CategoryBadge category={row.category} />
                   </td>
                   <td className="radar-table-col-actors">
                     {row.actors.length > 0
@@ -349,15 +345,15 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
                     </span>
                   </td>
                   <td className="radar-table-col-summary">
-                    <div className="radar-signal-text">{row.summary}</div>
+                    <div className="text-signal-body radar-signal-text">{row.summary}</div>
                     {row.so_what ? (
-                      <p className="radar-signal-sowhat">→ {row.so_what}</p>
+                      <p className="text-signal-sowhat radar-signal-sowhat">→ {row.so_what}</p>
                     ) : null}
                   </td>
                   <td className="radar-table-col-source">
                     <a
                       href={row.source_url}
-                      className="radar-table-link radar-table-source-link"
+                      className="text-source-url radar-table-link radar-table-source-link"
                       target="_blank"
                       rel="noopener noreferrer"
                       title={row.source_url}

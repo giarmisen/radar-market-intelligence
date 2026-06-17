@@ -51,7 +51,7 @@ function AnalysisReport({ report }: { report: ActorAnalysisResult }) {
       </div>
 
       <section className="radar-card radar-analysis-section">
-        <h3 className="radar-section-label">SWOT analysis</h3>
+        <h3 className="radar-section-label text-section-label">SWOT analysis</h3>
         <div className="radar-analysis-swot-grid">
           <SwotCard title="Strengths" items={report.swot.strengths} tone="strength" />
           <SwotCard title="Weaknesses" items={report.swot.weaknesses} tone="weakness" />
@@ -65,7 +65,7 @@ function AnalysisReport({ report }: { report: ActorAnalysisResult }) {
       </section>
 
       <section className="radar-card radar-analysis-section">
-        <h3 className="radar-section-label">AI strategy assessment</h3>
+        <h3 className="radar-section-label text-section-label">AI strategy assessment</h3>
         {report.ai_strategy_assessment.split(/\n\n+/).map((paragraph, index) => (
           <p key={index} className="radar-analysis-prose">
             {paragraph}
@@ -74,7 +74,7 @@ function AnalysisReport({ report }: { report: ActorAnalysisResult }) {
       </section>
 
       <section className="radar-card radar-analysis-section">
-        <h3 className="radar-section-label">Product map</h3>
+        <h3 className="radar-section-label text-section-label">Product map</h3>
         {report.product_map.length === 0 ? (
           <p className="radar-profile-empty">—</p>
         ) : (
@@ -91,12 +91,12 @@ function AnalysisReport({ report }: { report: ActorAnalysisResult }) {
 
       <div className="radar-analysis-grid">
         <section className="radar-card radar-analysis-section">
-          <h3 className="radar-section-label">Market opportunities</h3>
+          <h3 className="radar-section-label text-section-label">Market opportunities</h3>
           <BulletList items={report.market_opportunities} />
         </section>
 
         <section className="radar-card radar-analysis-section">
-          <h3 className="radar-section-label">Key risks</h3>
+          <h3 className="radar-section-label text-section-label">Key risks</h3>
           <BulletList items={report.key_risks} />
         </section>
       </div>
@@ -144,7 +144,7 @@ export function ActorAnalysisSection({
   return (
     <section className="radar-analysis-block">
       <div className="radar-profile-signals-header">
-        <h3 className="radar-section-label">Strategic analysis</h3>
+        <h3 className="radar-section-label text-section-label">Strategic analysis</h3>
         <div className="radar-analysis-actions">
           <button
             type="button"

@@ -27,7 +27,7 @@ export function ActorsRegistry({ data }: ActorsRegistryProps) {
       {data.tiers.map((tier) => (
         <section key={tier.tier} className="radar-tier-section">
           <div className="radar-actors-section-header">
-            <h2 className="radar-section-label">{tier.label}</h2>
+            <h2 className="radar-section-label text-section-label">{tier.label}</h2>
             {tier.tier === 1 ? (
               <Link href="/actors/compare" className="radar-profile-compare-link">
                 Compare actors →
@@ -52,7 +52,7 @@ export function ActorsRegistry({ data }: ActorsRegistryProps) {
                     <td>
                       <Link
                         href={actorProfileHref(actor.name)}
-                        className="radar-card-name radar-table-actor-link"
+                        className="text-actor-name radar-card-name radar-table-actor-link"
                       >
                         {actor.name}
                       </Link>
@@ -86,13 +86,13 @@ export function ActorsRegistry({ data }: ActorsRegistryProps) {
                           </span>
                           <Link
                             href="/proposals"
-                            className="radar-table-link radar-nowrap"
+                            className="text-source-url radar-table-link radar-nowrap"
                           >
                             Review →
                           </Link>
                         </div>
                       ) : (
-                        <span className="radar-signal-date">—</span>
+                        <span className="text-date radar-signal-date">—</span>
                       )}
                     </td>
                   </tr>

@@ -1,27 +1,11 @@
 import type { LivingDocumentSignal } from "@/lib/living-document";
-import {
-  categoryClassName,
-  formatCategory,
-  formatDate,
-  formatLifecycle,
-  isNewSignal,
-} from "@/lib/format";
+import { formatDate, formatLifecycle } from "@/lib/format";
+import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { SignalBadge } from "@/components/ui/SignalBadge";
 
 interface SignalItemProps {
   signal: LivingDocumentSignal;
   variant?: "default" | "worth-watching";
-}
-
-export function SignalNewBadge({
-  capturedAt,
-}: {
-  capturedAt?: string | null;
-}) {
-  if (!isNewSignal(capturedAt)) {
-    return null;
-  }
-
-  return <span className="radar-new-badge">New</span>;
 }
 
 export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
@@ -30,13 +14,11 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
       <article className="radar-worth-watching-card">
         <div className="radar-signal-header">
           <div>
-            <span className="radar-signal-date">
+            <span className="text-date radar-signal-date">
               {formatDate(signal.event_date)}
             </span>
-            <SignalNewBadge capturedAt={signal.captured_at} />
-            <span className={categoryClassName(signal.category)}>
-              {formatCategory(signal.category)}
-            </span>
+            <SignalBadge capturedAt={signal.captured_at} />
+            <CategoryBadge category={signal.category} />
           </div>
           <span
             className={`radar-score-badge radar-score-${signal.relevance}`}
@@ -44,13 +26,13 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
             {signal.relevance}
           </span>
         </div>
-        <p className="radar-signal-text">{signal.summary}</p>
+        <p className="text-signal-body radar-signal-text">{signal.summary}</p>
         {signal.so_what ? (
-          <p className="radar-signal-sowhat">→ {signal.so_what}</p>
+          <p className="text-signal-sowhat radar-signal-sowhat">→ {signal.so_what}</p>
         ) : null}
         <a
           href={signal.source_url}
-          className="radar-signal-source"
+          className="text-source-url radar-signal-source"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -72,13 +54,11 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
     <article className={`radar-signal ${scoreClass}`}>
       <div className="radar-signal-header">
         <div>
-          <span className="radar-signal-date">
+          <span className="text-date radar-signal-date">
             {formatDate(signal.event_date)}
           </span>
-          <SignalNewBadge capturedAt={signal.captured_at} />
-          <span className={categoryClassName(signal.category)}>
-            {formatCategory(signal.category)}
-          </span>
+          <SignalBadge capturedAt={signal.captured_at} />
+          <CategoryBadge category={signal.category} />
           {signal.lifecycle ? (
             <span className="radar-lifecycle-tag">
               {formatLifecycle(signal.lifecycle)}
@@ -93,13 +73,13 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
           </span>
         </div>
       </div>
-      <p className="radar-signal-text">{signal.summary}</p>
+      <p className="text-signal-body radar-signal-text">{signal.summary}</p>
       {signal.so_what ? (
-        <p className="radar-signal-sowhat">→ {signal.so_what}</p>
+        <p className="text-signal-sowhat radar-signal-sowhat">→ {signal.so_what}</p>
       ) : null}
       <a
         href={signal.source_url}
-        className="radar-signal-source"
+        className="text-source-url radar-signal-source"
         target="_blank"
         rel="noopener noreferrer"
       >

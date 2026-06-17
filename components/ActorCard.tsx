@@ -15,8 +15,8 @@ export function ActorCard({ actor }: ActorCardProps) {
   return (
     <article className="radar-card">
       <header className="radar-card-header">
-        <h2 className="radar-card-name">{actor.name}</h2>
-        <div className="radar-card-meta">
+        <h2 className="text-actor-name radar-card-name">{actor.name}</h2>
+        <div className="text-actor-meta radar-card-meta">
           <span
             className={`radar-tier-badge${actor.tier === 2 ? " radar-tier-badge-2" : ""}`}
           >

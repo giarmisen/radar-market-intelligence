@@ -38,7 +38,7 @@ function DotGrid({ opacity = 0.13 }: { opacity?: number }) {
     <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity, pointerEvents: 'none' }} xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="#94A3B8" />
+          <circle cx="1" cy="1" r="1" fill="var(--color-text-dim)" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#dots)" />
@@ -53,18 +53,18 @@ function BrowserFrame({ src, url, alt }: { src: string; url: string; alt: string
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57', display: 'inline-block' }} />
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FEBC2E', display: 'inline-block' }} />
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840', display: 'inline-block' }} />
-        <span style={{ marginLeft: 16, fontSize: 12, color: '#94A3B8' }}>{url}</span>
+        <span style={{ marginLeft: 16, fontSize: 12, color: 'var(--color-text-dim)' }}>{url}</span>
       </div>
       <Image src={src} alt={alt} width={1400} height={900} style={{ width: '100%', height: 'auto', display: 'block' }} />
     </div>
   );
 }
 
-const FONT = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+const FONT = 'var(--font-primary), -apple-system, BlinkMacSystemFont, sans-serif';
 
 export default function LandingPage() {
   return (
-    <main style={{ fontFamily: FONT, color: '#0F172A', background: '#fff', overflowX: 'hidden' }}>
+    <main style={{ fontFamily: FONT, color: 'var(--color-text-primary)', background: 'var(--color-bg-primary)', overflowX: 'hidden' }}>
       <Hero />
       <StickyStack />
       <WhoItsFor />
@@ -79,37 +79,37 @@ export default function LandingPage() {
 // ---------------------------------------------------------------------------
 function Hero() {
   return (
-    <section style={{ position: 'relative', background: '#0F172A', overflow: 'hidden' }}>
+    <section style={{ position: 'relative', background: 'var(--color-sidebar-from)', overflow: 'hidden' }}>
       <DotGrid opacity={0.12} />
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 900, margin: '0 auto', padding: '140px 24px 0', textAlign: 'center' }}>
         <Reveal>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: '#64748B', marginBottom: 32 }}>
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#94A3B8' }} />
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 'var(--font-weight-semibold)', letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 32 }}>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--color-text-dim)' }} />
             Market Radar
           </span>
         </Reveal>
 
         <Reveal delay={60}>
-          <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#F1F5F9', margin: '0 0 6px' }}>
+          <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 'var(--font-weight-semibold)', lineHeight: 1.0, letterSpacing: '-.04em', color: '#F1F5F9', margin: '0 0 6px' }}>
             Your industry is moving.
           </h1>
-          <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-.04em', color: '#64748B', margin: '0 0 36px' }}>
+          <h1 style={{ fontSize: 'clamp(52px, 9vw, 96px)', fontWeight: 'var(--font-weight-semibold)', lineHeight: 1.0, letterSpacing: '-.04em', color: 'var(--color-text-muted)', margin: '0 0 36px' }}>
             Know where, and why.
           </h1>
         </Reveal>
 
         <Reveal delay={140}>
-          <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: '#64748B', maxWidth: 520, margin: '0 auto 52px', fontWeight: 400 }}>
+          <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: 'var(--color-text-muted)', maxWidth: 520, margin: '0 auto 52px', fontWeight: 'var(--font-weight-regular)' }}>
             Market Radar tracks every player in your field, reads what they publish and announce, puts it in context with AI, and tells you what is worth your attention today.
           </p>
         </Reveal>
 
         <Reveal delay={200}>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 80 }}>
-            <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: '#F8FAFC', color: '#0F172A', borderRadius: 10, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
+            <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: '#F8FAFC', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-card)', fontSize: 16, fontWeight: 'var(--font-weight-semibold)', textDecoration: 'none' }}>
               Live demo (Language Services example)
             </a>
-            <a href="#cta" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: '#64748B', borderRadius: 10, fontSize: 16, fontWeight: 500, textDecoration: 'none' }}>
+            <a href="#cta" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: 'var(--color-text-muted)', borderRadius: 'var(--radius-card)', fontSize: 16, fontWeight: 'var(--font-weight-medium)', textDecoration: 'none' }}>
               Set this up for your market
             </a>
           </div>
@@ -118,11 +118,11 @@ function Hero() {
         {/* Browser frame hero */}
         <Reveal delay={280}>
           <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', borderBottom: 'none', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.6)' }}>
-            <div style={{ background: '#1E293B', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: 'var(--color-sidebar-to)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57', display: 'inline-block', flexShrink: 0 }} />
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FEBC2E', display: 'inline-block', flexShrink: 0 }} />
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840', display: 'inline-block', flexShrink: 0 }} />
-              <div style={{ marginLeft: 16, flex: 1, background: '#0F172A', borderRadius: 6, padding: '4px 12px', fontSize: 12, color: '#64748B', textAlign: 'left' }}>
+              <div style={{ marginLeft: 16, flex: 1, background: 'var(--color-sidebar-from)', borderRadius: 'var(--radius-sidebar-item)', padding: '4px 12px', fontSize: 12, color: 'var(--color-text-muted)', textAlign: 'left' }}>
                 radar-market.vercel.app
               </div>
             </div>
@@ -160,7 +160,7 @@ const FEATURES = [
   },
   {
     id: 'actors',
-    bg: '#ffffff',
+    bg: 'var(--color-bg-primary)',
     dark: false,
     eyebrow: 'Player profiles',
     heading: 'Every player in your field, fully mapped.',
@@ -200,24 +200,24 @@ function StickyStack() {
         >
           <div style={{ maxWidth: 980, margin: '0 auto', width: '100%' }}>
             <Reveal>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: f.dark ? '#64748B' : '#94A3B8', display: 'block', marginBottom: 20 }}>
+              <span style={{ fontSize: 12, fontWeight: 'var(--font-weight-semibold)', letterSpacing: '.1em', textTransform: 'uppercase', color: f.dark ? 'var(--color-text-muted)' : 'var(--color-text-dim)', display: 'block', marginBottom: 20 }}>
                 {f.eyebrow}
               </span>
             </Reveal>
             <Reveal delay={60}>
-              <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 600, letterSpacing: '-.03em', lineHeight: 1.08, margin: '0 0 24px', maxWidth: 580, color: f.dark ? '#F1F5F9' : '#0F172A' }}>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 'var(--font-weight-semibold)', letterSpacing: '-.03em', lineHeight: 1.08, margin: '0 0 24px', maxWidth: 580, color: f.dark ? '#F1F5F9' : 'var(--color-text-primary)' }}>
                 {f.heading}
               </h2>
             </Reveal>
             <Reveal delay={100}>
-              <p style={{ fontSize: 18, lineHeight: 1.7, color: f.dark ? '#64748B' : '#64748B', maxWidth: 540, margin: '0 0 48px' }}>
+              <p style={{ fontSize: 18, lineHeight: 1.7, color: f.dark ? 'var(--color-text-muted)' : 'var(--color-text-muted)', maxWidth: 540, margin: '0 0 48px' }}>
                 {f.body}
               </p>
             </Reveal>
 
             {f.aside === 'problem-and-pipeline' && (
               <div style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748B', marginBottom: 40, display: 'block' }}>
+                <span style={{ fontSize: 12, fontWeight: 'var(--font-weight-semibold)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 40, display: 'block' }}>
                   A system that runs so you don&apos;t have to.
                 </span>
                 <div style={{ position: 'relative' }}>
@@ -244,22 +244,22 @@ function StickyStack() {
                               width: 32,
                               height: 32,
                               borderRadius: '50%',
-                              background: '#0F172A',
+                              background: 'var(--color-sidebar-from)',
                               border: '1px solid rgba(255,255,255,0.15)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               fontSize: 12,
-                              fontWeight: 600,
-                              color: '#64748B',
+                              fontWeight: 'var(--font-weight-semibold)',
+                              color: 'var(--color-text-muted)',
                             }}
                           >
                             {step.n}
                           </div>
-                          <div style={{ marginTop: 24, fontSize: 22, fontWeight: 600, color: '#F1F5F9', letterSpacing: '-0.02em', marginBottom: 12 }}>
+                          <div style={{ marginTop: 24, fontSize: 22, fontWeight: 'var(--font-weight-semibold)', color: '#F1F5F9', letterSpacing: '-0.02em', marginBottom: 12 }}>
                             {step.title}
                           </div>
-                          <p style={{ fontSize: 15, lineHeight: 1.65, color: '#64748B', margin: 0 }}>
+                          <p style={{ fontSize: 15, lineHeight: 1.65, color: 'var(--color-text-muted)', margin: 0 }}>
                             {step.body}
                           </p>
                         </div>
@@ -303,21 +303,21 @@ const AUDIENCE = [
 
 function WhoItsFor() {
   return (
-    <section style={{ background: '#0F172A', position: 'relative', overflow: 'hidden', padding: '100px 24px', borderRadius: '20px 20px 0 0', zIndex: 60, boxShadow: '0 -8px 48px rgba(0,0,0,0.10)' }}>
+    <section style={{ background: 'var(--color-sidebar-from)', position: 'relative', overflow: 'hidden', padding: '100px 24px', borderRadius: '20px 20px 0 0', zIndex: 60, boxShadow: '0 -8px 48px rgba(0,0,0,0.10)' }}>
       <DotGrid opacity={0.09} />
       <div style={{ maxWidth: 980, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <Reveal>
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: 56 }}>
+          <span style={{ fontSize: 12, fontWeight: 'var(--font-weight-semibold)', letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: 56 }}>
             Who it&rsquo;s for
           </span>
         </Reveal>
         {AUDIENCE.map((a, i) => (
           <Reveal key={a.role} delay={i * 70}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(16px, 4vw, 64px)', padding: '28px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: 'clamp(20px, 2.8vw, 30px)', fontWeight: 600, letterSpacing: '-.025em', color: '#F1F5F9', minWidth: 'clamp(180px, 24vw, 280px)', flexShrink: 0 }}>
+              <span style={{ fontSize: 'clamp(20px, 2.8vw, 30px)', fontWeight: 'var(--font-weight-semibold)', letterSpacing: '-.025em', color: '#F1F5F9', minWidth: 'clamp(180px, 24vw, 280px)', flexShrink: 0 }}>
                 {a.role}
               </span>
-              <span style={{ fontSize: 17, color: '#64748B', lineHeight: 1.55 }}>{a.desc}</span>
+              <span style={{ fontSize: 17, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>{a.desc}</span>
             </div>
           </Reveal>
         ))}
@@ -331,30 +331,30 @@ function WhoItsFor() {
 // ---------------------------------------------------------------------------
 function ClosingCTA() {
   return (
-    <section id="cta" style={{ padding: '120px 24px', textAlign: 'center', background: '#fff' }}>
+    <section id="cta" style={{ padding: '120px 24px', textAlign: 'center', background: 'var(--color-bg-primary)' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <Reveal>
-          <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 600, letterSpacing: '-.03em', lineHeight: 1.08, marginBottom: 20 }}>
+          <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 'var(--font-weight-semibold)', letterSpacing: '-.03em', lineHeight: 1.08, marginBottom: 20 }}>
             This is one example. Your market is next.
           </h2>
         </Reveal>
         <Reveal delay={80}>
-          <p style={{ fontSize: 18, color: '#64748B', lineHeight: 1.65, marginBottom: 44 }}>
+          <p style={{ fontSize: 18, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 44 }}>
             The demo runs on Language Services and Language AI, configured as a working example of what the system can do. Market Radar can be set up for any industry with enough public activity: fintech, healthtech, SaaS, defense, and beyond.{' '}
             <span>Interested?</span>
             <br />
-            <a href="mailto:armisen.gi@gmail.com" style={{ color: '#0F172A', fontWeight: 600, textDecoration: 'none' }}>
+            <a href="mailto:armisen.gi@gmail.com" style={{ color: 'var(--color-text-primary)', fontWeight: 'var(--font-weight-semibold)', textDecoration: 'none' }}>
               Get in touch
             </a>
           </p>
         </Reveal>
         <Reveal delay={160}>
-          <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 30px', background: '#0F172A', color: '#fff', borderRadius: 10, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
+          <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 30px', background: 'var(--color-sidebar-from)', color: 'var(--color-filter-active-text)', borderRadius: 'var(--radius-card)', fontSize: 16, fontWeight: 'var(--font-weight-semibold)', textDecoration: 'none' }}>
             Open the demo →
           </a>
-          <p style={{ fontSize: 14, color: '#94A3B8', lineHeight: 1.65, marginTop: 40, marginBottom: 0 }}>
+          <p style={{ fontSize: 14, color: 'var(--color-text-dim)', lineHeight: 1.65, marginTop: 40, marginBottom: 0 }}>
             Built by{' '}
-            <a href="https://linkedin.com/in/giarmisen" target="_blank" rel="noreferrer" style={{ color: '#64748B', fontWeight: 600, textDecoration: 'none' }}>
+            <a href="https://linkedin.com/in/giarmisen" target="_blank" rel="noreferrer" style={{ color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-semibold)', textDecoration: 'none' }}>
               Georgina Armisen
             </a>
             , Senior Product Designer.
@@ -370,9 +370,9 @@ function ClosingCTA() {
 // ---------------------------------------------------------------------------
 function Footer() {
   return (
-    <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 32px', fontSize: 13, color: '#94A3B8', borderTop: '1px solid rgba(0,0,0,0.07)', flexWrap: 'wrap', gap: 12, background: '#fff' }}>
-      <span style={{ fontWeight: 600, color: '#0F172A', letterSpacing: '-.01em' }}>Radar.</span>
-      <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ color: '#64748B', textDecoration: 'none' }}>
+    <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '28px 32px', fontSize: 13, color: 'var(--color-text-dim)', borderTop: '1px solid var(--color-card-border)', flexWrap: 'wrap', gap: 12, background: 'var(--color-bg-primary)' }}>
+      <span style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', letterSpacing: '-.01em' }}>Radar.</span>
+      <a href="https://radar-market.vercel.app" target="_blank" rel="noreferrer" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
         radar-market.vercel.app →
       </a>
     </footer>

@@ -73,7 +73,7 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
           ? filteredTiers.map((tier) => (
               <section key={tier.tier} className="radar-tier-section">
                 {tierFilter === "all" ? (
-                  <h2 className="radar-section-label">{tier.label}</h2>
+                  <h2 className="radar-section-label text-section-label">{tier.label}</h2>
                 ) : null}
                 <div className="radar-cards">
                   {tier.actors.map((actor) => (

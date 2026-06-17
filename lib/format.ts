@@ -22,10 +22,6 @@ export function formatCategory(category: SignalCategory): string {
   return CATEGORY_LABELS[category] ?? category;
 }
 
-export function categoryClassName(category: SignalCategory): string {
-  return `radar-category-badge cat-${category}`;
-}
-
 export function formatRole(role: ActorRole): string {
   return ROLE_LABELS[role] ?? role;
 }

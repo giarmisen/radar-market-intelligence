@@ -12,8 +12,8 @@ export function StatGrid({ stats }: StatGridProps) {
     <div className="radar-stat-grid">
       {stats.map((stat) => (
         <div key={stat.label} className="radar-stat-card">
-          <span className="radar-stat-value">{stat.value}</span>
-          <span className="radar-stat-label">{stat.label}</span>
+          <span className="text-stat-number radar-stat-value">{stat.value}</span>
+          <span className="text-stat-label radar-stat-label">{stat.label}</span>
         </div>
       ))}
     </div>

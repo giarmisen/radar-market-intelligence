@@ -11,7 +11,7 @@ export function PageTopbar({ title, subtitle, meta, filters }: PageTopbarProps) 
   return (
     <header className="radar-topbar">
       <div className="radar-topbar-header">
-        <h1 className="radar-page-title">{title}</h1>
+        <h1 className="text-page-title radar-page-title">{title}</h1>
         {meta ? <span className="radar-topbar-meta">{meta}</span> : null}
       </div>
       <p className="radar-page-subtitle">{subtitle}</p>

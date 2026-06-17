@@ -46,7 +46,7 @@ export function ActorProfileDetail({ data }: ActorProfileDetailProps) {
         <div className="radar-profile-hero-top">
           <div>
             <h2 className="radar-profile-name">{actor.name}</h2>
-            <p className="radar-card-meta">
+            <p className="text-actor-meta radar-card-meta">
               {formatRole(actor.role)} · Tier {actor.tier}
               {actor.geography?.length ? ` · ${actor.geography.join(", ")}` : ""}
               {profile?.hq ? ` · HQ ${profile.hq}` : ""}
@@ -95,32 +95,32 @@ export function ActorProfileDetail({ data }: ActorProfileDetailProps) {
       {profile ? (
         <div className="radar-profile-grid">
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">Business model</h3>
+            <h3 className="radar-section-label text-section-label">Business model</h3>
             <p className="radar-profile-text">{profile.business_model}</p>
           </section>
 
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">AI strategy</h3>
+            <h3 className="radar-section-label text-section-label">AI strategy</h3>
             <p className="radar-profile-text">{profile.ai_strategy}</p>
           </section>
 
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">Recent moves</h3>
+            <h3 className="radar-section-label text-section-label">Recent moves</h3>
             <p className="radar-profile-text">{profile.recent_moves}</p>
           </section>
 
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">Core products</h3>
+            <h3 className="radar-section-label text-section-label">Core products</h3>
             <TagList items={profile.core_products} />
           </section>
 
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">Core technology</h3>
+            <h3 className="radar-section-label text-section-label">Core technology</h3>
             <TagList items={profile.core_technology} />
           </section>
 
           <section className="radar-card radar-profile-section">
-            <h3 className="radar-section-label">Key markets</h3>
+            <h3 className="radar-section-label text-section-label">Key markets</h3>
             <TagList items={profile.key_markets} />
           </section>
         </div>
@@ -133,9 +133,9 @@ export function ActorProfileDetail({ data }: ActorProfileDetailProps) {
 
       <section className="radar-profile-signals">
         <div className="radar-profile-signals-header">
-          <h3 className="radar-section-label">Signals</h3>
+          <h3 className="radar-section-label text-section-label">Signals</h3>
           {profile?.updated_at ? (
-            <span className="radar-signal-date">
+            <span className="text-date radar-signal-date">
               Profile updated {formatDate(profile.updated_at.slice(0, 10))}
             </span>
           ) : null}
