@@ -1,5 +1,6 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
+import { groupSignals, type GroupedSignalSource } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
 import type { ActorRole, SignalCategory } from "./types";
@@ -23,6 +24,8 @@ export interface TimelineRow {
   captured_at?: string | null;
   actors: TimelineActor[];
   top_tier: number;
+  grouped_sources?: GroupedSignalSource[];
+  source_count?: number;
 }
 
 export interface TimelinePageData {
@@ -106,7 +109,7 @@ export async function getTimelineData(
     throw new Error(`signals: ${error.message}`);
   }
 
-  const rows: TimelineRow[] = dedupeRowsBySourceUrl(
+  const dedupedRows = dedupeRowsBySourceUrl(
     (data ?? []).map((signal) => {
       const actors = parseTimelineActors(signal.signal_actors);
 
@@ -125,9 +128,44 @@ export async function getTimelineData(
           actors.length > 0
             ? Math.min(...actors.map((actor) => actor.tier))
             : 99,
+        actor_names: actors.map((actor) => actor.name),
       };
     }),
   );
+
+  const rows: TimelineRow[] = groupSignals(
+    dedupedRows.map((row) => ({
+      id: row.id,
+      category: row.category,
+      event_date: row.event_date,
+      relevance: row.relevance,
+      summary: row.summary,
+      source_url: row.source_url,
+      captured_at: row.captured_at,
+      actor_names: row.actor_names,
+    })),
+  ).map((grouped) => {
+    const source = dedupedRows.find((row) => row.id === grouped.id);
+    if (!source) {
+      throw new Error(`Missing timeline row for grouped signal ${grouped.id}`);
+    }
+
+    return {
+      id: grouped.id,
+      event_date: grouped.event_date,
+      category: grouped.category,
+      relevance: grouped.relevance,
+      summary: grouped.summary,
+      so_what: source.so_what,
+      source_url: grouped.source_url,
+      captured_at: grouped.captured_at,
+      lifecycle: source.lifecycle,
+      actors: source.actors,
+      top_tier: source.top_tier,
+      grouped_sources: grouped.grouped_sources,
+      source_count: grouped.source_count,
+    };
+  });
 
   const actorNames = new Set<string>();
   const categories = new Set<string>();

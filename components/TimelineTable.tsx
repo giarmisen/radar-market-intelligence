@@ -11,6 +11,7 @@ import {
 } from "@/lib/format";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SignalBadge } from "@/components/ui/SignalBadge";
+import { GroupedSources } from "./GroupedSources";
 
 interface TimelineTableProps {
   rows: TimelineRow[];
@@ -40,9 +41,30 @@ const EMPTY_FILTERS = {
 
 const PAGE_SIZE = 25;
 
+function timelineSources(row: TimelineRow) {
+  const sourceCount = row.source_count ?? row.grouped_sources?.length ?? 1;
+  const sources =
+    row.grouped_sources ??
+    (row.source_url
+      ? [
+          {
+            id: row.id,
+            source_url: row.source_url,
+            summary: row.summary,
+            relevance: row.relevance,
+            event_date: row.event_date,
+            captured_at: row.captured_at,
+          },
+        ]
+      : []);
+
+  return { sourceCount, sources };
+}
+
 function TimelineCard({ row }: { row: TimelineRow }) {
   const actorLabel =
     row.actors.length > 0 ? row.actors.map((actor) => actor.name).join(", ") : "—";
+  const { sourceCount, sources } = timelineSources(row);
 
   return (
     <article className="timeline-card">
@@ -51,18 +73,18 @@ function TimelineCard({ row }: { row: TimelineRow }) {
         {row.so_what ? (
           <p className="text-signal-sowhat radar-signal-sowhat">→ {row.so_what}</p>
         ) : null}
-        <a
-          href={row.source_url}
-          className="text-source-url radar-signal-source timeline-card-source"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {row.source_url.replace(/^https?:\/\//, "")}
-        </a>
+        <GroupedSources
+          sourceCount={sourceCount}
+          sources={sources}
+          linkClassName="text-source-url radar-signal-source timeline-card-source"
+        />
       </div>
       <div className="timeline-card-meta">
         <span className="timeline-card-pill text-date">{formatDate(row.event_date)}</span>
         <SignalBadge capturedAt={row.captured_at} />
+        {sourceCount > 1 ? (
+          <span className="radar-source-count-badge">{sourceCount} sources</span>
+        ) : null}
         {row.lifecycle ? (
           <span className="timeline-card-pill timeline-card-pill-lifecycle">
             {formatLifecycle(row.lifecycle)}
@@ -354,15 +376,23 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
                     ) : null}
                   </td>
                   <td className="radar-table-col-source">
-                    <a
-                      href={row.source_url}
-                      className="text-source-url radar-table-link radar-table-source-link"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={row.source_url}
-                    >
-                      {row.source_url.replace(/^https?:\/\//, "")}
-                    </a>
+                    {(() => {
+                      const { sourceCount, sources } = timelineSources(row);
+                      return (
+                        <div className="radar-table-source-cell">
+                          {sourceCount > 1 ? (
+                            <span className="radar-source-count-badge">
+                              {sourceCount} sources
+                            </span>
+                          ) : null}
+                          <GroupedSources
+                            sourceCount={sourceCount}
+                            sources={sources}
+                            linkClassName="text-source-url radar-table-link radar-table-source-link"
+                          />
+                        </div>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))

@@ -4,6 +4,11 @@ import {
   enrichmentContextFromConfig,
 } from "../enrichment";
 import { sourceUrlExists } from "../signal-dedupe";
+import {
+  maxExistingTemporalRelevance,
+  shouldSkipTemporalDedupe,
+  type TemporalDedupeRecord,
+} from "../signal-temporal-dedupe";
 import { getSupabase } from "../supabase";
 import type { DomainConfig, IngestRawItem } from "../types";
 import {
@@ -24,6 +29,7 @@ export interface IngestSummary {
   processed: number;
   inserted: number;
   skipped_dedupe: number;
+  skipped_temporal_dedupe: number;
   errors: string[];
   date_range: IngestDateRange;
   debug: IngestDebugInfo;
@@ -311,6 +317,8 @@ export async function runIngest(
   let processed = 0;
   let inserted = 0;
   let skipped_dedupe = 0;
+  let skipped_temporal_dedupe = 0;
+  const batchTemporalRecords: TemporalDedupeRecord[] = [];
 
   for (const item of items) {
     processed += 1;
@@ -346,6 +354,34 @@ export async function runIngest(
         continue;
       }
 
+      const actorIds = enrichment.actors
+        .map((name) => actorMap.get(name))
+        .filter((id): id is string => Boolean(id));
+
+      const existingTemporalMax = await maxExistingTemporalRelevance({
+        domainId,
+        category: enrichment.category,
+        actorIds,
+        eventDate: item.event_date,
+      });
+
+      if (
+        shouldSkipTemporalDedupe({
+          relevance: enrichment.relevance,
+          category: enrichment.category,
+          actorIds,
+          eventDate: item.event_date,
+          batchRecords: batchTemporalRecords,
+          existingMaxRelevance: existingTemporalMax,
+        })
+      ) {
+        skipped_temporal_dedupe += 1;
+        console.log(
+          `[ingest:pipeline] skipped_temporal_dedupe url=${item.url} category=${enrichment.category} relevance=${enrichment.relevance}`,
+        );
+        continue;
+      }
+
       await insertEnrichedSignal({
         domainId,
         item,
@@ -356,6 +392,15 @@ export async function runIngest(
       seenFingerprints.add(enrichment.event_fingerprint);
       seenUrls.add(item.url);
       inserted += 1;
+
+      if (actorIds.length > 0) {
+        batchTemporalRecords.push({
+          actorIds,
+          category: enrichment.category,
+          eventDate: item.event_date,
+          relevance: enrichment.relevance,
+        });
+      }
     } catch (error) {
       errors.push(
         `item (${item.url}): ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -369,6 +414,7 @@ export async function runIngest(
     processed,
     inserted,
     skipped_dedupe,
+    skipped_temporal_dedupe,
     errors,
     date_range: resolvedDateRange,
     debug,

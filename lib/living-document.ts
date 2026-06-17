@@ -1,7 +1,9 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
+import { groupSignals, type GroupedSignalSource } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
+import { unstable_noStore as noStore } from "next/cache";
 import type { ActorRole, SignalCategory } from "./types";
 
 export interface LivingDocumentSignal {
@@ -16,6 +18,8 @@ export interface LivingDocumentSignal {
   source_url: string;
   captured_at?: string | null;
   actor_names: string[];
+  grouped_sources?: GroupedSignalSource[];
+  source_count?: number;
 }
 
 export interface UpcomingEvent {
@@ -100,9 +104,16 @@ function logMarketPulseDebug(params: {
   actorCards: number;
   signalsPerActorCap: number;
   orphanSample: string[];
-  actorSignalCounts: Array<{ name: string; total: number; shown: number }>;
+  actorSignalCounts: Array<{
+    name: string;
+    total: number;
+    shown: number;
+    beforeGroup?: number;
+    merged?: number;
+  }>;
   rwsActorId: string | null;
   rwsLinkRows: number;
+  transPerfectRaw?: number;
 }): void {
   console.log("[market-pulse] SQL — signals:");
   console.log(MARKET_PULSE_SIGNALS_QUERY.replace(":domain_id", params.domainId));
@@ -137,8 +148,17 @@ function logMarketPulseDebug(params: {
     `[market-pulse] cap per actor card: ${params.signalsPerActorCap} (slice after sort by event_date desc)`,
   );
   for (const row of params.actorSignalCounts) {
+    const mergedNote =
+      row.merged && row.merged > 0 ? ` (${row.merged} merged into N-sources cards)` : "";
     console.log(
-      `[market-pulse] ${row.name}: ${row.total} linked signals, showing ${row.shown}`,
+      `[market-pulse] ${row.name}: ${row.beforeGroup ?? row.total} in bucket → ${row.total} after grouping${mergedNote} → ${row.shown} on card`,
+    );
+  }
+
+  const transPerfect = params.actorSignalCounts.find((row) => row.name === "TransPerfect");
+  if (transPerfect && params.transPerfectRaw !== undefined) {
+    console.log(
+      `[market-pulse] TransPerfect: ${params.transPerfectRaw} in query (relevance >= 2) → ${transPerfect.beforeGroup ?? transPerfect.total} in bucket → ${transPerfect.total} after grouping → ${transPerfect.shown} on card`,
     );
   }
 }
@@ -243,13 +263,18 @@ async function loadWorthWatchingSignals(
         lifecycle: signal.lifecycle as string | null,
         actor_names: [],
       })),
-  ).slice(0, WORTH_WATCHING_LIMIT);
-
-  console.log(
-    `[market-pulse] worth_watching: ${rows?.length ?? 0} flagged, ${orphanSignals.length} untracked shown`,
   );
 
-  return { data: orphanSignals, error: null };
+  const groupedOrphans = groupSignals(orphanSignals).slice(
+    0,
+    WORTH_WATCHING_LIMIT,
+  );
+
+  console.log(
+    `[market-pulse] worth_watching: ${rows?.length ?? 0} flagged, ${groupedOrphans.length} untracked shown`,
+  );
+
+  return { data: groupedOrphans, error: null };
 }
 
 function buildActorNamesBySignalId(
@@ -288,6 +313,7 @@ function buildActorNamesBySignalId(
 export async function getLivingDocumentData(
   domainSlug?: string,
 ): Promise<LivingDocumentPageData> {
+  noStore();
   const slug = resolveDomainSlug(domainSlug);
   const config = loadDomainConfig(slug);
   const domain = await getDomainMeta(slug);
@@ -338,6 +364,9 @@ export async function getLivingDocumentData(
   if (signalsRes.error) {
     throw new Error(`signals: ${signalsRes.error.message}`);
   }
+  console.log(
+    `[market-pulse] Supabase signals (relevance >= 2): ${signalsRes.data?.length ?? 0} rows`,
+  );
   if (actorsRes.error) {
     throw new Error(`actors: ${actorsRes.error.message}`);
   }
@@ -399,11 +428,19 @@ export async function getLivingDocumentData(
       actor_names: bySignalId.get(signal.id as string) ?? [],
     })),
   );
+  console.log(
+    `[market-pulse] after URL dedupe: ${signals.length} signals (${signalsRes.data?.length ?? 0} from Supabase)`,
+  );
   const actors = actorsRes.data ?? [];
 
   const signalsByActor = new Map<string, LivingDocumentSignal[]>();
-  const actorSignalCounts: Array<{ name: string; total: number; shown: number }> =
-    [];
+  const actorSignalCounts: Array<{
+    name: string;
+    total: number;
+    shown: number;
+    beforeGroup?: number;
+    merged?: number;
+  }> = [];
 
   for (const signal of signals) {
     for (const actorName of signal.actor_names ?? []) {
@@ -417,10 +454,22 @@ export async function getLivingDocumentData(
 
   for (const [name, actorSignals] of Array.from(signalsByActor.entries())) {
     actorSignals.sort((a, b) => b.event_date.localeCompare(a.event_date));
-    const total = actorSignals.length;
+    const beforeGroup = actorSignals.length;
+    console.log(
+      `[market-pulse] grouping actor=${name}: ${beforeGroup} signals before groupSignals`,
+    );
+    const grouped = groupSignals(actorSignals, { scopeActor: name });
+    grouped.sort((a, b) => b.event_date.localeCompare(a.event_date));
+    const total = grouped.length;
     const shown = Math.min(total, MARKET_PULSE_SIGNALS_PER_ACTOR);
-    signalsByActor.set(name, actorSignals.slice(0, MARKET_PULSE_SIGNALS_PER_ACTOR));
-    actorSignalCounts.push({ name, total, shown });
+    signalsByActor.set(name, grouped.slice(0, MARKET_PULSE_SIGNALS_PER_ACTOR));
+    actorSignalCounts.push({
+      name,
+      total,
+      shown,
+      beforeGroup,
+      merged: beforeGroup - total,
+    });
   }
 
   const actorCards: ActorCard[] = actors
@@ -446,9 +495,19 @@ export async function getLivingDocumentData(
   for (const tracked of ["TransPerfect", "RWS"]) {
     const row = actorSignalCounts.find((entry) => entry.name === tracked);
     if (!row) {
-      actorSignalCounts.unshift({ name: tracked, total: 0, shown: 0 });
+      actorSignalCounts.unshift({
+        name: tracked,
+        total: 0,
+        shown: 0,
+        beforeGroup: 0,
+        merged: 0,
+      });
     }
   }
+
+  const transPerfectRaw = signals.filter((signal) =>
+    signal.actor_names.includes("TransPerfect"),
+  ).length;
 
   logMarketPulseDebug({
     domainId,
@@ -468,6 +527,7 @@ export async function getLivingDocumentData(
     actorSignalCounts,
     rwsActorId: (rwsActor?.id as string | undefined) ?? null,
     rwsLinkRows,
+    transPerfectRaw,
   });
 
   const tiers: TierSection[] = [1, 2]

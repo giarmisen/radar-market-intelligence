@@ -1,7 +1,10 @@
+"use client";
+
 import type { LivingDocumentSignal } from "@/lib/living-document";
 import { formatDate, formatLifecycle } from "@/lib/format";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SignalBadge } from "@/components/ui/SignalBadge";
+import { GroupedSources } from "./GroupedSources";
 
 interface SignalItemProps {
   signal: LivingDocumentSignal;
@@ -9,6 +12,22 @@ interface SignalItemProps {
 }
 
 export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
+  const sourceCount = signal.source_count ?? signal.grouped_sources?.length ?? 1;
+  const groupedSources =
+    signal.grouped_sources ??
+    (signal.source_url
+      ? [
+          {
+            id: signal.id,
+            source_url: signal.source_url,
+            summary: signal.summary,
+            relevance: signal.relevance,
+            event_date: signal.event_date,
+            captured_at: signal.captured_at,
+          },
+        ]
+      : []);
+
   if (variant === "worth-watching") {
     return (
       <article className="radar-worth-watching-card">
@@ -19,6 +38,9 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
             </span>
             <SignalBadge capturedAt={signal.captured_at} />
             <CategoryBadge category={signal.category} />
+            {sourceCount > 1 ? (
+              <span className="radar-source-count-badge">{sourceCount} sources</span>
+            ) : null}
           </div>
           <span
             className={`radar-score-badge radar-score-${signal.relevance}`}
@@ -30,15 +52,7 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
         {signal.so_what ? (
           <p className="text-signal-sowhat radar-signal-sowhat">→ {signal.so_what}</p>
         ) : null}
-        <a
-          href={signal.source_url}
-          className="text-source-url radar-signal-source"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {signal.source_url.replace(/^https?:\/\//, "").slice(0, 48)}
-          {signal.source_url.length > 56 ? "…" : ""}
-        </a>
+        <GroupedSources sourceCount={sourceCount} sources={groupedSources} />
       </article>
     );
   }
@@ -59,6 +73,9 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
           </span>
           <SignalBadge capturedAt={signal.captured_at} />
           <CategoryBadge category={signal.category} />
+          {sourceCount > 1 ? (
+            <span className="radar-source-count-badge">{sourceCount} sources</span>
+          ) : null}
           {signal.lifecycle ? (
             <span className="radar-lifecycle-tag">
               {formatLifecycle(signal.lifecycle)}
@@ -77,15 +94,7 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
       {signal.so_what ? (
         <p className="text-signal-sowhat radar-signal-sowhat">→ {signal.so_what}</p>
       ) : null}
-      <a
-        href={signal.source_url}
-        className="text-source-url radar-signal-source"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {signal.source_url.replace(/^https?:\/\//, "").slice(0, 48)}
-        {signal.source_url.length > 56 ? "…" : ""}
-      </a>
+      <GroupedSources sourceCount={sourceCount} sources={groupedSources} />
     </article>
   );
 }

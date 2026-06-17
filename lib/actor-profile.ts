@@ -1,8 +1,10 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { actorNameToSlug } from "./actor-slug";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
+import { groupSignals, type GroupedSignalSource } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
+import { unstable_noStore as noStore } from "next/cache";
 import type { ActorRole, SignalCategory } from "./types";
 
 export interface ActorProfileRecord {
@@ -30,6 +32,9 @@ export interface ActorProfileSignal {
   event_date: string;
   lifecycle: string | null;
   source_url: string;
+  captured_at?: string | null;
+  grouped_sources?: GroupedSignalSource[];
+  source_count?: number;
 }
 
 export interface ActorProfileActor {
@@ -117,6 +122,7 @@ function mapProfile(row: Record<string, unknown>): ActorProfileRecord {
 async function loadActorSignals(
   domainId: string,
   actorId: string,
+  actorName: string,
 ): Promise<ActorProfileSignal[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -140,13 +146,18 @@ async function loadActorSignals(
     )
     .eq("domain_id", domainId)
     .eq("signal_actors.actor_id", actorId)
+    .gte("relevance", 1)
     .order("event_date", { ascending: false });
 
   if (error) {
     throw new Error(`signals: ${error.message}`);
   }
 
-  const rows = dedupeRowsBySourceUrl(
+  console.log(
+    `[actor-profile] Supabase signals for ${actorName}: ${data?.length ?? 0} rows (before dedupe/grouping)`,
+  );
+
+  const deduped = dedupeRowsBySourceUrl(
     (data ?? []).map((signal) => ({
       id: signal.id as string,
       title: signal.title as string,
@@ -161,13 +172,24 @@ async function loadActorSignals(
     })),
   );
 
-  return rows;
+  console.log(
+    `[actor-profile] ${actorName}: ${deduped.length} signals after URL dedupe, calling groupSignals`,
+  );
+
+  const grouped = groupSignals(deduped, { scopeActor: actorName });
+
+  console.log(
+    `[actor-profile] ${actorName}: ${grouped.length} signals after grouping (UI rows)`,
+  );
+
+  return grouped.sort((a, b) => b.event_date.localeCompare(a.event_date));
 }
 
 export async function getActorProfilePageData(
   actorSlug: string,
   domainSlug?: string,
 ): Promise<ActorProfilePageData | null> {
+  noStore();
   const slug = resolveDomainSlug(domainSlug);
   const config = loadDomainConfig(slug);
   const domain = await getDomainMeta(slug);
@@ -191,7 +213,7 @@ export async function getActorProfilePageData(
       )
       .eq("actor_id", resolved.id)
       .maybeSingle(),
-    loadActorSignals(domain.id, resolved.id),
+    loadActorSignals(domain.id, resolved.id, resolved.name),
   ]);
 
   if (actorRes.error || !actorRes.data) {
