@@ -99,7 +99,11 @@ create table signals (
 
   worth_watching boolean default false, -- inspire/threaten product teams outside tracked field
 
-  raw_content text                      -- original text for re-enrichment
+  raw_content text,                     -- original text for re-enrichment
+
+  -- semantic dedupe: alternate sources merged onto the primary row at ingest
+  grouped_sources jsonb,
+  source_count smallint default 1
 );
 
 create unique index signals_dedupe on signals (domain_id, event_fingerprint)

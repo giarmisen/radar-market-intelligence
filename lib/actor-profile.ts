@@ -1,7 +1,7 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { actorNameToSlug } from "./actor-slug";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
-import { groupSignals, type GroupedSignalSource } from "./group-signals";
+import { groupSignals, type GroupedSignalSource, withStoredGroupedMetadata } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
 import { unstable_noStore as noStore } from "next/cache";
@@ -139,6 +139,8 @@ async function loadActorSignals(
       lifecycle,
       source_url,
       captured_at,
+      grouped_sources,
+      source_count,
       signal_actors!inner (
         actor_id
       )
@@ -158,18 +160,24 @@ async function loadActorSignals(
   );
 
   const deduped = dedupeRowsBySourceUrl(
-    (data ?? []).map((signal) => ({
-      id: signal.id as string,
-      title: signal.title as string,
-      summary: signal.summary as string,
-      so_what: signal.so_what as string | null,
-      category: signal.category as SignalCategory,
-      relevance: signal.relevance as number,
-      event_date: signal.event_date as string,
-      lifecycle: signal.lifecycle as string | null,
-      source_url: signal.source_url as string,
-      captured_at: (signal.captured_at as string | null) ?? undefined,
-    })),
+    (data ?? []).map((signal) =>
+      withStoredGroupedMetadata(
+        {
+          id: signal.id as string,
+          title: signal.title as string,
+          summary: signal.summary as string,
+          so_what: signal.so_what as string | null,
+          category: signal.category as SignalCategory,
+          relevance: signal.relevance as number,
+          event_date: signal.event_date as string,
+          lifecycle: signal.lifecycle as string | null,
+          source_url: signal.source_url as string,
+          captured_at: (signal.captured_at as string | null) ?? undefined,
+        },
+        signal.grouped_sources,
+        signal.source_count,
+      ),
+    ),
   );
 
   console.log(

@@ -1,6 +1,6 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
-import { groupSignals, type GroupedSignalSource } from "./group-signals";
+import { groupSignals, type GroupedSignalSource, withStoredGroupedMetadata } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
 import { unstable_noStore as noStore } from "next/cache";
@@ -210,7 +210,9 @@ async function loadWorthWatchingSignals(
         event_date,
         source_url,
         captured_at,
-        lifecycle
+        lifecycle,
+        grouped_sources,
+        source_count
       `,
     )
     .eq("domain_id", domainId)
@@ -250,19 +252,25 @@ async function loadWorthWatchingSignals(
   const orphanSignals = dedupeRowsBySourceUrl(
     (rows ?? [])
       .filter((signal) => !linkedSignalIds.has(signal.id as string))
-      .map((signal) => ({
-        id: signal.id as string,
-        title: signal.title as string,
-        summary: signal.summary as string,
-        so_what: signal.so_what as string | null,
-        category: signal.category as SignalCategory,
-        relevance: signal.relevance as number,
-        event_date: signal.event_date as string,
-        source_url: signal.source_url as string,
-        captured_at: (signal.captured_at as string | null) ?? undefined,
-        lifecycle: signal.lifecycle as string | null,
-        actor_names: [],
-      })),
+      .map((signal) =>
+        withStoredGroupedMetadata(
+          {
+            id: signal.id as string,
+            title: signal.title as string,
+            summary: signal.summary as string,
+            so_what: signal.so_what as string | null,
+            category: signal.category as SignalCategory,
+            relevance: signal.relevance as number,
+            event_date: signal.event_date as string,
+            source_url: signal.source_url as string,
+            captured_at: (signal.captured_at as string | null) ?? undefined,
+            lifecycle: signal.lifecycle as string | null,
+            actor_names: [],
+          },
+          signal.grouped_sources,
+          signal.source_count,
+        ),
+      ),
   );
 
   const groupedOrphans = groupSignals(orphanSignals).slice(
@@ -337,7 +345,9 @@ export async function getLivingDocumentData(
         event_date,
         source_url,
         captured_at,
-        lifecycle
+        lifecycle,
+        grouped_sources,
+        source_count
       `,
       )
       .eq("domain_id", domainId)
@@ -414,19 +424,25 @@ export async function getLivingDocumentData(
     : 0;
 
   const signals: LivingDocumentSignal[] = dedupeRowsBySourceUrl(
-    (signalsRes.data ?? []).map((signal) => ({
-      id: signal.id as string,
-      title: signal.title as string,
-      summary: signal.summary as string,
-      so_what: signal.so_what as string | null,
-      category: signal.category as SignalCategory,
-      relevance: signal.relevance as number,
-      event_date: signal.event_date as string,
-      source_url: signal.source_url as string,
-      captured_at: (signal.captured_at as string | null) ?? undefined,
-      lifecycle: signal.lifecycle as string | null,
-      actor_names: bySignalId.get(signal.id as string) ?? [],
-    })),
+    (signalsRes.data ?? []).map((signal) =>
+      withStoredGroupedMetadata(
+        {
+          id: signal.id as string,
+          title: signal.title as string,
+          summary: signal.summary as string,
+          so_what: signal.so_what as string | null,
+          category: signal.category as SignalCategory,
+          relevance: signal.relevance as number,
+          event_date: signal.event_date as string,
+          source_url: signal.source_url as string,
+          captured_at: (signal.captured_at as string | null) ?? undefined,
+          lifecycle: signal.lifecycle as string | null,
+          actor_names: bySignalId.get(signal.id as string) ?? [],
+        },
+        signal.grouped_sources,
+        signal.source_count,
+      ),
+    ),
   );
   console.log(
     `[market-pulse] after URL dedupe: ${signals.length} signals (${signalsRes.data?.length ?? 0} from Supabase)`,

@@ -246,7 +246,7 @@ const SwapCard = forwardRef<HTMLDivElement, any>(({ ...rest }, ref) => (
 ));
 SwapCard.displayName = 'SwapCard';
 
-function CardSwap({ width = 460, height = 300, delay = 3500, children }: any) {
+function CardSwap({ width = 460, height = 220, delay = 3500, children }: any) {
   const childArr = useMemo(() => Children.toArray(children), [children]);
   const refs = useMemo(() => childArr.map(() => createRef<HTMLDivElement>()), [childArr.length]);
   const order = useRef(Array.from({ length: childArr.length }, (_, i) => i));
@@ -333,58 +333,83 @@ function CardSwap({ width = 460, height = 300, delay = 3500, children }: any) {
 function HeroCards() {
   return (
     <div style={{ marginTop: 56, marginBottom: 56 }}>
-      <CardSwap width={460} height={300} delay={3500}>
+      <CardSwap width={460} height={220} delay={3500}>
         <SwapCard>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#94A3B8', marginBottom: 14 }}>MARKET PULSE</div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-            {[{ n: '7', l: 'SIGNALS' }, { n: '5', l: 'ACTORS' }, { n: '5', l: 'WATCH' }].map(s => (
-              <div key={s.l} style={{ flex: 1, padding: '10px 12px', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 8 }}>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', lineHeight: 1 }}>{s.n}</div>
-                <div style={{ fontSize: 8, color: '#94A3B8', letterSpacing: '.06em', marginTop: 3 }}>{s.l}</div>
-              </div>
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#E2E8F0', flexShrink: 0 }} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>John Mitchell</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>@jmitchell · 2h</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000000" style={{ marginLeft: 'auto' }}>
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629 5.905-5.629zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
           </div>
-          <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5 }}>What moved this week, per player.</div>
+          <div style={{ fontSize: 14, color: '#334155', lineHeight: 1.6, marginBottom: 14 }}>
+            Interesting move from TransPerfect — combining MPC and The Mill into a single studio operation. Signals consolidation across localization and creative production. Worth watching.
+          </div>
+          <div style={{ fontSize: 12, color: '#94A3B8', paddingBottom: 8 }}>4:32 PM · Jun 18, 2026</div>
         </SwapCard>
 
         <SwapCard>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#94A3B8', marginBottom: 14 }}>TIMELINE</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <svg width="28" height="28" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <g fill="none" fillRule="evenodd">
+                <path d="M19.712.133a5.381 5.381 0 0 0-5.376 5.387 5.381 5.381 0 0 0 5.376 5.386h5.376V5.52A5.381 5.381 0 0 0 19.712.133m0 14.365H5.376A5.381 5.381 0 0 0 0 19.884a5.381 5.381 0 0 0 5.376 5.387h14.336a5.381 5.381 0 0 0 5.376-5.387 5.381 5.381 0 0 0-5.376-5.386" fill="#36C5F0" />
+                <path d="M53.76 19.884a5.381 5.381 0 0 0-5.376-5.386 5.381 5.381 0 0 0-5.376 5.386v5.387h5.376a5.381 5.381 0 0 0 5.376-5.387m-14.336 0V5.52A5.381 5.381 0 0 0 34.048.133a5.381 5.381 0 0 0-5.376 5.387v14.364a5.381 5.381 0 0 0 5.376 5.387 5.381 5.381 0 0 0 5.376-5.387" fill="#2EB67D" />
+                <path d="M34.048 54a5.381 5.381 0 0 0 5.376-5.387 5.381 5.381 0 0 0-5.376-5.386h-5.376v5.386A5.381 5.381 0 0 0 34.048 54m0-14.365h14.336a5.381 5.381 0 0 0 5.376-5.386 5.381 5.381 0 0 0-5.376-5.387H34.048a5.381 5.381 0 0 0-5.376 5.387 5.381 5.381 0 0 0 5.376 5.386" fill="#ECB22E" />
+                <path d="M0 34.249a5.381 5.381 0 0 0 5.376 5.386 5.381 5.381 0 0 0 5.376-5.386v-5.387H5.376A5.381 5.381 0 0 0 0 34.249m14.336 0v14.364A5.381 5.381 0 0 0 19.712 54a5.381 5.381 0 0 0 5.376-5.387V34.249a5.381 5.381 0 0 0-5.376-5.387 5.381 5.381 0 0 0-5.376 5.387" fill="#E01E5A" />
+              </g>
+            </svg>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}># competitive-intel</span>
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#CBD5E1', flexShrink: 0 }} />
+            <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Sarah K.</span>
+                <span style={{ fontSize: 12, color: '#94A3B8' }}>11:47 AM</span>
+              </div>
+              <div style={{ fontSize: 14, color: '#334155', lineHeight: 1.6 }}>
+                did anyone see the RWS results? profits up but dividend cut and share price down... something doesn&apos;t add up
+              </div>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 8, paddingBottom: 8 }}>🧵 3 replies</div>
+            </div>
+          </div>
+        </SwapCard>
+
+        <SwapCard>
+          <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 14, marginBottom: 14 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#94A3B8', marginBottom: 8 }}>INBOX</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>Slator Weekly — Issue #214</div>
+            <div style={{ fontSize: 12, color: '#94A3B8' }}>Slator · slator.com · Jun 18, 2026</div>
+          </div>
+          <div style={{ fontSize: 14, color: '#475569', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            This week: DeepL expands language intelligence offering, RWS reports mixed H1 results, LocWorld52 announces keynote lineup...
+          </div>
+          <div style={{ marginTop: 14, fontSize: 12, color: '#94A3B8', paddingBottom: 8 }}>+ 6 more stories</div>
+        </SwapCard>
+
+        <SwapCard>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 6, background: '#4285F4', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>G</span>
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Google Alert</span>
+            <span style={{ fontSize: 12, color: '#94A3B8', marginLeft: 'auto' }}>Jun 18 · 08:14</span>
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', marginBottom: 8 }}>
+            &ldquo;Welocalize&rdquo; — 4 new results
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingBottom: 8 }}>
             {[
-              { date: 'Jun 18', cat: 'PRODUCT', color: '#16A34A', actor: '8x8' },
-              { date: 'Jun 18', cat: 'COMMERCIAL', color: '#2563EB', actor: 'TransPerfect' },
-              { date: 'Jun 17', cat: 'COMMS', color: '#9333EA', actor: 'Welocalize' },
-            ].map((r, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11 }}>
-                <span style={{ color: '#94A3B8', minWidth: 42 }}>{r.date}</span>
-                <span style={{ fontSize: 8, fontWeight: 700, color: r.color, letterSpacing: '.05em', minWidth: 78 }}>{r.cat}</span>
-                <span style={{ color: '#475569', fontWeight: 500 }}>{r.actor}</span>
-              </div>
+              'Welocalize named finalist at CODiE Awards 2026',
+              'Welocalize Opal platform adds multilingual AI features',
+              'Welocalize expands APAC team amid localization demand',
+            ].map((item, i) => (
+              <div key={i} style={{ fontSize: 13, color: '#2563EB', lineHeight: 1.5, textDecoration: 'underline' }}>{item}</div>
             ))}
           </div>
-          <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5, marginTop: 14 }}>Full history, filterable by everything.</div>
-        </SwapCard>
-
-        <SwapCard>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#94A3B8', marginBottom: 14 }}>ACTORS</div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginBottom: 2 }}>DeepL</div>
-          <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 14 }}>Processor · Tier 1 · DE, EU</div>
-          <div style={{ display: 'flex', gap: 18 }}>
-            {[{ n: '3', l: 'Signals' }, { n: '~900', l: 'Headcount' }].map(s => (
-              <div key={s.l}>
-                <div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>{s.n}</div>
-                <div style={{ fontSize: 10, color: '#94A3B8' }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5, marginTop: 14 }}>Full profile on every player.</div>
-        </SwapCard>
-
-        <SwapCard>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#94A3B8', marginBottom: 12 }}>REPORTS</div>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.08em', color: '#94A3B8', marginBottom: 6 }}>EXECUTIVE SUMMARY</div>
-          <div style={{ fontSize: 11, color: '#475569', lineHeight: 1.55 }}>The language services market is bifurcating: cloud-scale AI infrastructure converging with edge deployment...</div>
-          <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5, marginTop: 14 }}>Analyst briefings, on demand.</div>
         </SwapCard>
       </CardSwap>
     </div>
@@ -700,7 +725,18 @@ function Hero() {
         <HeroCards />
 
         <Reveal delay={140}>
-          <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: DARK_BODY, maxWidth: 900, margin: '0 auto', fontWeight: 'var(--font-weight-regular)' }}>
+          <p style={{
+            fontSize: 'clamp(15px, 1.8vw, 17px)',
+            lineHeight: 1.65,
+            color: '#94A3B8',
+            maxWidth: 900,
+            margin: '0 auto 20px',
+            textAlign: 'center',
+          }}>
+            A newsletter here. A Google Alert there. A message from someone who caught something.
+            It works until the market gets busy, the team gets stretched, or the field gets wider.
+          </p>
+          <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: '#F1F5F9', maxWidth: 900, margin: '0 auto', fontWeight: 600 }}>
             Market Radar tracks every player in your field, reads what they publish and announce, puts it in context with AI, and tells you what is worth your attention today.
           </p>
         </Reveal>
@@ -728,9 +764,9 @@ const FEATURES = [
     id: 'problem',
     bg: '#162032',
     dark: true,
-    eyebrow: 'The loop everyone knows',
-    heading: 'Market intelligence is still a patchwork.',
-    body: 'A newsletter here. A Google Alert there. A message from someone who caught something. It works until the market gets busy, the team gets stretched, or the field gets wider.',
+    eyebrow: 'How it works',
+    heading: 'A system that runs so you don\'t have to.',
+    body: null,
     aside: 'problem-and-pipeline',
   },
   {
@@ -793,17 +829,16 @@ function StickyStack() {
                 {f.heading}
               </h2>
             </Reveal>
-            <Reveal delay={100}>
-              <p style={{ fontSize: 18, lineHeight: 1.7, color: f.dark ? DARK_BODY : 'var(--color-text-muted)', maxWidth: 540, margin: '0 0 48px' }}>
-                {f.body}
-              </p>
-            </Reveal>
+            {f.body && (
+              <Reveal delay={100}>
+                <p style={{ fontSize: 18, lineHeight: 1.7, color: f.dark ? DARK_BODY : 'var(--color-text-muted)', maxWidth: 540, margin: '0 0 48px' }}>
+                  {f.body}
+                </p>
+              </Reveal>
+            )}
 
             {f.aside === 'problem-and-pipeline' && (
-              <div style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: 48 }}>
-                  A system that runs so you don&apos;t have to.
-                </span>
+              <div style={{ marginTop: f.body ? 64 : 0, paddingTop: f.body ? 48 : 0, borderTop: f.body ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', top: 16, left: 0, right: 0, height: 1,

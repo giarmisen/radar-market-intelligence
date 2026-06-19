@@ -260,6 +260,32 @@ function assertNoSignalsDropped<T extends GroupableSignal>(
   }
 }
 
+export function parseStoredGroupedSources(
+  value: unknown,
+): GroupedSignalSource[] | undefined {
+  if (!Array.isArray(value) || value.length === 0) {
+    return undefined;
+  }
+  return value as GroupedSignalSource[];
+}
+
+export function withStoredGroupedMetadata<T extends GroupableSignal>(
+  signal: T,
+  groupedSources: unknown,
+  sourceCount: unknown,
+): WithGroupedSources<T> {
+  const parsed = parseStoredGroupedSources(groupedSources);
+  if (!parsed) {
+    return signal;
+  }
+
+  return {
+    ...signal,
+    grouped_sources: parsed,
+    source_count: typeof sourceCount === "number" ? sourceCount : parsed.length,
+  };
+}
+
 /**
  * Group signals that share a category and fall within the 24-hour window.
  * When actor_names are present, signals must also share at least one actor.

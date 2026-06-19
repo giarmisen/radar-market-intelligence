@@ -1,6 +1,6 @@
 import { loadDomainConfig, resolveDomainSlug } from "./config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "./domain";
-import { groupSignals, type GroupedSignalSource } from "./group-signals";
+import { groupSignals, type GroupedSignalSource, withStoredGroupedMetadata } from "./group-signals";
 import { dedupeRowsBySourceUrl } from "./signal-dedupe";
 import { getSupabase } from "./supabase";
 import type { ActorRole, SignalCategory } from "./types";
@@ -96,6 +96,8 @@ export async function getTimelineData(
       source_url,
       captured_at,
       lifecycle,
+      grouped_sources,
+      source_count,
       signal_actors (
         actor:actors ( id, name, tier, role )
       )
@@ -113,23 +115,27 @@ export async function getTimelineData(
     (data ?? []).map((signal) => {
       const actors = parseTimelineActors(signal.signal_actors);
 
-      return {
-        id: signal.id as string,
-        event_date: signal.event_date as string,
-        category: signal.category as SignalCategory,
-        relevance: signal.relevance as number,
-        summary: signal.summary as string,
-        so_what: signal.so_what as string | null,
-        source_url: signal.source_url as string,
-        captured_at: (signal.captured_at as string | null) ?? undefined,
-        lifecycle: signal.lifecycle as string | null,
-        actors,
-        top_tier:
-          actors.length > 0
-            ? Math.min(...actors.map((actor) => actor.tier))
-            : 99,
-        actor_names: actors.map((actor) => actor.name),
-      };
+      return withStoredGroupedMetadata(
+        {
+          id: signal.id as string,
+          event_date: signal.event_date as string,
+          category: signal.category as SignalCategory,
+          relevance: signal.relevance as number,
+          summary: signal.summary as string,
+          so_what: signal.so_what as string | null,
+          source_url: signal.source_url as string,
+          captured_at: (signal.captured_at as string | null) ?? undefined,
+          lifecycle: signal.lifecycle as string | null,
+          actors,
+          top_tier:
+            actors.length > 0
+              ? Math.min(...actors.map((actor) => actor.tier))
+              : 99,
+          actor_names: actors.map((actor) => actor.name),
+        },
+        signal.grouped_sources,
+        signal.source_count,
+      );
     }),
   );
 
@@ -143,6 +149,8 @@ export async function getTimelineData(
       source_url: row.source_url,
       captured_at: row.captured_at,
       actor_names: row.actor_names,
+      grouped_sources: row.grouped_sources,
+      source_count: row.source_count,
     })),
   ).map((grouped) => {
     const source = dedupedRows.find((row) => row.id === grouped.id);

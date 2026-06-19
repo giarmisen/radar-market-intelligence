@@ -51,8 +51,14 @@ export function formatDate(isoDate: string): string {
   });
 }
 
+const LIFECYCLE_LABELS: Record<string, string> = {
+  shutdown: "shutdown",
+  acquired: "acquisition",
+  pivot: "pivot",
+};
+
 export function formatLifecycle(lifecycle: string): string {
-  return lifecycle.replace(/_/g, " ");
+  return LIFECYCLE_LABELS[lifecycle] ?? lifecycle.replace(/_/g, " ");
 }
 
 export function formatActorStatus(status: string): string {

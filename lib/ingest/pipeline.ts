@@ -9,6 +9,12 @@ import {
   shouldSkipTemporalDedupe,
   type TemporalDedupeRecord,
 } from "../signal-temporal-dedupe";
+import {
+  findSemanticDedupeCandidates,
+  isSameEvent,
+  mergeIntoGroupedSources,
+  toEnrichedSignal,
+} from "../semantic-dedupe";
 import { getSupabase } from "../supabase";
 import type { DomainConfig, IngestRawItem } from "../types";
 import {
@@ -30,6 +36,7 @@ export interface IngestSummary {
   inserted: number;
   skipped_dedupe: number;
   skipped_temporal_dedupe: number;
+  skipped_semantic_dedupe: number;
   errors: string[];
   date_range: IngestDateRange;
   debug: IngestDebugInfo;
@@ -318,6 +325,7 @@ export async function runIngest(
   let inserted = 0;
   let skipped_dedupe = 0;
   let skipped_temporal_dedupe = 0;
+  let skipped_semantic_dedupe = 0;
   const batchTemporalRecords: TemporalDedupeRecord[] = [];
 
   for (const item of items) {
@@ -382,6 +390,46 @@ export async function runIngest(
         continue;
       }
 
+      const incoming = toEnrichedSignal(enrichment.summary, enrichment.so_what);
+      let mergedSemantically = false;
+
+      if (actorIds.length > 0) {
+        const candidates = await findSemanticDedupeCandidates({
+          domainId,
+          category: enrichment.category,
+          actorIds,
+          eventDate: item.event_date,
+        });
+
+        for (const candidate of candidates) {
+          const sameEvent = await isSameEvent(incoming, {
+            summary: candidate.summary,
+            so_what: candidate.so_what,
+          });
+
+          if (!sameEvent) {
+            continue;
+          }
+
+          await mergeIntoGroupedSources({
+            existing: candidate,
+            item,
+            enrichment,
+          });
+
+          skipped_semantic_dedupe += 1;
+          mergedSemantically = true;
+          console.log(`skipped_semantic_dedupe: ${item.title}`);
+          break;
+        }
+      }
+
+      if (mergedSemantically) {
+        seenFingerprints.add(enrichment.event_fingerprint);
+        seenUrls.add(item.url);
+        continue;
+      }
+
       await insertEnrichedSignal({
         domainId,
         item,
@@ -415,6 +463,7 @@ export async function runIngest(
     inserted,
     skipped_dedupe,
     skipped_temporal_dedupe,
+    skipped_semantic_dedupe,
     errors,
     date_range: resolvedDateRange,
     debug,
