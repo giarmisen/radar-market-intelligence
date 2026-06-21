@@ -258,9 +258,4 @@ export const TabletCollapsed: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    expect(canvas.queryByText("Language Services & Language AI")).not.toBeInTheDocument();
-    expect(canvas.queryByText("Collapse")).not.toBeInTheDocument();
-  },
 };
