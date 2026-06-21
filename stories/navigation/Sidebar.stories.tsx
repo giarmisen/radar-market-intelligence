@@ -251,9 +251,6 @@ export const TabletCollapsed: Story = {
     isMobile: false,
   },
   parameters: {
-    viewport: {
-      defaultViewport: "tablet",
-    },
     docs: {
       description: {
         story:
