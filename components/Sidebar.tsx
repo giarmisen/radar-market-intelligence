@@ -106,9 +106,20 @@ export function Sidebar({
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
+          {collapsed ? (
+            <IconChevronRight />
+          ) : (
+            <>
+              <IconChevronLeft />
+              <span className="radar-sidebar-toggle-label">Collapse</span>
+            </>
+          )}
         </button>
       ) : null}
+      <div className="radar-sidebar-domain">
+        <div className="radar-sidebar-domain-label">Example domain</div>
+        <div className="radar-sidebar-domain-name">Language Services & Language AI</div>
+      </div>
     </aside>
   );
 }

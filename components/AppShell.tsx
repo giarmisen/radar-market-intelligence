@@ -6,6 +6,7 @@ import { IconMenu } from "./SidebarIcons";
 
 const SIDEBAR_STORAGE_KEY = "radar-sidebar-collapsed";
 const MOBILE_BREAKPOINT = 767;
+const TABLET_MAX_BREAKPOINT = 1024;
 
 interface AppShellProps {
   active: SidebarActive;
@@ -24,25 +25,28 @@ export function AppShell({ active, pendingProposals, children }: AppShellProps) 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setCollapsed(readStoredCollapsed());
     setHydrated(true);
 
-    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-
     const syncViewport = () => {
-      const mobile = mediaQuery.matches;
+      const width = window.innerWidth;
+      const mobile = width <= MOBILE_BREAKPOINT;
+      const tablet = width > MOBILE_BREAKPOINT && width <= TABLET_MAX_BREAKPOINT;
+
       setIsMobile(mobile);
+      setIsTablet(tablet);
       if (mobile) {
         setMobileOpen(false);
       }
     };
 
     syncViewport();
-    mediaQuery.addEventListener("change", syncViewport);
-    return () => mediaQuery.removeEventListener("change", syncViewport);
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
   }, []);
 
   const toggleCollapsed = useCallback(() => {
@@ -61,9 +65,11 @@ export function AppShell({ active, pendingProposals, children }: AppShellProps) 
     setMobileOpen(true);
   }, []);
 
+  const visuallyCollapsed = !isMobile && (isTablet || collapsed);
+
   const shellClassName = [
     "radar-app",
-    hydrated && collapsed && !isMobile ? "radar-sidebar-collapsed" : "",
+    hydrated && visuallyCollapsed ? "radar-sidebar-collapsed" : "",
     mobileOpen ? "radar-sidebar-mobile-open" : "",
   ]
     .filter(Boolean)
@@ -93,7 +99,7 @@ export function AppShell({ active, pendingProposals, children }: AppShellProps) 
       <Sidebar
         active={active}
         pendingProposals={pendingProposals}
-        collapsed={collapsed && !isMobile}
+        collapsed={visuallyCollapsed}
         isMobile={isMobile}
         onToggleCollapse={toggleCollapsed}
         onNavigate={closeMobile}

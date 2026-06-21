@@ -733,11 +733,10 @@ function Hero() {
             margin: '0 auto 20px',
             textAlign: 'center',
           }}>
-            A newsletter here. A Google Alert there. A message from someone who caught something.
-            It works until the market gets busy, the team gets stretched, or the field gets wider.
+            A newsletter here. A Google Alert there. A Slack message from someone who caught something. No single place where it all lives, no system connecting the dots. Someone has to find the sources, read everything, filter what matters, and figure out what it means. It does not scale, and it breaks the moment your market moves faster than you can keep up.
           </p>
           <p style={{ fontSize: 'clamp(17px, 2.2vw, 20px)', lineHeight: 1.65, color: '#F1F5F9', maxWidth: 900, margin: '0 auto', fontWeight: 600 }}>
-            Market Radar tracks every player in your field, reads what they publish and announce, puts it in context with AI, and tells you what is worth your attention today.
+            Market Radar tracks every player in your field, reads what they publish and announce, puts it in context with AI, and tells you what is worth your attention.
           </p>
         </Reveal>
 
@@ -765,7 +764,7 @@ const FEATURES = [
     bg: '#162032',
     dark: true,
     eyebrow: 'How it works',
-    heading: 'A system that runs so you don\'t have to.',
+    heading: 'A system that monitors your market and tells you what matters.',
     body: null,
     aside: 'problem-and-pipeline',
   },
@@ -774,8 +773,8 @@ const FEATURES = [
     bg: '#F8FAFC',
     dark: false,
     eyebrow: 'Market Pulse',
-    heading: 'What moved today, across your field.',
-    body: 'A live feed of updates per player, updated daily when there is activity. Filter by tier, read by update type, flag what warrants a closer look. Nothing slips through because nobody had time to check.',
+    heading: 'What happened this week, by player.',
+    body: 'A live feed of updates per player, updated daily when there is activity. Filter by type of player, read by update type, flag what warrants a closer look. Nothing slips through because nobody had time to check.',
     aside: 'animated-pulse',
   },
   {
@@ -847,7 +846,7 @@ function StickyStack() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative', zIndex: 1 }}>
                     {[
                       { n: '01', title: 'Watch', body: 'The system ingests updates daily across every player and topic in the configured domain. No manual curation. No missed sources.' },
-                      { n: '02', title: 'Enrich', body: 'Each update is automatically categorized, scored by relevance, and connected to the players and topics it affects. You get context, not just raw information.' },
+                      { n: '02', title: 'Analyze', body: 'Each update is automatically categorized, scored by relevance, and connected to the players and topics it affects. You get context, not just raw information.' },
                       { n: '03', title: 'Surface', body: 'Updates rise to a live pulse, structured player profiles, and on-demand reports. You read what matters, already in context.' },
                     ].map((step, i) => (
                       <Reveal key={step.n} delay={i * 150}>
@@ -902,9 +901,9 @@ function StickyStack() {
 // ---------------------------------------------------------------------------
 const AUDIENCE = [
   { role: 'Product analysts', desc: 'Track a competitive field without managing a dozen sources by hand.' },
-  { role: 'Founders', desc: 'Know where your market is moving before it moves on you.' },
-  { role: 'Investors', desc: "Read a sector's signal density at a glance. Configure any domain in minutes." },
-  { role: 'Consultants', desc: 'Stand up a credible, live market view — and generate a briefing for any client.' },
+  { role: 'Founders', desc: 'Know where your market is heading before it leaves you behind.' },
+  { role: 'Investors', desc: "Get a structured view of any sector's competitive activity, without building the research infrastructure yourself." },
+  { role: 'Consultants', desc: 'Build a credible market view for any client domain and hand them a structured briefing from day one.' },
 ];
 
 function WhoItsFor() {
@@ -941,7 +940,7 @@ function ClosingCTA() {
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <Reveal>
           <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 'var(--font-weight-semibold)', letterSpacing: '-.03em', lineHeight: 1.08, marginBottom: 20 }}>
-            This is one example. Your market is next.
+            This is one example. Your market could be next.
           </h2>
         </Reveal>
         <Reveal delay={80}>

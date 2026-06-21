@@ -8,7 +8,6 @@ import { StatGrid } from "./StatGrid";
 import { TimelineTable } from "./TimelineTable";
 
 interface TimelinePageContentProps {
-  domainName: string;
   rows: TimelineRow[];
   stats: {
     total: number;
@@ -19,7 +18,6 @@ interface TimelinePageContentProps {
 }
 
 export function TimelinePageContent({
-  domainName,
   rows,
   stats,
   worthWatchingCount,
@@ -31,7 +29,6 @@ export function TimelinePageContent({
       <PageTopbar
         title="Timeline"
         subtitle="Full signal history — filter by tier, category, actor, relevance, and date."
-        meta={domainName}
         filters={
           <FilterPills
             value={tierFilter}

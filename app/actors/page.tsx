@@ -13,7 +13,6 @@ export default async function ActorsPage() {
       <PageTopbar
         title="Actors"
         subtitle="Tracked actor registry — tier, role, geography, and lifecycle status."
-        meta={data.domainName}
       />
       <div className="radar-content">
         {data.tiers.length === 0 ? (

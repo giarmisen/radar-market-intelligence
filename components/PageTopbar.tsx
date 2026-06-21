@@ -3,16 +3,14 @@ import type { ReactNode } from "react";
 interface PageTopbarProps {
   title: string;
   subtitle: string;
-  meta?: string;
   filters?: ReactNode;
 }
 
-export function PageTopbar({ title, subtitle, meta, filters }: PageTopbarProps) {
+export function PageTopbar({ title, subtitle, filters }: PageTopbarProps) {
   return (
     <header className="radar-topbar">
       <div className="radar-topbar-header">
         <h1 className="text-page-title radar-page-title">{title}</h1>
-        {meta ? <span className="radar-topbar-meta">{meta}</span> : null}
       </div>
       <p className="radar-page-subtitle">{subtitle}</p>
       {filters ? <div className="radar-topbar-filters">{filters}</div> : null}

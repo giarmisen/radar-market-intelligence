@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
 import { AppShell } from "@/components/AppShell";
 import { PageTopbar } from "@/components/PageTopbar";
-import { DOMAIN_NAME } from "../fixtures";
 
 const meta = {
   title: "5. Layouts/AppShell",
@@ -46,11 +45,10 @@ export const Default: Story = {
         <PageTopbar
           title="Market Pulse"
           subtitle="Latest signals per tracked actor — full history in Timeline."
-          meta={DOMAIN_NAME}
         />
         <div className="radar-content">
           <p className="text-signal-body">
-            App shell with sidebar navigation and main content column for Language Services intelligence.
+            App shell with sidebar navigation and main content column.
           </p>
         </div>
       </>
@@ -73,8 +71,7 @@ export const TimelineActive: Story = {
       <>
         <PageTopbar
           title="Timeline"
-          subtitle="Chronological signal history across all tracked Language Services actors."
-          meta={DOMAIN_NAME}
+          subtitle="Chronological signal history across all tracked actors."
         />
         <div className="radar-content">
           <p className="text-signal-body">
@@ -94,8 +91,7 @@ export const WithProposals: Story = {
       <>
         <PageTopbar
           title="Proposals"
-          subtitle="Review pending actor and signal proposals for the Language Services domain."
-          meta={DOMAIN_NAME}
+          subtitle="Review pending actor and signal proposals."
         />
         <div className="radar-content">
           <p className="text-signal-body">Five proposals awaiting analyst review.</p>

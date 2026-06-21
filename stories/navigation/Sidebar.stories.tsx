@@ -13,10 +13,15 @@ const SIDEBAR_HREF_TO_ACTIVE: Record<string, SidebarActive> = {
 
 function InteractiveSidebar(props: ComponentProps<typeof Sidebar>) {
   const [active, setActive] = useState(props.active);
+  const [collapsed, setCollapsed] = useState(props.collapsed);
 
   useEffect(() => {
     setActive(props.active);
   }, [props.active]);
+
+  useEffect(() => {
+    setCollapsed(props.collapsed);
+  }, [props.collapsed]);
 
   const handleCapture = (event: MouseEvent<HTMLDivElement>) => {
     const link = (event.target as HTMLElement).closest("a.radar-sidebar-item");
@@ -37,7 +42,15 @@ function InteractiveSidebar(props: ComponentProps<typeof Sidebar>) {
 
   return (
     <div onClickCapture={handleCapture}>
-      <Sidebar {...props} active={active} />
+      <Sidebar
+        {...props}
+        active={active}
+        collapsed={collapsed}
+        onToggleCollapse={() => {
+          setCollapsed((previous) => !previous);
+          props.onToggleCollapse();
+        }}
+      />
     </div>
   );
 }
@@ -157,5 +170,100 @@ export const TimelineActive: Story = {
     const canvas = within(canvasElement);
     const timeline = canvas.getByRole("link", { name: "Timeline" });
     expect(timeline).toHaveClass("radar-sidebar-item-active");
+  },
+};
+
+export const WithDomainBlock: Story = {
+  render: (args) => <InteractiveSidebar {...args} />,
+  args: {
+    active: "living",
+    pendingProposals: 0,
+    collapsed: false,
+    isMobile: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows the domain block at the bottom of the sidebar with the configured domain name and example domain label. The domain name never appears in page headers — sidebar only.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getByText("Example domain")).toBeVisible();
+    expect(canvas.getByText("Language Services & Language AI")).toBeVisible();
+  },
+};
+
+export const CollapseButton: Story = {
+  render: (args) => <InteractiveSidebar {...args} />,
+  args: {
+    active: "living",
+    pendingProposals: 0,
+    collapsed: false,
+    isMobile: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The collapse toggle shows a left chevron and the text Collapse when expanded. When collapsed, only the right chevron is shown.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const toggle = canvas.getByRole("button", { name: /collapse/i });
+    expect(toggle).toBeVisible();
+    await userEvent.click(toggle);
+    expect(canvas.queryByText("Collapse")).not.toBeInTheDocument();
+  },
+};
+
+export const CollapsedToggleVisible: Story = {
+  args: {
+    active: "living",
+    pendingProposals: 0,
+    collapsed: true,
+    isMobile: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When collapsed, the toggle button remains visible showing only a right-pointing chevron. This is the only affordance to expand the sidebar again.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const toggle = canvas.getByRole("button", { name: /expand/i });
+    expect(toggle).toBeVisible();
+  },
+};
+
+export const TabletCollapsed: Story = {
+  args: {
+    active: "living",
+    pendingProposals: 2,
+    collapsed: true,
+    isMobile: false,
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "tablet",
+    },
+    docs: {
+      description: {
+        story:
+          "On tablet (768px to 1024px) the sidebar is automatically collapsed to icon-only mode. Domain block and labels are hidden. Toggle remains visible.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.queryByText("Language Services & Language AI")).not.toBeInTheDocument();
+    expect(canvas.queryByText("Collapse")).not.toBeInTheDocument();
   },
 };

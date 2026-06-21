@@ -14,7 +14,6 @@ export default async function ProposalsPage() {
       <PageTopbar
         title="Proposals"
         subtitle="Curation queue — review system-generated proposals and approve or reject changes."
-        meta={data.domainName}
       />
       <div className="radar-content">
         <StatGrid

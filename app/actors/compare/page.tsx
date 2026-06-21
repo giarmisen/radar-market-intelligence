@@ -33,7 +33,6 @@ export default async function ActorComparePage({
       <PageTopbar
         title="Compare actors"
         subtitle="Side-by-side profiles for Tier 1 actors — business model, AI strategy, and positioning."
-        meta={pageData.domainName}
       />
       <div className="radar-content">
         <StatGrid

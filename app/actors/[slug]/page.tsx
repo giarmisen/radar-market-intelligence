@@ -22,7 +22,6 @@ export default async function ActorProfilePage({ params }: ActorProfilePageProps
       <PageTopbar
         title={data.actor.name}
         subtitle="Actor profile — business context, AI strategy, and linked signals."
-        meta={data.domainName}
       />
       <div className="radar-content">
         <ActorProfileDetail data={data} />

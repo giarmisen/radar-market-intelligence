@@ -17,7 +17,6 @@ export default async function ReportsPage() {
       <PageTopbar
         title="Market Report"
         subtitle="Generate an on-demand analyst briefing from signals in any date range."
-        meta={config.name}
       />
       <div className="radar-content">
         <QuarterlyReviewPanel domainSlug={slug} domainName={config.name} />

@@ -86,6 +86,14 @@ Single font: **Inter**. Two weights only in practice: 400 (body) and 500–600 (
 | 3 — Critical | `#111111` | `#ffffff` |
 | 2 — Relevant | `#F0F0F0` | `#888888` |
 
+### Sidebar text tokens
+| Token | Hex | Usage |
+|---|---|---|
+| `--color-sidebar-border` | `rgba(255,255,255,0.06)` | Sidebar internal borders |
+| `--color-sidebar-text-domain` | `#94A3B8` | Domain name text |
+| `--color-sidebar-text-label` | `#64748B` | "Example domain" label |
+| `--color-sidebar-text-collapse` | `#64748B` | Collapse button text |
+
 ---
 
 ## Layout
@@ -102,6 +110,44 @@ Single font: **Inter**. Two weights only in practice: 400 (body) and 500–600 (
 - Hover: `background: #F0F0F0`, `color: #111`
 - Divider before Proposals: `height: 1px`, `background: #EBEBEB`, `margin: 8px 4px`
 - Icons: Tabler outline, 14px, inherit color
+
+**Breakpoints**
+- Desktop (>1024px): sidebar expanded, width 216px
+- Tablet (768px–1024px): sidebar auto-collapsed, width 48px, icons only, no labels, no domain block
+- Mobile (<768px): sidebar hidden, overlay drawer triggered by mobile button, z-index 100
+
+**Behaviour**
+- position: fixed, top 0, left 0, height 100vh, zIndex 50
+- display flex, flexDirection column, overflowY auto
+- Main content area compensates with margin-left: var(--sidebar-width)
+- Transition: margin-left 0.2s ease on collapse/expand
+
+**Collapse button — .radar-sidebar-toggle**
+- Expanded: left chevron icon + text "Collapse", fontSize 11, color var(--color-sidebar-text-collapse)
+- Collapsed: right chevron icon only, justify-content center
+- Style: full-width, padding 8px 20px, borderTop 1px solid var(--color-sidebar-border), background transparent
+- Hover: background rgba(255,255,255,0.04), color rgba(255,255,255,0.7)
+
+**Collapse toggle — always visible**
+- The .radar-sidebar-toggle button is always visible regardless of collapsed state
+- Expanded: left chevron + "Collapse" text
+- Collapsed: right chevron only, centered
+- Never hidden — it is the only way to expand the sidebar back
+
+### Domain block — .radar-sidebar-domain
+- Position: bottom of sidebar, marginTop auto (sticks to bottom via flex column)
+- borderTop: 1px solid var(--color-sidebar-border)
+- padding: 16px 20px
+- Hidden when sidebar is collapsed (.radar-sidebar-collapsed .radar-sidebar-domain { display: none })
+
+**Label — .radar-sidebar-domain-label**
+- fontSize 10, fontWeight 600, letterSpacing .08em, textTransform uppercase
+- color: var(--color-sidebar-text-label) — #64748B
+
+**Domain name — .radar-sidebar-domain-name**
+- fontSize 12, color var(--color-sidebar-text-domain) — #94A3B8, lineHeight 1.4
+
+**Rule: domain name never appears in page headers or topbars. Sidebar only.**
 
 ### Topbar (inside main)
 - `padding: 16px 24px 0`
@@ -168,3 +214,6 @@ Single font: **Inter**. Two weights only in practice: 400 (body) and 500–600 (
 8. **NEW badge = green, always.** Only for signals captured in the last 24h.
 9. **Worth Watching border = amber.** Not the card background — just the border.
 10. **Transitions: 0.15s on cards, 0.12s on sidebar items.**
+11. **Domain context lives in the sidebar only.** The configured domain name never appears in page headers, topbars, or content areas. It renders exclusively in .radar-sidebar-domain at the bottom of the sidebar.
+12. **Sidebar is fixed.** It does not scroll with the page. Internal sidebar content uses overflowY auto if needed.
+13. **Sidebar tokens for text on dark.** Use --color-sidebar-text-domain (#94A3B8) and --color-sidebar-text-label (#64748B) for muted text on the dark sidebar background. Never use #334155 or #475569 on dark — contrast is insufficient.

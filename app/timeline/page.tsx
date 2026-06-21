@@ -11,7 +11,6 @@ export default async function TimelinePage() {
   return (
     <AppShell active="timeline" pendingProposals={data.pendingProposals}>
       <TimelinePageContent
-        domainName={data.domainName}
         rows={data.rows}
         stats={data.stats}
         worthWatchingCount={worthWatchingCount}
