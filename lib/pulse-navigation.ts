@@ -29,7 +29,7 @@ export function scrollToSignal(signalId: string): void {
       `[data-signal-id="${signalId}"]`,
     );
     target =
-      [...nodes].find((node) => node.offsetParent !== null) ?? nodes[0] ?? null;
+      Array.from(nodes).find((node) => node.offsetParent !== null) ?? nodes[0] ?? null;
   }
 
   if (!target) {

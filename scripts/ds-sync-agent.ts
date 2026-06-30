@@ -26,8 +26,6 @@ const STORY_CATEGORY_PREFIX: Record<string, string> = {
   layouts: "5. Layouts",
 };
 
-type StoryTarget = "colors" | "typography" | "spacing" | "component";
-
 type DsSyncAction =
   | {
       type: "update_design_md";
@@ -43,12 +41,28 @@ type DsSyncAction =
     }
   | {
       type: "update_story";
-      target: StoryTarget;
+      target: "colors";
       name?: string;
+      usage?: string;
+      sample?: string;
+    }
+  | {
+      type: "update_story";
+      target: "typography";
       className?: string;
       usage?: string;
       sample?: string;
       context?: string;
+    }
+  | {
+      type: "update_story";
+      target: "spacing";
+      name?: string;
+      usage?: string;
+    }
+  | {
+      type: "update_story";
+      target: "component";
       componentPath?: string;
       storyCategory?: keyof typeof STORY_CATEGORY_PREFIX;
     }
@@ -376,7 +390,7 @@ function tokenAliases(token: string): string[] {
   } else if (normalized.startsWith("--") && !normalized.startsWith("--color-")) {
     aliases.add(`--color-${normalized.slice(2)}`);
   }
-  return [...aliases];
+  return Array.from(aliases);
 }
 
 function updateDesignMd(action: Extract<DsSyncAction, { type: "update_design_md" }>): void {
@@ -504,7 +518,7 @@ function stageModifiedFiles(): void {
   if (DRY_RUN || modifiedFiles.size === 0) {
     return;
   }
-  const files = [...modifiedFiles];
+  const files = Array.from(modifiedFiles);
   log(`staging ${files.length} modified file(s)`);
   spawnSync("git", ["add", ...files], { cwd: ROOT, stdio: "inherit" });
 }
