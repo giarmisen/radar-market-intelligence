@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useEffect, useState } from "react";
-import { getCssVar } from "../helpers/css-tokens";
+import { formatTokenLabel, getCssVar } from "../helpers/css-tokens";
 
 const SPACING_TOKENS = [
   { name: "--spacing-card-padding", usage: "Card, profile section, and proposal panel padding" },
@@ -33,7 +33,9 @@ function SpacingBlock({ name, usage }: (typeof SPACING_TOKENS)[number]) {
   return (
     <div style={{ marginBottom: 24 }}>
       <code style={{ fontSize: 12, color: "var(--color-text-primary)" }}>{name}</code>
-      <div style={{ fontSize: 12, color: "var(--color-text-muted)", marginTop: 4 }}>{value || "—"}</div>
+      <div style={{ fontSize: 12, color: "var(--color-text-muted)", marginTop: 4 }}>
+        {formatTokenLabel(name, value || "—")}
+      </div>
       <div style={{ fontSize: 11, color: "var(--color-text-dim)", marginBottom: 8 }}>{usage}</div>
       <div
         style={{

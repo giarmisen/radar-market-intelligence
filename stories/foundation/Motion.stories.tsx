@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useEffect, useState } from "react";
-import { getCssVar } from "../helpers/css-tokens";
+import { formatTokenLabel, getCssVar, parseSecondsToMs } from "../helpers/css-tokens";
 
 /**
  * Interactive demos for motion tokens used on cards and navigation controls.
@@ -22,10 +22,15 @@ function TransitionCardDemo() {
     setValue(getCssVar("--transition-card"));
   }, []);
 
+  const durationMs = parseSecondsToMs(value);
+
   return (
     <div style={{ marginBottom: 32 }}>
       <code style={{ fontSize: 12, color: "var(--color-text-primary)" }}>--transition-card</code>
-      <div style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "4px 0 12px" }}>{value}</div>
+      <div style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "4px 0 12px" }}>
+        {formatTokenLabel("--transition-card", value)}
+        {durationMs ? ` (${durationMs})` : ""}
+      </div>
       <p style={{ fontSize: 11, color: "var(--color-text-dim)", marginBottom: 12 }}>
         Used on cards and worth-watching items — hover to see border, shadow, and lift.
       </p>
@@ -46,10 +51,15 @@ function TransitionNavDemo() {
     setValue(getCssVar("--transition-nav"));
   }, []);
 
+  const durationMs = parseSecondsToMs(value);
+
   return (
     <div>
       <code style={{ fontSize: 12, color: "var(--color-text-primary)" }}>--transition-nav</code>
-      <div style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "4px 0 12px" }}>{value}</div>
+      <div style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "4px 0 12px" }}>
+        {formatTokenLabel("--transition-nav", value)}
+        {durationMs ? ` (${durationMs})` : ""}
+      </div>
       <p style={{ fontSize: 11, color: "var(--color-text-dim)", marginBottom: 12 }}>
         Used on filter pills and sidebar items — hover and click to see color and background shifts.
       </p>
@@ -57,7 +67,7 @@ function TransitionNavDemo() {
         style={{
           display: "inline-flex",
           gap: "var(--spacing-stat-gap)",
-          padding: 16,
+          padding: "var(--spacing-card-padding)",
           background: "var(--color-sidebar-from)",
           borderRadius: "var(--radius-card)",
         }}
@@ -68,12 +78,12 @@ function TransitionNavDemo() {
         <button type="button" className="radar-filter-pill radar-filter-pill-active" style={{ cursor: "pointer" }}>
           Tier 1
         </button>
-        <span className="radar-sidebar-item text-nav-item" style={{ padding: "6px 10px", cursor: "default" }}>
+        <span className="radar-sidebar-item text-nav-item" style={{ padding: "var(--spacing-signal-padding)", cursor: "default" }}>
           Timeline
         </span>
         <span
           className="radar-sidebar-item radar-sidebar-item-active text-nav-item text-nav-item-active"
-          style={{ padding: "6px 10px", cursor: "default" }}
+          style={{ padding: "var(--spacing-signal-padding)", cursor: "default" }}
         >
           Market Pulse
         </span>

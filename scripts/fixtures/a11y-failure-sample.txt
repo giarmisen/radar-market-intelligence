@@ -1,0 +1,18 @@
+FAIL browser: chromium stories/layouts/MarketPulse.stories.tsx
+  ● 5. Layouts/MarketPulse › Default › play-test
+
+    page.evaluate: StorybookTestRunnerError: 
+    Message:
+     Expected the HTML found at $('#new-today > .radar-card-signals > .radar-signal-3.radar-signal[data-signal-id="sig-deepl-1"] > .radar-signal-header > div:nth-child(1) > .text-date.radar-signal-date') to have no violations:
+
+    <span class="text-date radar-signal-date">Mar 12, 2026</span>
+
+    Received:
+
+    "Elements must meet minimum color contrast ratio thresholds (color-contrast)"
+
+    Fix any of the following:
+      Element has insufficient color contrast of 4.36 (foreground color: #6b7280, background color: #f5f3f0, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1
+
+    You can find more information on this issue here:
+    https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI

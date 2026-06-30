@@ -52,7 +52,7 @@ const preview: Preview = {
           '3. Controls',
           ['CategoryBadge', 'ScoreBadge', 'SignalBadge', 'FilterPills'],
           '4. Data Display',
-          ['SignalItem', 'StatGrid', 'TimelineTable', 'WorthWatchingSection'],
+          ['SignalItem', 'TimelineTable', 'WorthWatchingSection'],
           '5. Layouts',
           ['AppShell', 'MarketPulse'],
         ],

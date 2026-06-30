@@ -1,0 +1,19 @@
+diff --git a/app/globals.css b/app/globals.css
+index abc1234..def5678 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -10,6 +10,16 @@
+ :root {
+   --color-bg: #ffffff;
+   --transition-fast: 150ms ease;
+ }
++
++.text-example {
++  color: #333333;
++  font-size: 14px;
++}
++
++.btn-primary {
++  transition: background-color 0.15s ease;
++  padding: 8px 12px;
++}

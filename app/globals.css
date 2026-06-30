@@ -14,7 +14,7 @@
     --color-text-primary: #0F172A;
     --color-text-body: #1E293B;
     --color-text-muted: #4B5563;
-    --color-text-dim: #6B7280;
+    --color-text-dim: #667080;
     --color-bg-content-from: #FAFAF8;
     --color-bg-content-to: #FAF8F5;
     --color-card-bg: rgba(255, 255, 255, 0.82);
@@ -539,30 +539,6 @@
 .radar-filter-pill-active {
   background: var(--color-text-primary);
   color: var(--color-filter-active-text);
-}
-
-/* —— Stat grid —— */
-.radar-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--spacing-stat-gap);
-  margin-bottom: var(--spacing-section-gap);
-}
-
-.radar-stat-card {
-  background: var(--color-bg-stat-card);
-  border: 1px solid var(--color-card-border);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-
-.radar-stat-value {
-  display: block;
-}
-
-.radar-stat-label {
-  display: block;
-  margin-top: 4px;
 }
 
 /* —— Section labels —— */
@@ -2185,10 +2161,6 @@
 @media (max-width: 900px) {
   .radar-app {
     grid-template-columns: 1fr;
-  }
-
-  .radar-stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .radar-compare-grid-2,

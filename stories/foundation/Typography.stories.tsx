@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useEffect, useState } from "react";
-import { getCssVar } from "../helpers/css-tokens";
+import { formatTokenLabel, getCssVar, getTypographyMetricLines } from "../helpers/css-tokens";
 
 const TEXT_CLASSES: Array<{ className: string; sample: string; context: string }> = [
   { className: "text-page-title", sample: "Market Pulse", context: "Page topbar title" },
@@ -25,7 +25,7 @@ function TypographyScale() {
   return (
     <div style={{ maxWidth: 560, padding: "var(--spacing-card-padding)", background: "var(--color-bg-primary)" }}>
       <div aria-hidden="true" style={{ marginBottom: 16, fontSize: 11, color: "var(--color-text-dim)" }}>
-        Primary font: {getCssVar("--font-primary") || "Inter, sans-serif"}
+        {formatTokenLabel("--font-primary", getCssVar("--font-primary") || "Inter, sans-serif")}
       </div>
       {TEXT_CLASSES.map((item) => (
         <TypographyRow key={item.className} {...item} />
@@ -38,7 +38,6 @@ function TypographyRow({ className, sample, context }: (typeof TEXT_CLASSES)[num
   const [metrics, setMetrics] = useState({ fontSize: "", fontWeight: "", color: "" });
 
   useEffect(() => {
-    const root = getComputedStyle(document.documentElement);
     const probe = document.createElement("span");
     probe.className = className;
     probe.style.position = "absolute";
@@ -52,10 +51,9 @@ function TypographyRow({ className, sample, context }: (typeof TEXT_CLASSES)[num
       color: styles.color,
     });
     document.body.removeChild(probe);
-
-    void root;
   }, [className, sample]);
 
+  const metricLines = getTypographyMetricLines(className, metrics);
   const onDark = className.includes("text-nav-item");
 
   return (
@@ -72,9 +70,9 @@ function TypographyRow({ className, sample, context }: (typeof TEXT_CLASSES)[num
         style={
           onDark
             ? {
-                background: getCssVar("--color-sidebar-from") || "var(--color-sidebar-from)",
+                background: "var(--color-sidebar-from)",
                 padding: "8px 16px",
-                borderRadius: 8,
+                borderRadius: "var(--radius-card)",
                 margin: "8px 0 6px",
               }
             : { margin: "8px 0 6px" }
@@ -84,8 +82,12 @@ function TypographyRow({ className, sample, context }: (typeof TEXT_CLASSES)[num
           {sample}
         </p>
       </div>
-      <div aria-hidden="true" style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
-        {metrics.fontSize} · weight {metrics.fontWeight} · {metrics.color}
+      <div aria-hidden="true" style={{ fontSize: 11, color: "var(--color-text-muted)", lineHeight: 1.5 }}>
+        {metricLines.map((line) => (
+          <div key={line.label}>
+            {line.label}: {line.value}
+          </div>
+        ))}
       </div>
       <div aria-hidden="true" style={{ fontSize: 11, color: "var(--color-text-dim)", marginTop: 4 }}>
         {context}

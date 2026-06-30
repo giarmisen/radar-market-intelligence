@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useEffect, useState } from "react";
-import { colorToHex, getCssVar } from "../helpers/css-tokens";
+import { colorToHex, formatTokenLabel, getCssVar } from "../helpers/css-tokens";
 
 const COLOR_TOKENS: Array<{ name: string; usage: string; sample?: "text" | "border" | "bg" }> = [
   { name: "--color-sidebar-from", usage: "Sidebar gradient start", sample: "bg" },
@@ -72,8 +72,10 @@ function ColorSwatch({ name, usage, sample = "bg" }: (typeof COLOR_TOKENS)[numbe
       <div>
         <code style={{ fontSize: 12, color: "var(--color-text-primary)" }}>{name}</code>
         <div style={{ fontSize: 12, color: "var(--color-text-muted)", marginTop: 4 }}>
-          {hex || value || "—"}
-          {hex && value && hex !== value ? ` (${value})` : ""}
+          {formatTokenLabel(name, hex || value || "—")}
+          {hex && value && hex !== value && !value.startsWith("#") ? (
+            <span style={{ color: "var(--color-text-dim)" }}> (raw: {value})</span>
+          ) : null}
         </div>
         <div style={{ fontSize: 11, color: "var(--color-text-dim)", marginTop: 4 }}>{usage}</div>
       </div>

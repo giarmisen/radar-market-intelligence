@@ -1,0 +1,312 @@
+commit 062a08b4b3250fd92f4dd4dd31cc3f0042823136
+Author: Georgina Armisen <armisen.gi@gmail.com>
+Date:   Tue Jun 30 11:28:28 2026 +0200
+
+    fix: market pulse New Today section, button consistency (.btn-primary/.btn-secondary), remove StatGrid noise, sticky topbar, navy accent alignment, proposals empty state, report loading states
+
+diff --git a/app/actors/compare/page.tsx b/app/actors/compare/page.tsx
+index d423205..b547b3e 100644
+--- a/app/actors/compare/page.tsx
++++ b/app/actors/compare/page.tsx
+@@ -2,7 +2,6 @@ import { Suspense } from "react";
+ import { ActorCompareView } from "@/components/ActorCompareView";
+ import { AppShell } from "@/components/AppShell";
+ import { PageTopbar } from "@/components/PageTopbar";
+-import { StatGrid } from "@/components/StatGrid";
+ import {
+   getActorComparePageData,
+   getActorProfilesForCompare,
+@@ -32,20 +31,9 @@ export default async function ActorComparePage({
+     <AppShell active="actors" pendingProposals={pageData.pendingProposals}>
+       <PageTopbar
+         title="Compare actors"
+-        subtitle="Side-by-side profiles for Tier 1 actors — business model, AI strategy, and positioning."
++        subtitle="Side-by-side profiles for Tier 1 actors: business model, AI strategy, and positioning."
+       />
+       <div className="radar-content">
+-        <StatGrid
+-          stats={[
+-            {
+-              value: pageData.options.filter((option) => option.hasProfile).length,
+-              label: "Profiles available",
+-            },
+-            { value: profiles.length, label: "Selected" },
+-            { value: 3, label: "Max compare" },
+-            { value: pageData.options.length, label: "Tier 1 options" },
+-          ]}
+-        />
+         <Suspense fallback={<p className="radar-empty">Loading compare view…</p>}>
+           <ActorCompareView options={pageData.options} profiles={profiles} />
+         </Suspense>
+diff --git a/app/proposals/page.tsx b/app/proposals/page.tsx
+index 7d9969f..5744fec 100644
+--- a/app/proposals/page.tsx
++++ b/app/proposals/page.tsx
+@@ -1,33 +1,30 @@
+ import { AppShell } from "@/components/AppShell";
+ import { PageTopbar } from "@/components/PageTopbar";
++import { ProposalsEmptyState } from "@/components/ProposalsEmptyState";
+ import { ProposalsQueue } from "@/components/ProposalsQueue";
+-import { StatGrid } from "@/components/StatGrid";
+ import { getProposalsPageData } from "@/lib/proposals-page";
+ 
+ export const dynamic = "force-dynamic";
+ 
+ export default async function ProposalsPage() {
+   const data = await getProposalsPageData();
++  const isEmpty = data.proposals.length === 0;
+ 
+   return (
+     <AppShell active="proposals" pendingProposals={data.pendingProposals}>
+       <PageTopbar
+         title="Proposals"
+-        subtitle="Curation queue — review system-generated proposals and approve or reject changes."
++        subtitle="Curation queue: review system-generated proposals and approve or reject changes."
+       />
+       <div className="radar-content">
+-        <StatGrid
+-          stats={[
+-            { value: data.stats.pending, label: "Pending proposals" },
+-            { value: data.stats.evidence, label: "Evidence signals" },
+-            {
+-              value: new Set(data.proposals.map((p) => p.type)).size,
+-              label: "Proposal types",
+-            },
+-            { value: data.proposals.length, label: "Total in queue" },
+-          ]}
+-        />
+-        <ProposalsQueue proposals={data.proposals} />
++        {isEmpty ? (
++          <ProposalsEmptyState resolvedProposals={data.resolvedProposals} />
++        ) : (
++          <ProposalsQueue
++            proposals={data.proposals}
++            resolvedProposals={data.resolvedProposals}
++          />
++        )}
+       </div>
+     </AppShell>
+   );
+diff --git a/components/MarketPulsePage.tsx b/components/MarketPulsePage.tsx
+index d1a81d4..d2deb46 100644
+--- a/components/MarketPulsePage.tsx
++++ b/components/MarketPulsePage.tsx
+@@ -1,11 +1,12 @@
+ "use client";
+ 
+-import { useState } from "react";
++import { useMemo, useState } from "react";
+ import type { LivingDocumentPageData } from "@/lib/living-document";
++import { collectPulseSignalIds } from "@/lib/pulse-navigation";
+ import { ActorCard } from "./ActorCard";
+ import { FilterPills, type TierFilterValue } from "./FilterPills";
+ import { PageTopbar } from "./PageTopbar";
+-import { StatGrid } from "./StatGrid";
++import { NewTodaySection } from "./NewTodaySection";
+ import { UpcomingBar } from "./UpcomingBar";
+ import { WorthWatchingSection } from "./WorthWatchingSection";
+ 
+@@ -15,6 +16,21 @@ interface MarketPulsePageProps {
+ 
+ export function MarketPulsePage({ data }: MarketPulsePageProps) {
+   const [tierFilter, setTierFilter] = useState<TierFilterValue>("all");
++  const pulseSignalIds = useMemo(() => collectPulseSignalIds(data), [data]);
++
++  const showUpcoming =
++    (tierFilter === "all" || tierFilter === "1" || tierFilter === "2") &&
++    data.upcoming.length > 0;
++  const showNewToday =
++    (tierFilter === "all" ||
++      tierFilter === "new-today" ||
++      tierFilter === "1" ||
++      tierFilter === "2") &&
++    data.newToday.length > 0;
++  const showActorCards =
++    tierFilter === "all" || tierFilter === "1" || tierFilter === "2";
++  const showWorthWatching =
++    tierFilter === "all" || tierFilter === "worth-watching";
+ 
+   const filteredTiers = data.tiers
+     .map((tier) => ({
+@@ -23,18 +39,17 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
+         if (tierFilter === "all") {
+           return true;
+         }
+-        if (tierFilter === "worth-watching") {
+-          return false;
++        if (tierFilter === "1" || tierFilter === "2") {
++          return String(actor.tier) === tierFilter;
+         }
+-        return String(actor.tier) === tierFilter;
++        return false;
+       }),
+     }))
+     .filter((tier) => tier.actors.length > 0);
+ 
+-  const showWorthWatching =
+-    tierFilter === "all" || tierFilter === "worth-watching";
+-  const showActorCards = tierFilter !== "worth-watching";
+   const hasContent =
++    showNewToday ||
++    showUpcoming ||
+     (showActorCards && filteredTiers.some((tier) => tier.actors.length > 0)) ||
+     (showWorthWatching && data.worthWatching.length > 0);
+ 
+@@ -42,26 +57,26 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
+     <>
+       <PageTopbar
+         title="Market Pulse"
+-        subtitle="Latest signals per tracked actor — full history in Timeline."
++        subtitle="Today's signals, upcoming events, and recent market activity by tier."
+         filters={
+           <FilterPills
++            variant="market-pulse"
+             value={tierFilter}
+             onChange={setTierFilter}
++            newTodayCount={data.newToday.length}
+             worthWatchingCount={data.worthWatching.length}
+           />
+         }
+       />
+       <div className="radar-content">
+-        <StatGrid
+-          stats={[
+-            { value: data.stats.actors, label: "Actors with signals" },
+-            { value: data.stats.signals, label: "Pulse signals" },
+-            { value: data.stats.upcoming, label: "Upcoming events" },
+-            { value: data.worthWatching.length, label: "Worth watching" },
+-          ]}
+-        />
+-
+-        <UpcomingBar events={data.upcoming} />
++        {showUpcoming || showNewToday ? (
++          <div className="radar-pulse-summary">
++            {showUpcoming ? (
++              <UpcomingBar events={data.upcoming} pulseSignalIds={pulseSignalIds} />
++            ) : null}
++            {showNewToday ? <NewTodaySection signals={data.newToday} /> : null}
++          </div>
++        ) : null}
+ 
+         {!hasContent ? (
+           <p className="radar-empty">
+@@ -69,8 +84,9 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
+           </p>
+         ) : null}
+ 
+-        {showActorCards
+-          ? filteredTiers.map((tier) => (
++        {showActorCards && filteredTiers.length > 0 ? (
++          <div className="radar-pulse-tiers">
++            {filteredTiers.map((tier) => (
+               <section key={tier.tier} className="radar-tier-section">
+                 {tierFilter === "all" ? (
+                   <h2 className="radar-section-label text-section-label">{tier.label}</h2>
+@@ -81,8 +97,9 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
+                   ))}
+                 </div>
+               </section>
+-            ))
+-          : null}
++            ))}
++          </div>
++        ) : null}
+ 
+         {showWorthWatching ? (
+           <WorthWatchingSection signals={data.worthWatching} />
+diff --git a/components/TimelinePageContent.tsx b/components/TimelinePageContent.tsx
+index dde96b9..6423a53 100644
+--- a/components/TimelinePageContent.tsx
++++ b/components/TimelinePageContent.tsx
+@@ -1,57 +1,61 @@
+ "use client";
+ 
+-import { useState } from "react";
++import { useEffect, useState } from "react";
+ import type { TimelineRow } from "@/lib/timeline";
+-import { FilterPills, type TierFilterValue } from "./FilterPills";
++import { scrollToSignal } from "@/lib/pulse-navigation";
++import {
++  EMPTY_TIMELINE_FILTERS,
++  TimelineFilters,
++  type TimelineFiltersState,
++} from "./TimelineFilters";
+ import { PageTopbar } from "./PageTopbar";
+-import { StatGrid } from "./StatGrid";
+ import { TimelineTable } from "./TimelineTable";
+ 
+ interface TimelinePageContentProps {
+   rows: TimelineRow[];
+-  stats: {
+-    total: number;
+-    actors: number;
+-    categories: number;
+-  };
+-  worthWatchingCount: number;
+ }
+ 
+-export function TimelinePageContent({
+-  rows,
+-  stats,
+-  worthWatchingCount,
+-}: TimelinePageContentProps) {
+-  const [tierFilter, setTierFilter] = useState<TierFilterValue>("all");
++export function TimelinePageContent({ rows }: TimelinePageContentProps) {
++  const [filters, setFilters] = useState<TimelineFiltersState>(EMPTY_TIMELINE_FILTERS);
++
++  useEffect(() => {
++    const hash = window.location.hash;
++    if (!hash.startsWith("#signal-")) {
++      return;
++    }
++
++    const signalId = decodeURIComponent(hash.slice("#signal-".length));
++    if (!signalId) {
++      return;
++    }
++
++    const timer = window.setTimeout(() => {
++      scrollToSignal(signalId);
++    }, 0);
++
++    return () => {
++      window.clearTimeout(timer);
++    };
++  }, [rows]);
+ 
+   return (
+     <>
+       <PageTopbar
+         title="Timeline"
+-        subtitle="Full signal history — filter by tier, category, actor, relevance, and date."
++        subtitle="Full signal history. Filter by tier, category, actor, relevance, and date."
+         filters={
+-          <FilterPills
+-            value={tierFilter}
+-            onChange={setTierFilter}
+-            worthWatchingCount={worthWatchingCount}
+-          />
++          rows.length > 0 ? (
++            <TimelineFilters rows={rows} filters={filters} onChange={setFilters} />
++          ) : null
+         }
+       />
+       <div className="radar-content">
+-        <StatGrid
+-          stats={[
+-            { value: stats.total, label: "Signals in history" },
+-            { value: stats.actors, label: "Actors referenced" },
+-            { value: stats.categories, label: "Categories" },
+-            { value: worthWatchingCount, label: "Worth watching" },
+-          ]}
+-        />
+         {rows.length === 0 ? (
+           <p className="radar-empty">
+             No signals in history yet. Run ingestion to populate the timeline.
+           </p>
+         ) : (
+-          <TimelineTable rows={rows} tierFilter={tierFilter} />
++          <TimelineTable rows={rows} filters={filters} />
+         )}
+       </div>
+     </>

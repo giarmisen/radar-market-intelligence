@@ -1,0 +1,4 @@
+app/actors/compare/page.tsx
+app/proposals/page.tsx
+components/MarketPulsePage.tsx
+components/TimelinePageContent.tsx
