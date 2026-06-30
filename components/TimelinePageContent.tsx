@@ -1,57 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TimelineRow } from "@/lib/timeline";
-import { FilterPills, type TierFilterValue } from "./FilterPills";
+import { scrollToSignal } from "@/lib/pulse-navigation";
+import {
+  EMPTY_TIMELINE_FILTERS,
+  TimelineFilters,
+  type TimelineFiltersState,
+} from "./TimelineFilters";
 import { PageTopbar } from "./PageTopbar";
-import { StatGrid } from "./StatGrid";
 import { TimelineTable } from "./TimelineTable";
 
 interface TimelinePageContentProps {
   rows: TimelineRow[];
-  stats: {
-    total: number;
-    actors: number;
-    categories: number;
-  };
-  worthWatchingCount: number;
 }
 
-export function TimelinePageContent({
-  rows,
-  stats,
-  worthWatchingCount,
-}: TimelinePageContentProps) {
-  const [tierFilter, setTierFilter] = useState<TierFilterValue>("all");
+export function TimelinePageContent({ rows }: TimelinePageContentProps) {
+  const [filters, setFilters] = useState<TimelineFiltersState>(EMPTY_TIMELINE_FILTERS);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#signal-")) {
+      return;
+    }
+
+    const signalId = decodeURIComponent(hash.slice("#signal-".length));
+    if (!signalId) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      scrollToSignal(signalId);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [rows]);
 
   return (
     <>
       <PageTopbar
         title="Timeline"
-        subtitle="Full signal history — filter by tier, category, actor, relevance, and date."
+        subtitle="Full signal history. Filter by tier, category, actor, relevance, and date."
         filters={
-          <FilterPills
-            value={tierFilter}
-            onChange={setTierFilter}
-            worthWatchingCount={worthWatchingCount}
-          />
+          rows.length > 0 ? (
+            <TimelineFilters rows={rows} filters={filters} onChange={setFilters} />
+          ) : null
         }
       />
       <div className="radar-content">
-        <StatGrid
-          stats={[
-            { value: stats.total, label: "Signals in history" },
-            { value: stats.actors, label: "Actors referenced" },
-            { value: stats.categories, label: "Categories" },
-            { value: worthWatchingCount, label: "Worth watching" },
-          ]}
-        />
         {rows.length === 0 ? (
           <p className="radar-empty">
             No signals in history yet. Run ingestion to populate the timeline.
           </p>
         ) : (
-          <TimelineTable rows={rows} tierFilter={tierFilter} />
+          <TimelineTable rows={rows} filters={filters} />
         )}
       </div>
     </>

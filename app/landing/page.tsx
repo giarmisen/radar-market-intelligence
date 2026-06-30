@@ -156,7 +156,7 @@ function MarketPulsePreview() {
       {/* Header */}
       <div {...item(0, 0, -20, null)} style={{ ...item(0, 0, -20, null).style, marginBottom: 16 }}>
         <div style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>Market Pulse</div>
-        <div style={{ fontSize: 13, color: '#94A3B8' }}>Latest updates per tracked player — full history in Timeline.</div>
+        <div style={{ fontSize: 13, color: '#94A3B8' }}>Latest updates per tracked player. Full history in Timeline.</div>
       </div>
 
       {/* Filters */}
@@ -202,12 +202,12 @@ function MarketPulsePreview() {
       }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', color: '#94A3B8' }}>UPCOMING</span>
         <span style={{ background: '#F1F5F9', padding: '2px 10px', borderRadius: 6, fontSize: 12, color: '#0F172A', fontWeight: 500 }}>Oct 1, 2026</span>
-        <span>LocWorld52 — major localization industry conference</span>
+        <span>LocWorld52, major localization industry conference</span>
       </div>
 
       {/* Tier label */}
       <div style={{ ...item(400, 0, 0, null).style, fontSize: 11, fontWeight: 700, letterSpacing: '.1em', color: '#94A3B8', marginBottom: 12 }}>
-        TIER 1 — FOCUS
+        TIER 1 (FOCUS)
       </div>
 
       {/* Actor cards */}
@@ -346,7 +346,7 @@ function HeroCards() {
             </svg>
           </div>
           <div style={{ fontSize: 14, color: '#334155', lineHeight: 1.6, marginBottom: 14 }}>
-            Interesting move from TransPerfect — combining MPC and The Mill into a single studio operation. Signals consolidation across localization and creative production. Worth watching.
+            Interesting move from TransPerfect, combining MPC and The Mill into a single studio operation. Signals consolidation across localization and creative production. Worth watching.
           </div>
           <div style={{ fontSize: 12, color: '#94A3B8', paddingBottom: 8 }}>4:32 PM · Jun 18, 2026</div>
         </SwapCard>
@@ -381,7 +381,7 @@ function HeroCards() {
         <SwapCard>
           <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 14, marginBottom: 14 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#94A3B8', marginBottom: 8 }}>INBOX</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>Slator Weekly — Issue #214</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>Slator Weekly, Issue #214</div>
             <div style={{ fontSize: 12, color: '#94A3B8' }}>Slator · slator.com · Jun 18, 2026</div>
           </div>
           <div style={{ fontSize: 14, color: '#475569', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -399,7 +399,7 @@ function HeroCards() {
             <span style={{ fontSize: 12, color: '#94A3B8', marginLeft: 'auto' }}>Jun 18 · 08:14</span>
           </div>
           <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', marginBottom: 8 }}>
-            &ldquo;Welocalize&rdquo; — 4 new results
+            &ldquo;Welocalize&rdquo;, 4 new results
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingBottom: 8 }}>
             {[
@@ -433,7 +433,7 @@ function ActorProfilePreview() {
   });
 
   const boxes = [
-    { label: 'BUSINESS MODEL', value: 'SaaS MT — freemium to enterprise' },
+    { label: 'BUSINESS MODEL', value: 'SaaS MT (freemium to enterprise)' },
     { label: 'AI STRATEGY', value: 'Quality leader vs Google/Microsoft on European pairs. Expanding into writing assistance (DeepL Write).' },
     { label: 'RECENT MOVES', value: 'Nimdzi 100 2026 placed DeepL alongside legacy LSPs for the first time.' },
     { label: 'CORE PRODUCTS', value: 'DeepL Translator · Pro · Write · API' },

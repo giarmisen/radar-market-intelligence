@@ -13,7 +13,7 @@ export function WorthWatchingSection({ signals }: WorthWatchingSectionProps) {
   return (
     <section id="worth-watching" className="radar-worth-watching">
       <h2 className="radar-worth-watching-label">
-        Worth Watching — Signals from beyond the radar
+        Worth Watching: signals from beyond the radar
       </h2>
       <div className="radar-worth-watching-list">
         {signals.map((signal) => (

@@ -10,10 +10,14 @@ import { FilterPills, type TierFilterValue } from "@/components/FilterPills";
 function FilterPillsDemo({
   value,
   worthWatchingCount,
+  newTodayCount,
+  variant,
   onChange,
 }: {
   value: TierFilterValue;
   worthWatchingCount: number;
+  newTodayCount?: number;
+  variant?: "timeline" | "market-pulse" | "actors";
   onChange: (value: TierFilterValue) => void;
 }) {
   const [current, setCurrent] = useState(value);
@@ -25,6 +29,8 @@ function FilterPillsDemo({
   return (
     <FilterPills
       value={current}
+      variant={variant}
+      newTodayCount={newTodayCount}
       onChange={(next) => {
         setCurrent(next);
         onChange(next);
@@ -52,7 +58,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Tier filter pill group for Market Pulse and Timeline. Use in PageTopbar to filter actor tiers and worth-watching signals.",
+          "Tier filter pill group for Market Pulse, Timeline, and Actors. Use in PageTopbar to filter actor tiers and worth-watching signals.",
       },
     },
   },
@@ -66,8 +72,17 @@ const meta = {
   argTypes: {
     value: {
       control: "select",
-      options: ["all", "1", "2", "worth-watching"],
+      options: ["all", "new-today", "0", "1", "2", "worth-watching"],
       description: "Active tier filter selection",
+    },
+    variant: {
+      control: "select",
+      options: ["timeline", "market-pulse", "actors"],
+      description: "Timeline shows All tiers; Market Pulse shows New Today (N); Actors shows Tier 0–2",
+    },
+    newTodayCount: {
+      control: { type: "number", min: 0 },
+      description: "New today signal count — hides pill when zero (market-pulse only)",
     },
     worthWatchingCount: {
       control: { type: "number", min: 0 },
@@ -142,5 +157,56 @@ export const NoWorthWatching: Story = {
       "aria-pressed",
       "true",
     );
+  },
+};
+
+export const MarketPulse: Story = {
+  args: {
+    variant: "market-pulse",
+    value: "all",
+    newTodayCount: 2,
+    worthWatchingCount: 3,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getByRole("button", { name: "All" })).toBeVisible();
+    expect(canvas.getByRole("button", { name: "New Today (2)" })).toBeVisible();
+    await clickPillAndExpectActive(canvasElement, "All");
+    await clickPillAndExpectActive(canvasElement, "New Today (2)");
+    await clickPillAndExpectActive(canvasElement, "Tier 1");
+  },
+};
+
+export const MarketPulseNoNewToday: Story = {
+  args: {
+    variant: "market-pulse",
+    value: "all",
+    newTodayCount: 0,
+    worthWatchingCount: 3,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.queryByRole("button", { name: /New Today/ })).toBeNull();
+    expect(canvas.getByRole("button", { name: "All" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(canvas.getByRole("button", { name: "Tier 1" })).toBeVisible();
+  },
+};
+
+export const Actors: Story = {
+  args: {
+    variant: "actors",
+    value: "all",
+    worthWatchingCount: 0,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    expect(canvas.getByRole("button", { name: "All tiers" })).toBeVisible();
+    expect(canvas.getByRole("button", { name: "Tier 0" })).toBeVisible();
+    expect(canvas.queryByRole("button", { name: /Worth Watching/ })).toBeNull();
+    await clickPillAndExpectActive(canvasElement, "Tier 0");
+    await clickPillAndExpectActive(canvasElement, "Tier 2");
   },
 };

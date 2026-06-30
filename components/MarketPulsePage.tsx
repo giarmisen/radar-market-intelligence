@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { LivingDocumentPageData } from "@/lib/living-document";
+import { collectPulseSignalIds } from "@/lib/pulse-navigation";
 import { ActorCard } from "./ActorCard";
 import { FilterPills, type TierFilterValue } from "./FilterPills";
 import { PageTopbar } from "./PageTopbar";
-import { StatGrid } from "./StatGrid";
+import { NewTodaySection } from "./NewTodaySection";
 import { UpcomingBar } from "./UpcomingBar";
 import { WorthWatchingSection } from "./WorthWatchingSection";
 
@@ -15,6 +16,21 @@ interface MarketPulsePageProps {
 
 export function MarketPulsePage({ data }: MarketPulsePageProps) {
   const [tierFilter, setTierFilter] = useState<TierFilterValue>("all");
+  const pulseSignalIds = useMemo(() => collectPulseSignalIds(data), [data]);
+
+  const showUpcoming =
+    (tierFilter === "all" || tierFilter === "1" || tierFilter === "2") &&
+    data.upcoming.length > 0;
+  const showNewToday =
+    (tierFilter === "all" ||
+      tierFilter === "new-today" ||
+      tierFilter === "1" ||
+      tierFilter === "2") &&
+    data.newToday.length > 0;
+  const showActorCards =
+    tierFilter === "all" || tierFilter === "1" || tierFilter === "2";
+  const showWorthWatching =
+    tierFilter === "all" || tierFilter === "worth-watching";
 
   const filteredTiers = data.tiers
     .map((tier) => ({
@@ -23,18 +39,17 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
         if (tierFilter === "all") {
           return true;
         }
-        if (tierFilter === "worth-watching") {
-          return false;
+        if (tierFilter === "1" || tierFilter === "2") {
+          return String(actor.tier) === tierFilter;
         }
-        return String(actor.tier) === tierFilter;
+        return false;
       }),
     }))
     .filter((tier) => tier.actors.length > 0);
 
-  const showWorthWatching =
-    tierFilter === "all" || tierFilter === "worth-watching";
-  const showActorCards = tierFilter !== "worth-watching";
   const hasContent =
+    showNewToday ||
+    showUpcoming ||
     (showActorCards && filteredTiers.some((tier) => tier.actors.length > 0)) ||
     (showWorthWatching && data.worthWatching.length > 0);
 
@@ -42,26 +57,26 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
     <>
       <PageTopbar
         title="Market Pulse"
-        subtitle="Latest signals per tracked actor — full history in Timeline."
+        subtitle="Today's signals, upcoming events, and recent market activity by tier."
         filters={
           <FilterPills
+            variant="market-pulse"
             value={tierFilter}
             onChange={setTierFilter}
+            newTodayCount={data.newToday.length}
             worthWatchingCount={data.worthWatching.length}
           />
         }
       />
       <div className="radar-content">
-        <StatGrid
-          stats={[
-            { value: data.stats.actors, label: "Actors with signals" },
-            { value: data.stats.signals, label: "Pulse signals" },
-            { value: data.stats.upcoming, label: "Upcoming events" },
-            { value: data.worthWatching.length, label: "Worth watching" },
-          ]}
-        />
-
-        <UpcomingBar events={data.upcoming} />
+        {showUpcoming || showNewToday ? (
+          <div className="radar-pulse-summary">
+            {showUpcoming ? (
+              <UpcomingBar events={data.upcoming} pulseSignalIds={pulseSignalIds} />
+            ) : null}
+            {showNewToday ? <NewTodaySection signals={data.newToday} /> : null}
+          </div>
+        ) : null}
 
         {!hasContent ? (
           <p className="radar-empty">
@@ -69,8 +84,9 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
           </p>
         ) : null}
 
-        {showActorCards
-          ? filteredTiers.map((tier) => (
+        {showActorCards && filteredTiers.length > 0 ? (
+          <div className="radar-pulse-tiers">
+            {filteredTiers.map((tier) => (
               <section key={tier.tier} className="radar-tier-section">
                 {tierFilter === "all" ? (
                   <h2 className="radar-section-label text-section-label">{tier.label}</h2>
@@ -81,8 +97,9 @@ export function MarketPulsePage({ data }: MarketPulsePageProps) {
                   ))}
                 </div>
               </section>
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
 
         {showWorthWatching ? (
           <WorthWatchingSection signals={data.worthWatching} />

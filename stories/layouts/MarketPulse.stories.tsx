@@ -39,14 +39,14 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvasElement.querySelector(".radar-upcoming")).toBeVisible();
+    expect(canvasElement.querySelector('[aria-label="Upcoming events"]')).toBeVisible();
 
     const actorCards = canvasElement.querySelectorAll(".radar-card");
     expect(actorCards.length).toBeGreaterThan(0);
 
     expect(canvasElement.querySelector("#worth-watching")).toBeVisible();
     expect(
-      canvas.getByRole("heading", { name: /Worth Watching — Signals from beyond the radar/ }),
+      canvas.getByRole("heading", { name: /Worth Watching: signals from beyond the radar/i }),
     ).toBeVisible();
   },
 };

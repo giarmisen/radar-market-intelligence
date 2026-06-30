@@ -9,9 +9,14 @@ import { GroupedSources } from "./GroupedSources";
 interface SignalItemProps {
   signal: LivingDocumentSignal;
   variant?: "default" | "worth-watching";
+  showNewBadge?: boolean;
 }
 
-export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
+export function SignalItem({
+  signal,
+  variant = "default",
+  showNewBadge = true,
+}: SignalItemProps) {
   const sourceCount = signal.source_count ?? signal.grouped_sources?.length ?? 1;
   const groupedSources =
     signal.grouped_sources ??
@@ -30,13 +35,17 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
 
   if (variant === "worth-watching") {
     return (
-      <article className="radar-worth-watching-card">
+    <article
+      id={`signal-${signal.id}`}
+      data-signal-id={signal.id}
+      className="radar-worth-watching-card"
+    >
         <div className="radar-signal-header">
           <div>
             <span className="text-date radar-signal-date">
               {formatDate(signal.event_date)}
             </span>
-            <SignalBadge capturedAt={signal.captured_at} />
+            {showNewBadge ? <SignalBadge capturedAt={signal.captured_at} /> : null}
             <CategoryBadge category={signal.category} />
             {sourceCount > 1 ? (
               <span className="radar-source-count-badge">{sourceCount} sources</span>
@@ -65,13 +74,17 @@ export function SignalItem({ signal, variant = "default" }: SignalItemProps) {
         : "radar-signal-1";
 
   return (
-    <article className={`radar-signal ${scoreClass}`}>
+    <article
+      id={`signal-${signal.id}`}
+      data-signal-id={signal.id}
+      className={`radar-signal ${scoreClass}`}
+    >
       <div className="radar-signal-header">
         <div>
           <span className="text-date radar-signal-date">
             {formatDate(signal.event_date)}
           </span>
-          <SignalBadge capturedAt={signal.captured_at} />
+          {showNewBadge ? <SignalBadge capturedAt={signal.captured_at} /> : null}
           <CategoryBadge category={signal.category} />
           {sourceCount > 1 ? (
             <span className="radar-source-count-badge">{sourceCount} sources</span>

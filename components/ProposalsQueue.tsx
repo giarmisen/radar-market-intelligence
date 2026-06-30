@@ -2,14 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { ProposalItem } from "@/lib/proposals-page";
+import type { ProposalItem, ResolvedProposalItem } from "@/lib/proposals-page";
 import { formatDate, formatDateTime, formatProposalType } from "@/lib/format";
+import { ProposalsEmptyState } from "./ProposalsEmptyState";
 
 interface ProposalsQueueProps {
   proposals: ProposalItem[];
+  resolvedProposals: ResolvedProposalItem[];
 }
 
-export function ProposalsQueue({ proposals: initial }: ProposalsQueueProps) {
+export function ProposalsQueue({
+  proposals: initial,
+  resolvedProposals,
+}: ProposalsQueueProps) {
   const router = useRouter();
   const [proposals, setProposals] = useState(initial);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -52,12 +57,7 @@ export function ProposalsQueue({ proposals: initial }: ProposalsQueueProps) {
   }
 
   if (proposals.length === 0) {
-    return (
-      <p className="radar-empty">
-        No pending proposals. The system will surface curation items after
-        ingestion runs.
-      </p>
-    );
+    return <ProposalsEmptyState resolvedProposals={resolvedProposals} />;
   }
 
   return (
@@ -121,7 +121,7 @@ export function ProposalsQueue({ proposals: initial }: ProposalsQueueProps) {
           <div className="radar-proposal-actions">
             <button
               type="button"
-              className="radar-btn radar-btn-approve"
+              className="btn-primary"
               disabled={loadingId === proposal.id}
               onClick={() => resolve(proposal.id, "approve")}
             >
@@ -129,7 +129,7 @@ export function ProposalsQueue({ proposals: initial }: ProposalsQueueProps) {
             </button>
             <button
               type="button"
-              className="radar-btn radar-btn-reject"
+              className="btn-secondary"
               disabled={loadingId === proposal.id}
               onClick={() => resolve(proposal.id, "reject")}
             >

@@ -4,7 +4,7 @@ import { getCssVar } from "../helpers/css-tokens";
 
 const TEXT_CLASSES: Array<{ className: string; sample: string; context: string }> = [
   { className: "text-page-title", sample: "Market Pulse", context: "Page topbar title" },
-  { className: "text-section-label", sample: "Tier 1 — Enterprise LSPs", context: "Section eyebrows and table group labels" },
+  { className: "text-section-label", sample: "Tier 1 (Enterprise LSPs)", context: "Section eyebrows and table group labels" },
   { className: "text-actor-name", sample: "TransPerfect", context: "Actor card and registry names" },
   { className: "text-actor-meta", sample: "Processor · Tier 1 · US, EU", context: "Actor role, tier, and geography" },
   { className: "text-signal-body", sample: "Phrase shipped in-context AI quality estimation across Memsource projects.", context: "Signal summary text" },

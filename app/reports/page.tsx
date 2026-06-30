@@ -1,6 +1,5 @@
 import { AppShell } from "@/components/AppShell";
-import { PageTopbar } from "@/components/PageTopbar";
-import { QuarterlyReviewPanel } from "@/components/QuarterlyReviewPanel";
+import { ReportsPageContent } from "@/components/ReportsPageContent";
 import { loadDomainConfig, resolveDomainSlug } from "@/lib/config-loader";
 import { getDomainMeta, getPendingProposalsCount } from "@/lib/domain";
 
@@ -14,13 +13,7 @@ export default async function ReportsPage() {
 
   return (
     <AppShell active="reports" pendingProposals={pendingProposals}>
-      <PageTopbar
-        title="Market Report"
-        subtitle="Generate an on-demand analyst briefing from signals in any date range."
-      />
-      <div className="radar-content">
-        <QuarterlyReviewPanel domainSlug={slug} domainName={config.name} />
-      </div>
+      <ReportsPageContent domainSlug={slug} domainName={config.name} />
     </AppShell>
   );
 }

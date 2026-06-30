@@ -9,6 +9,28 @@ export type ProposalType =
 
 export type ProposalStatus = "pending" | "approved" | "rejected";
 
+/** Post-ingestion checks (Phase 5). Surfaced in the Proposals empty state. */
+export const PROPOSAL_TRIGGER_RULES: ReadonlyArray<{
+  type: ProposalType;
+  description: string;
+}> = [
+  {
+    type: "promote_actor",
+    description:
+      "A Tier 3 actor appears in 3 or more signals this month → proposal to promote to Tier 2",
+  },
+  {
+    type: "new_tier0_source",
+    description:
+      "An untracked source URL appears in 5 or more high-relevance signals → proposal to add as a Tier 0 reference source",
+  },
+  {
+    type: "archive_actor",
+    description:
+      "An active actor appears in a lifecycle signal (acquisition, shutdown, or major pivot) → proposal to archive or redirect tracking",
+  },
+];
+
 export interface ProposalRecord {
   id: string;
   domain_id: string;

@@ -6,9 +6,11 @@ import {
   formatProposalType,
   formatRole,
 } from "@/lib/format";
+import type { TierFilterValue } from "./FilterPills";
 
 interface ActorsRegistryProps {
   data: ActorsPageData;
+  tierFilter?: TierFilterValue;
 }
 
 function statusClassName(status: string): string {
@@ -21,10 +23,21 @@ function statusClassName(status: string): string {
   return "radar-status-archived";
 }
 
-export function ActorsRegistry({ data }: ActorsRegistryProps) {
+export function ActorsRegistry({ data, tierFilter = "all" }: ActorsRegistryProps) {
+  const filteredTiers =
+    tierFilter === "all"
+      ? data.tiers
+      : data.tiers.filter((tier) => tier.tier === Number(tierFilter));
+
+  if (filteredTiers.length === 0) {
+    return (
+      <p className="radar-empty">No actors in this tier.</p>
+    );
+  }
+
   return (
     <>
-      {data.tiers.map((tier) => (
+      {filteredTiers.map((tier) => (
         <section key={tier.tier} className="radar-tier-section">
           <div className="radar-actors-section-header">
             <h2 className="radar-section-label text-section-label">{tier.label}</h2>

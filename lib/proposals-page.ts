@@ -22,10 +22,19 @@ export interface ProposalItem {
   evidence: EvidenceSignal[];
 }
 
+export interface ResolvedProposalItem {
+  id: string;
+  type: ProposalType;
+  status: "approved" | "rejected";
+  subjectLabel: string | null;
+  resolved_at: string;
+}
+
 export interface ProposalsPageData {
   domainName: string;
   domainSlug: string;
   proposals: ProposalItem[];
+  resolvedProposals: ResolvedProposalItem[];
   pendingProposals: number;
   stats: {
     pending: number;
@@ -50,21 +59,32 @@ export async function getProposalsPageData(
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
+  const { data: resolvedData, error: resolvedError } = await supabase
+    .from("proposals")
+    .select("id, type, status, resolved_at, subject_actor_id, subject_source_id")
+    .eq("domain_id", domain.id)
+    .in("status", ["approved", "rejected"])
+    .order("resolved_at", { ascending: false });
+
   if (error) {
     throw new Error(`proposals: ${error.message}`);
   }
+  if (resolvedError) {
+    throw new Error(`resolved proposals: ${resolvedError.message}`);
+  }
 
   const proposalRows = data ?? [];
+  const resolvedRows = resolvedData ?? [];
   const actorIds = Array.from(
     new Set(
-      proposalRows
+      [...proposalRows, ...resolvedRows]
         .map((row) => row.subject_actor_id)
         .filter((id): id is string => Boolean(id)),
     ),
   );
   const sourceIds = Array.from(
     new Set(
-      proposalRows
+      [...proposalRows, ...resolvedRows]
         .map((row) => row.subject_source_id)
         .filter((id): id is string => Boolean(id)),
     ),
@@ -153,10 +173,36 @@ export async function getProposalsPageData(
     0,
   );
 
+  const resolvedProposals: ResolvedProposalItem[] = resolvedRows
+    .filter((row) => Boolean(row.resolved_at))
+    .map((row) => {
+      const actor = row.subject_actor_id
+        ? actorById.get(row.subject_actor_id)
+        : null;
+      const source = row.subject_source_id
+        ? sourceById.get(row.subject_source_id)
+        : null;
+
+      const subjectLabel = actor
+        ? (actor.name as string)
+        : source
+          ? (source.label as string)
+          : null;
+
+      return {
+        id: row.id as string,
+        type: row.type as ProposalType,
+        status: row.status as "approved" | "rejected",
+        subjectLabel,
+        resolved_at: row.resolved_at as string,
+      };
+    });
+
   return {
     domainName: config.name,
     domainSlug: slug,
     proposals,
+    resolvedProposals,
     pendingProposals: await getPendingProposalsCount(domain.id),
     stats: {
       pending: proposals.length,

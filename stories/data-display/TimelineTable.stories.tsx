@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, within } from "storybook/test";
+import { EMPTY_TIMELINE_FILTERS } from "@/components/TimelineFilters";
 import { TimelineTable } from "@/components/TimelineTable";
 import { timelineRows } from "../fixtures";
 
@@ -10,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Sortable, filterable signal table with responsive card fallback. Use on the Timeline page for full signal history.",
+          "Sortable signal table with responsive card fallback. Filters live in PageTopbar via TimelineFilters on the Timeline page.",
       },
     },
   },
@@ -26,15 +27,14 @@ const meta = {
       control: "object",
       description: "Timeline signal rows with actors, scores, and source URLs",
     },
-    tierFilter: {
-      control: "select",
-      options: ["all", "1", "2", "worth-watching"],
-      description: "Tier filter applied from the page topbar",
+    filters: {
+      control: "object",
+      description: "Active timeline filters (managed by TimelineFilters in the page topbar)",
     },
   },
   args: {
     rows: timelineRows(),
-    tierFilter: "all",
+    filters: EMPTY_TIMELINE_FILTERS,
   },
 } satisfies Meta<typeof TimelineTable>;
 
@@ -43,43 +43,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
     const rows = canvasElement.querySelectorAll("tbody tr");
     expect(rows.length).toBeGreaterThan(0);
-
-    const categorySelect = canvas.getByLabelText("Filter by category");
-    expect(categorySelect).toBeVisible();
-    const countBefore = canvas.getByText(/\d+ of \d+ signals/).textContent;
-    await userEvent.selectOptions(categorySelect, "product");
-    const countAfter = canvas.getByText(/\d+ of \d+ signals/).textContent;
-    expect(countAfter).toBeDefined();
-    expect(categorySelect).toHaveValue("product");
-    expect(countAfter).not.toBe(countBefore);
-
-    const fromDate = canvas.getByLabelText("From date");
-    const toDate = canvas.getByLabelText("To date");
-    expect(fromDate).toBeVisible();
-    expect(toDate).toBeVisible();
-    expect(fromDate).toHaveAttribute("type", "date");
-    expect(toDate).toHaveAttribute("type", "date");
   },
 };
 
-export const TierOneFilter: Story = {
+export const WorthWatchingFilter: Story = {
   args: {
-    tierFilter: "1",
-  },
-};
-
-export const TierTwoFilter: Story = {
-  args: {
-    tierFilter: "2",
+    filters: { ...EMPTY_TIMELINE_FILTERS, tier: "worth-watching" },
   },
 };
 
 export const Empty: Story = {
   args: {
     rows: [],
+    filters: EMPTY_TIMELINE_FILTERS,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

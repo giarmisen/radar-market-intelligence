@@ -21,7 +21,7 @@ export default async function ActorProfilePage({ params }: ActorProfilePageProps
     <AppShell active="actors" pendingProposals={data.pendingProposals}>
       <PageTopbar
         title={data.actor.name}
-        subtitle="Actor profile — business context, AI strategy, and linked signals."
+        subtitle="Actor profile: business context, AI strategy, and linked signals."
       />
       <div className="radar-content">
         <ActorProfileDetail data={data} />

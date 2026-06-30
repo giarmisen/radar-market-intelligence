@@ -2,44 +2,27 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { TimelineRow } from "@/lib/timeline";
-import type { TierFilterValue } from "./FilterPills";
-import type { SignalCategory } from "@/lib/types";
 import {
-  formatCategory,
   formatDate,
   formatLifecycle,
 } from "@/lib/format";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SignalBadge } from "@/components/ui/SignalBadge";
 import { GroupedSources } from "./GroupedSources";
+import {
+  filterTimelineRows,
+  type TimelineFiltersState,
+} from "./TimelineFilters";
 
 interface TimelineTableProps {
   rows: TimelineRow[];
-  tierFilter?: TierFilterValue;
+  filters: TimelineFiltersState;
 }
+
+const PAGE_SIZE = 25;
 
 type SortKey = "event_date" | "category" | "relevance" | "top_tier";
 type SortDir = "asc" | "desc";
-
-const CATEGORIES: SignalCategory[] = [
-  "product",
-  "regulatory",
-  "geopolitical",
-  "commercial",
-  "team",
-  "communications",
-  "technical",
-];
-
-const EMPTY_FILTERS = {
-  category: "",
-  actor: "",
-  relevance: "",
-  dateFrom: "",
-  dateTo: "",
-};
-
-const PAGE_SIZE = 25;
 
 function timelineSources(row: TimelineRow) {
   const sourceCount = row.source_count ?? row.grouped_sources?.length ?? 1;
@@ -67,7 +50,7 @@ function TimelineCard({ row }: { row: TimelineRow }) {
   const { sourceCount, sources } = timelineSources(row);
 
   return (
-    <article className="timeline-card">
+    <article data-signal-id={row.id} className="timeline-card">
       <div className="timeline-card-content">
         <p className="text-signal-body timeline-card-summary">{row.summary}</p>
         {row.so_what ? (
@@ -100,56 +83,19 @@ function TimelineCard({ row }: { row: TimelineRow }) {
   );
 }
 
-export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) {
+export function TimelineTable({ rows, filters }: TimelineTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("event_date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filters, tierFilter, sortKey, sortDir]);
+  }, [filters, sortKey, sortDir]);
 
-  const actorOptions = useMemo(() => {
-    const names = new Set<string>();
-    for (const row of rows) {
-      for (const actor of row.actors) {
-        names.add(actor.name);
-      }
-    }
-    return Array.from(names).sort();
-  }, [rows]);
-
-  const filtered = useMemo(() => {
-    return rows.filter((row) => {
-      if (tierFilter === "worth-watching") {
-        if (row.actors.length > 0) {
-          return false;
-        }
-      } else if (tierFilter !== "all") {
-        if (row.top_tier !== Number(tierFilter)) {
-          return false;
-        }
-      }
-
-      if (filters.category && row.category !== filters.category) {
-        return false;
-      }
-      if (filters.actor && !row.actors.some((a) => a.name === filters.actor)) {
-        return false;
-      }
-      if (filters.relevance && row.relevance !== Number(filters.relevance)) {
-        return false;
-      }
-      if (filters.dateFrom && row.event_date < filters.dateFrom) {
-        return false;
-      }
-      if (filters.dateTo && row.event_date > filters.dateTo) {
-        return false;
-      }
-      return true;
-    });
-  }, [rows, filters, tierFilter]);
+  const filtered = useMemo(
+    () => filterTimelineRows(rows, filters),
+    [rows, filters],
+  );
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -204,77 +150,6 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
 
   return (
     <>
-      <div className="radar-filters">
-        <span className="radar-filter-label">Filters</span>
-        <select
-          className="radar-filter-control"
-          value={filters.category}
-          aria-label="Filter by category"
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, category: e.target.value }))
-          }
-        >
-          <option value="">All categories</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {formatCategory(cat)}
-            </option>
-          ))}
-        </select>
-        <select
-          className="radar-filter-control"
-          value={filters.actor}
-          aria-label="Filter by actor"
-          onChange={(e) => setFilters((f) => ({ ...f, actor: e.target.value }))}
-        >
-          <option value="">All actors</option>
-          {actorOptions.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="radar-filter-control"
-          value={filters.relevance}
-          aria-label="Filter by relevance"
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, relevance: e.target.value }))
-          }
-        >
-          <option value="">All relevance</option>
-          <option value="3">3 — Critical</option>
-          <option value="2">2 — Relevant</option>
-          <option value="1">1 — Context</option>
-        </select>
-        <input
-          type="date"
-          className="radar-filter-control"
-          value={filters.dateFrom}
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, dateFrom: e.target.value }))
-          }
-          aria-label="From date"
-        />
-        <input
-          type="date"
-          className="radar-filter-control"
-          value={filters.dateTo}
-          onChange={(e) => setFilters((f) => ({ ...f, dateTo: e.target.value }))}
-          aria-label="To date"
-        />
-        <button
-          type="button"
-          className="radar-filter-reset"
-          onClick={() => setFilters(EMPTY_FILTERS)}
-        >
-          Reset
-        </button>
-        <span className="radar-filter-count">
-          {sorted.length} of {rows.length} signals
-        </span>
-      </div>
-
       <div className="timeline-views">
         <div className="radar-table-wrap timeline-table-wrap">
           <table className="radar-table timeline-table">
@@ -329,7 +204,7 @@ export function TimelineTable({ rows, tierFilter = "all" }: TimelineTableProps) 
               </tr>
             ) : (
               visibleRows.map((row) => (
-                <tr key={row.id}>
+                <tr key={row.id} data-signal-id={row.id}>
                   <td className="radar-table-col-date">
                     <div className="radar-table-badge-row">
                       <span className="text-date radar-signal-date">

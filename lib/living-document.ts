@@ -51,6 +51,7 @@ export interface LivingDocumentPageData {
   domainName: string;
   domainSlug: string;
   upcoming: UpcomingEvent[];
+  newToday: LivingDocumentSignal[];
   tiers: TierSection[];
   worthWatching: LivingDocumentSignal[];
   stats: {
@@ -62,8 +63,8 @@ export interface LivingDocumentPageData {
 }
 
 const TIER_LABELS: Record<number, string> = {
-  1: "Tier 1 — Focus",
-  2: "Tier 2 — Peripheral",
+  1: "Tier 1 (Focus)",
+  2: "Tier 2 (Peripheral)",
 };
 
 /** Max signals shown per actor card on Market Pulse */
@@ -165,6 +166,109 @@ function logMarketPulseDebug(params: {
 
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+function todayUtcRange(): { start: string; end: string } {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 1);
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+async function loadNewTodaySignals(
+  domainId: string,
+  actorById: Map<string, { name: string; domain_id: string }>,
+): Promise<{ data: LivingDocumentSignal[]; error: Error | null }> {
+  const supabase = getSupabase();
+  const { start, end } = todayUtcRange();
+
+  const { data: rows, error } = await supabase
+    .from("signals")
+    .select(
+      `
+        id,
+        title,
+        summary,
+        so_what,
+        category,
+        relevance,
+        event_date,
+        source_url,
+        captured_at,
+        lifecycle,
+        grouped_sources,
+        source_count
+      `,
+    )
+    .eq("domain_id", domainId)
+    .gte("relevance", 2)
+    .gte("captured_at", start)
+    .lt("captured_at", end)
+    .order("relevance", { ascending: false })
+    .order("event_date", { ascending: false });
+
+  if (error) {
+    return { data: [], error: new Error(`new_today: ${error.message}`) };
+  }
+
+  const signalIds = (rows ?? []).map((signal) => signal.id as string);
+  if (signalIds.length === 0) {
+    return { data: [], error: null };
+  }
+
+  const { data: links, error: linksError } = await supabase
+    .from("signal_actors")
+    .select("signal_id, actor_id")
+    .in("signal_id", signalIds);
+
+  if (linksError) {
+    return {
+      data: [],
+      error: new Error(`new_today signal_actors: ${linksError.message}`),
+    };
+  }
+
+  const { bySignalId } = buildActorNamesBySignalId(
+    (links ?? []) as Array<{ signal_id: string; actor_id: string }>,
+    actorById,
+    domainId,
+  );
+
+  const signals = dedupeRowsBySourceUrl(
+    (rows ?? []).map((signal) =>
+      withStoredGroupedMetadata(
+        {
+          id: signal.id as string,
+          title: signal.title as string,
+          summary: signal.summary as string,
+          so_what: signal.so_what as string | null,
+          category: signal.category as SignalCategory,
+          relevance: signal.relevance as number,
+          event_date: signal.event_date as string,
+          source_url: signal.source_url as string,
+          captured_at: (signal.captured_at as string | null) ?? undefined,
+          lifecycle: signal.lifecycle as string | null,
+          actor_names: bySignalId.get(signal.id as string) ?? [],
+        },
+        signal.grouped_sources,
+        signal.source_count,
+      ),
+    ),
+  );
+
+  signals.sort((a, b) => {
+    if (b.relevance !== a.relevance) {
+      return b.relevance - a.relevance;
+    }
+    return b.event_date.localeCompare(a.event_date);
+  });
+
+  console.log(
+    `[market-pulse] new today: captured_at in [${start}, ${end}) relevance >= 2 → ${signals.length} signals`,
+  );
+
+  return { data: signals, error: null };
 }
 
 async function loadUpcomingEvents(
@@ -556,10 +660,16 @@ export async function getLivingDocumentData(
     }))
     .filter((section) => section.actors.length > 0);
 
+  const newTodayResult = await loadNewTodaySignals(domainId, actorById);
+  if (newTodayResult.error) {
+    throw newTodayResult.error;
+  }
+
   return {
     domainName: config.name,
     domainSlug: slug,
     upcoming,
+    newToday: newTodayResult.data,
     tiers,
     worthWatching,
     stats: {

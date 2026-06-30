@@ -64,8 +64,8 @@ export function formatLifecycle(lifecycle: string): string {
 export function formatActorStatus(status: string): string {
   const labels: Record<string, string> = {
     active: "Active",
-    archived_shutdown: "Archived — shutdown",
-    archived_acquired: "Archived — acquired",
+    archived_shutdown: "Archived (shutdown)",
+    archived_acquired: "Archived (acquired)",
     candidate: "Candidate",
   };
   return labels[status] ?? status;
@@ -106,4 +106,8 @@ export function formatProposalType(type: string): string {
     new_tier0_source: "New Tier 0 source",
   };
   return labels[type] ?? type.replace(/_/g, " ");
+}
+
+export function formatProposalStatus(status: "approved" | "rejected"): string {
+  return status === "approved" ? "Approved" : "Rejected";
 }

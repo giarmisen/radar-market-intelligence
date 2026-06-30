@@ -142,33 +142,32 @@ export function ActorAnalysisSection({
   }, [actorSlug, domainSlug]);
 
   return (
-    <section className="radar-analysis-block">
-      <div className="radar-profile-signals-header">
-        <h3 className="radar-section-label text-section-label">Strategic analysis</h3>
-        <div className="radar-analysis-actions">
-          <button
-            type="button"
-            className={`radar-btn ${report ? "radar-btn-reject" : "radar-btn-approve"}`}
-            onClick={generate}
-            disabled={loading}
-          >
-            {report ? "Regenerate" : "Generate Report"}
-          </button>
-        </div>
+    <section className="radar-card radar-analysis-panel">
+      <h3 className="radar-section-label text-section-label">Strategic analysis</h3>
+
+      {!loading && !report ? (
+        <p className="radar-analysis-panel-description">
+          Generate an AI-powered strategic report from this actor&apos;s profile and
+          linked signals.
+        </p>
+      ) : null}
+
+      <div className="radar-analysis-panel-action">
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={generate}
+          disabled={loading}
+        >
+          {loading ? "Generating…" : report ? "Regenerate Report" : "Generate Report"}
+        </button>
       </div>
 
       {loading ? (
         <p className="radar-analysis-loading">Generating analysis...</p>
       ) : null}
 
-      {error ? <p className="radar-proposal-error">{error}</p> : null}
-
-      {!loading && !report && !error ? (
-        <p className="radar-profile-empty">
-          Generate an AI-powered strategic report from this actor&apos;s profile and
-          linked signals.
-        </p>
-      ) : null}
+      {error ? <p className="radar-proposal-error radar-analysis-error">{error}</p> : null}
 
       {report && !loading ? <AnalysisReport report={report} /> : null}
     </section>

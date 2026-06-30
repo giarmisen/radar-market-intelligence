@@ -76,6 +76,10 @@ export function Sidebar({
           R.
         </span>
       </Link>
+      <div className="radar-sidebar-domain">
+        <div className="radar-sidebar-domain-label">Example domain</div>
+        <div className="radar-sidebar-domain-name">Language Services & Language AI</div>
+      </div>
       <nav className="radar-sidebar-nav" aria-label="Main">
         {NAV_ITEMS.map((item) => (
           <div key={item.id}>
@@ -116,10 +120,6 @@ export function Sidebar({
           )}
         </button>
       ) : null}
-      <div className="radar-sidebar-domain">
-        <div className="radar-sidebar-domain-label">Example domain</div>
-        <div className="radar-sidebar-domain-name">Language Services & Language AI</div>
-      </div>
     </aside>
   );
 }

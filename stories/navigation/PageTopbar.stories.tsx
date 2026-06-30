@@ -66,14 +66,14 @@ export const Default: Story = {
   args: {
     title: "Market Pulse",
     subtitle:
-      "Latest signals per tracked actor — full history in Timeline.",
+      "Today's signals, upcoming events, and recent market activity by tier.",
   },
   render: (args) => <PageTopbarWithFilters {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     expect(canvas.getByRole("heading", { name: "Market Pulse" })).toBeVisible();
     expect(
-      canvas.getByText(/Latest signals per tracked actor/),
+      canvas.getByText(/Today's signals, upcoming events/),
     ).toBeVisible();
 
     const tierOne = canvas.getByRole("button", { name: "Tier 1" });
@@ -91,7 +91,7 @@ export const WithoutFilters: Story = {
   args: {
     title: "Actors",
     subtitle:
-      "Tracked actor registry — tier, role, geography, and lifecycle status.",
+      "Tracked actor registry: tier, role, geography, and lifecycle status.",
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -103,7 +103,7 @@ export const WithoutFilters: Story = {
 export const Timeline: Story = {
   args: {
     title: "Timeline",
-    subtitle: "Full signal history — filter by tier, category, actor, relevance, and date.",
+    subtitle: "Full signal history. Filter by tier, category, actor, relevance, and date.",
     filters: <FilterPills value="1" onChange={() => undefined} worthWatchingCount={3} />,
   },
   play: async ({ canvasElement }) => {

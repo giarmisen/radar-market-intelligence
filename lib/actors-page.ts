@@ -44,10 +44,10 @@ export interface ActorsPageData {
 }
 
 const TIER_LABELS: Record<number, string> = {
-  0: "Tier 0 — Reference",
-  1: "Tier 1 — Focus",
-  2: "Tier 2 — Peripheral",
-  3: "Tier 3 — Wide radar",
+  0: "Tier 0 (Reference)",
+  1: "Tier 1 (Focus)",
+  2: "Tier 2 (Peripheral)",
+  3: "Tier 3 (Wide radar)",
 };
 
 const TIER_DISPLAY_ORDER = [1, 2, 0];

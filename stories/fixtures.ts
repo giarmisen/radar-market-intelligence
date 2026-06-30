@@ -32,7 +32,7 @@ export function languageServicesSignal(
     summary:
       "DeepL launched Write Pro for enterprise localization teams, adding glossary-aware post-editing and TMS export for Phrase and memoQ workflows.",
     so_what:
-      "Raises the bar for AI-assisted enterprise translation — LSPs will need comparable quality claims in RFP responses.",
+      "Raises the bar for AI-assisted enterprise translation. LSPs will need comparable quality claims in RFP responses.",
     category: "product",
     relevance: 2,
     event_date: "2026-03-12",
@@ -53,7 +53,7 @@ export const CATEGORY_SIGNAL_COPY: Record<
     summary:
       "Phrase shipped in-context AI quality estimation across Memsource projects, scoring segment-level MT output before human review.",
     so_what:
-      "Pushes TMS vendors deeper into MTQA — relevant for LSPs pricing post-editing on high-volume programs.",
+      "Pushes TMS vendors deeper into MTQA, relevant for LSPs pricing post-editing on high-volume programs.",
     source_url: "https://slator.com/phrase-ai-quality-estimation/",
     actor_names: ["Phrase (Memsource)"],
   },
@@ -80,7 +80,7 @@ export const CATEGORY_SIGNAL_COPY: Record<
     summary:
       "RWS signed a multi-year localization and regulatory submission mandate with a top-10 pharmaceutical company.",
     so_what:
-      "Signals continued enterprise spend on regulated content — competitive pressure on TransPerfect and Lionbridge in life sciences.",
+      "Signals continued enterprise spend on regulated content, with competitive pressure on TransPerfect and Lionbridge in life sciences.",
     source_url: "https://slator.com/rws-pharma-localization-contract/",
     actor_names: ["RWS"],
   },
@@ -125,7 +125,7 @@ export function signalForCategory(category: SignalCategory): LivingDocumentSigna
 
 export const UPCOMING_LOCWORLD: UpcomingEvent = {
   id: "upcoming-locworld",
-  title: "LocWorld Silicon Valley — Language AI track",
+  title: "LocWorld Silicon Valley: Language AI track",
   scheduled_date: "2026-04-22",
   so_what: "Key venue for LSP product launches and partnership announcements.",
   category: "communications",
@@ -180,17 +180,28 @@ function actorCard(overrides: Partial<ActorCard> & Pick<ActorCard, "id" | "name"
 }
 
 export function marketPulseData(): LivingDocumentPageData {
+  const newTodaySignal = languageServicesSignal({
+    id: "sig-deepl-1",
+    relevance: 3,
+    captured_at: recentCapture(),
+    summary:
+      "DeepL announced EU sovereign cloud hosting for enterprise MT, targeting regulated buyers that cannot use US-only inference.",
+    actor_names: ["DeepL"],
+    source_url: "https://slator.com/deepl-eu-sovereign-cloud/",
+  });
+
   return {
     domainName: DOMAIN_NAME,
     domainSlug: "language-services-ai",
     pendingProposals: 2,
     upcoming: [UPCOMING_LOCWORLD],
+    newToday: [newTodaySignal],
     worthWatching: WORTH_WATCHING_SIGNALS,
     stats: { actors: 6, signals: 18, upcoming: 1 },
     tiers: [
       {
         tier: 1,
-        label: "Tier 1 — Focus",
+        label: "Tier 1 (Focus)",
         actors: [
           actorCard({
             id: "actor-deepl",
@@ -252,7 +263,7 @@ export function marketPulseData(): LivingDocumentPageData {
       },
       {
         tier: 2,
-        label: "Tier 2 — Peripheral",
+        label: "Tier 2 (Peripheral)",
         actors: [
           actorCard({
             id: "actor-lilt",
@@ -317,7 +328,7 @@ export function timelineRows(): TimelineRow[] {
       summary:
         "RWS signed a multi-year localization and regulatory submission mandate with a top-10 pharmaceutical company.",
       so_what:
-        "Signals continued enterprise spend on regulated content — competitive pressure on TransPerfect and Lionbridge.",
+        "Signals continued enterprise spend on regulated content, with competitive pressure on TransPerfect and Lionbridge.",
       source_url: "https://slator.com/rws-pharma-localization-contract/",
       lifecycle: null,
       captured_at: null,

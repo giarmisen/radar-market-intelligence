@@ -44,7 +44,7 @@ export const Default: Story = {
       <>
         <PageTopbar
           title="Market Pulse"
-          subtitle="Latest signals per tracked actor — full history in Timeline."
+          subtitle="Today's signals, upcoming events, and recent market activity by tier."
         />
         <div className="radar-content">
           <p className="text-signal-body">
