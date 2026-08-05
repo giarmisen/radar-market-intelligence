@@ -6,9 +6,7 @@ create table if not exists gmail_tokens (
   updated_at timestamptz default now()
 );
 
-alter table gmail_tokens disable row level security;
-
-grant all on table gmail_tokens to anon, authenticated, service_role;
+alter table gmail_tokens enable row level security;
 
 -- Add gmail source type (run once; safe to ignore if already exists)
 alter type source_type add value if not exists 'gmail';

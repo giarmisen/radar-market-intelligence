@@ -1,14 +1,5 @@
--- Run once in Supabase SQL Editor after schema.sql
--- Grants API roles access to Radar tables (v1: no RLS, single-analyst tool)
-
-grant usage on schema public to anon, authenticated, service_role;
-
-grant all on all tables in schema public to anon, authenticated, service_role;
-grant all on all sequences in schema public to anon, authenticated, service_role;
-grant select on living_document, upcoming_events to anon, authenticated, service_role;
-
-alter default privileges in schema public
-  grant all on tables to anon, authenticated, service_role;
-
-alter default privileges in schema public
-  grant all on sequences to anon, authenticated, service_role;
+-- Historicamente este archivo daba "grant all" a anon/authenticated (v1: no RLS,
+-- single-analyst tool). Eso quedo cerrado: ver supabase/harden-access.sql.
+-- No hace falta correr nada de aqui para una instalacion nueva, RLS ya viene
+-- activado en schema.sql y sin policies, asi que anon/authenticated no tienen
+-- acceso por defecto. Este archivo se deja solo para referencia historica.

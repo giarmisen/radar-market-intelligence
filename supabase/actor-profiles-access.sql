@@ -1,6 +1,6 @@
--- Run once in Supabase SQL Editor if actor_profiles seeding hits RLS errors.
--- v1: single-analyst tool — match other Radar tables (no RLS).
-
-alter table actor_profiles disable row level security;
-
-grant all on table actor_profiles to anon, authenticated, service_role;
+-- Historicamente este archivo desactivaba RLS en actor_profiles y daba grant
+-- all a anon/authenticated. Eso quedo cerrado: ver supabase/harden-access.sql,
+-- que activa RLS en actor_profiles igual que en el resto de tablas.
+-- Si al sembrar datos (seed) aparece un error de "row-level security", es
+-- porque el script esta usando SUPABASE_ANON_KEY en vez de
+-- SUPABASE_SERVICE_ROLE_KEY. Revisa .env.local, no reabras RLS.

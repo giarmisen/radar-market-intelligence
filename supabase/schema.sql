@@ -167,16 +167,15 @@ create table gmail_tokens (
   updated_at timestamptz default now()
 );
 
-alter table gmail_tokens disable row level security;
-
--- API access (v1: no RLS, single-analyst tool)
-grant usage on schema public to anon, authenticated, service_role;
-
-grant all on all tables in schema public to anon, authenticated, service_role;
-grant all on all sequences in schema public to anon, authenticated, service_role;
-
-alter default privileges in schema public
-  grant all on tables to anon, authenticated, service_role;
-
-alter default privileges in schema public
-  grant all on sequences to anon, authenticated, service_role;
+-- API access: single-analyst tool, todo el acceso pasa por rutas de servidor
+-- con SUPABASE_SERVICE_ROLE_KEY (que bypassa RLS). anon/authenticated no
+-- necesitan ningun permiso porque el navegador nunca habla con Supabase
+-- directamente. Ver supabase/harden-access.sql para el detalle.
+alter table domains enable row level security;
+alter table actors enable row level security;
+alter table radar_queries enable row level security;
+alter table sources enable row level security;
+alter table signals enable row level security;
+alter table signal_actors enable row level security;
+alter table proposals enable row level security;
+alter table gmail_tokens enable row level security;
