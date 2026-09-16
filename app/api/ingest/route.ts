@@ -39,6 +39,13 @@ async function readDateParams(request: NextRequest): Promise<{
 }
 
 async function handleIngest(request: NextRequest) {
+  if (process.env.RADAR_INGEST_ENABLED !== "true") {
+    return NextResponse.json(
+      { ok: false, error: "Ingestion is disabled for this project." },
+      { status: 410 },
+    );
+  }
+
   try {
     const slug = resolveDomainSlug(request.nextUrl.searchParams.get("domain"));
     const { from, to, source } = await readDateParams(request);
