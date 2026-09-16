@@ -40,6 +40,40 @@ export interface TimelinePageData {
   };
 }
 
+const TIMELINE_SIGNAL_SELECT = `
+  id,
+  event_date,
+  category,
+  relevance,
+  summary,
+  so_what,
+  source_url,
+  captured_at,
+  lifecycle,
+  grouped_sources,
+  source_count,
+  signal_actors (
+    actor:actors ( id, name, tier, role )
+  )
+`;
+
+const LEGACY_TIMELINE_SIGNAL_SELECT = `
+  id,
+  event_date,
+  category,
+  relevance,
+  summary,
+  so_what,
+  source_url,
+  captured_at,
+  lifecycle,
+  signal_actors (
+    actor:actors ( id, name, tier, role )
+  )
+`;
+
+type TimelineSignal = Record<string, unknown>;
+
 function parseTimelineActors(
   signalActors: unknown,
 ): TimelineActor[] {
@@ -83,29 +117,29 @@ export async function getTimelineData(
   const domain = await getDomainMeta(slug);
   const supabase = getSupabase();
 
-  const { data, error } = await supabase
+  const initialQuery = await supabase
     .from("signals")
-    .select(
-      `
-      id,
-      event_date,
-      category,
-      relevance,
-      summary,
-      so_what,
-      source_url,
-      captured_at,
-      lifecycle,
-      grouped_sources,
-      source_count,
-      signal_actors (
-        actor:actors ( id, name, tier, role )
-      )
-    `,
-    )
+    .select(TIMELINE_SIGNAL_SELECT)
     .eq("domain_id", domain.id)
     .gte("relevance", 1)
     .order("event_date", { ascending: false });
+  let data = initialQuery.data as TimelineSignal[] | null;
+  let error = initialQuery.error;
+
+  if (
+    error &&
+    /column .* does not exist|schema cache/i.test(error.message) &&
+    /grouped_sources|source_count/i.test(error.message)
+  ) {
+    const legacyQuery = await supabase
+      .from("signals")
+      .select(LEGACY_TIMELINE_SIGNAL_SELECT)
+      .eq("domain_id", domain.id)
+      .gte("relevance", 1)
+      .order("event_date", { ascending: false });
+    data = legacyQuery.data as TimelineSignal[] | null;
+    error = legacyQuery.error;
+  }
 
   if (error) {
     throw new Error(`signals: ${error.message}`);
