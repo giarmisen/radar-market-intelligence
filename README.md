@@ -73,6 +73,8 @@ if (process.env.RADAR_DEMO_MODE === "true") {
 
 This mode exposes protected write APIs, so it should not remain enabled on a public deployment.
 
+The current demo deployment is frozen: the Vercel cron has been removed, so no automatic ingestion runs for this project.
+
 ## License
 
 Private portfolio project — not licensed for redistribution.
