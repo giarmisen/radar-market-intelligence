@@ -26,6 +26,10 @@ export function middleware(request: NextRequest): NextResponse {
     }
   }
 
+  if (process.env.RADAR_DEMO_MODE === "true") {
+    return NextResponse.next();
+  }
+
   const adminUser = process.env.ADMIN_USER;
   const adminPassword = process.env.ADMIN_PASSWORD;
 

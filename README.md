@@ -61,6 +61,16 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Domain config lives in `config/`; schema and migrations in `supabase/`.
 
+### Temporary demo access
+
+Protected pages and APIs require `ADMIN_USER` and `ADMIN_PASSWORD` by default. To temporarily remove that login for a presentation, set this environment variable in the deployment environment:
+
+```bash
+RADAR_DEMO_MODE=true
+```
+
+Unset it or set it to `false` after the demo. This mode also exposes protected write APIs, so it should not remain enabled on a public deployment.
+
 ## License
 
 Private portfolio project — not licensed for redistribution.
