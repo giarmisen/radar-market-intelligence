@@ -63,13 +63,15 @@ Open [http://localhost:3000](http://localhost:3000). Domain config lives in `con
 
 ### Temporary demo access
 
-Protected pages and APIs require `ADMIN_USER` and `ADMIN_PASSWORD` by default. To temporarily remove that login for a presentation, set this environment variable in the deployment environment:
+The deployed demo currently runs without login. To restore Basic Auth after the presentation, remove the unconditional `NextResponse.next()` in `middleware.ts` and use this environment-controlled guard instead:
 
-```bash
-RADAR_DEMO_MODE=true
+```ts
+if (process.env.RADAR_DEMO_MODE === "true") {
+	return NextResponse.next();
+}
 ```
 
-Unset it or set it to `false` after the demo. This mode also exposes protected write APIs, so it should not remain enabled on a public deployment.
+This mode exposes protected write APIs, so it should not remain enabled on a public deployment.
 
 ## License
 
